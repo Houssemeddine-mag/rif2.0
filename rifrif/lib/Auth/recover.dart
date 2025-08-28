@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firebase_service.dart'; // Firebase auth service
 
 class RecoverPage extends StatefulWidget {
@@ -20,25 +21,99 @@ class _RecoverPageState extends State<RecoverPage> {
   @override
   void initState() {
     super.initState();
-    // Initialize test credentials
-    emailController.text = 'h@h.com';
-    codeController.text = '1234';
-    newPasswordController.text = '12345';
   }
 
   // Send a password reset email using Firebase
   Future<void> sendPasswordResetEmail() async {
-    setState(() => isLoading = true);
-    try {
-      await FirebaseService.sendPasswordReset(emailController.text.trim());
+    if (emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Email de réinitialisation envoyé.")),
+        SnackBar(content: Text("Veuillez entrer votre adresse email")),
+      );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      print(
+          '[Recover] Checking if email exists first: ${emailController.text.trim()}');
+
+      // First check if email exists using our custom method
+      final emailExists =
+          await FirebaseService.checkEmailExists(emailController.text.trim());
+      print('[Recover] Email exists result: $emailExists');
+
+      if (!emailExists) {
+        print('[Recover] Email does not exist, showing error message');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Email invalide"),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+
+      print('[Recover] Email exists, attempting to send password reset email');
+
+      // If email exists, send the reset email
+      await FirebaseService.sendPasswordReset(emailController.text.trim());
+
+      print('[Recover] Password reset email sent successfully');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              "Email de réinitialisation envoyé. Vérifiez votre boîte email ou dans le spam."),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
       );
       Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      print('[Recover] FirebaseAuthException: ${e.code} - ${e.message}');
+      print('[Recover] Full error details: $e');
+      String errorMessage;
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = "Email invalide";
+          print('[Recover] User not found - showing email invalide message');
+          break;
+        case 'invalid-email':
+          errorMessage = "Format d'email invalide";
+          break;
+        case 'too-many-requests':
+          errorMessage = "Trop de tentatives. Veuillez réessayer plus tard.";
+          break;
+        case 'network-request-failed':
+          errorMessage =
+              "Erreur de connexion. Vérifiez votre connexion internet.";
+          break;
+        default:
+          errorMessage = "Erreur lors de l'envoi de l'email: ${e.message}";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor:
+              e.code == 'user-not-found' ? Colors.orange : Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      print('[Recover] General error: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text("Erreur lors de l'envoi de l'email de réinitialisation"),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
     } finally {
       setState(() => isLoading = false);
     }

@@ -207,21 +207,71 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> loginWithGithub() async {
     setState(() => isLoading = true);
     try {
-      final cred = await FirebaseService.signInWithGithub();
-      if (cred.user != null) {
+      print('[Login] Starting GitHub login process...');
+
+      final userCredential = await FirebaseService.signInWithGithub();
+
+      if (userCredential.user != null) {
+        print('[Login] GitHub login successful: ${userCredential.user!.email}');
+
+        // Create user model
+        final userModel = UserModel.fromFirebaseUser(userCredential.user!);
+        print('[Login] User model created: ${userModel.email}');
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                "Connexion GitHub réussie ! Bienvenue ${userModel.displayName ?? userModel.email}"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // Navigate to home
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      print('[Login] GitHub login error: $e');
+      String errorMessage = "Erreur lors de la connexion avec GitHub";
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'popup-closed-by-user':
+          case 'user-cancelled':
+            errorMessage = "Connexion annulée par l'utilisateur";
+            break;
+          case 'network-request-failed':
+            errorMessage =
+                "Erreur de connexion réseau. Vérifiez votre connexion internet.";
+            break;
+          case 'invalid-credential':
+            errorMessage =
+                "Erreur d'authentification GitHub. Veuillez réessayer.";
+            break;
+          case 'account-exists-with-different-credential':
+            errorMessage =
+                "Un compte existe déjà avec cette adresse email via un autre fournisseur.";
+            break;
+          case 'operation-not-supported-in-this-environment':
+            errorMessage =
+                "L'authentification GitHub n'est pas supportée dans cet environnement.";
+            break;
+          default:
+            errorMessage = e.message ?? "Erreur d'authentification GitHub";
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
     } finally {
       setState(() => isLoading = false);
     }
-  }
-
-  void loginWithFacebook() {
-    // TODO: Implement Facebook Sign-In
   }
 
   @override
@@ -354,21 +404,17 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 children: [
                   _socialButton(
-                    "Login with Google",
+                    "Continuer avec Google",
                     loginWithGoogle,
                     Icons.g_mobiledata,
+                    Color(0xFFDB4437), // Google red
                   ),
                   SizedBox(height: 10),
                   _socialButton(
-                    "Login with GitHub",
+                    "Continuer avec GitHub",
                     loginWithGithub,
                     Icons.code,
-                  ),
-                  SizedBox(height: 10),
-                  _socialButton(
-                    "Login with Facebook",
-                    loginWithFacebook,
-                    Icons.facebook,
+                    Color(0xFF333333), // GitHub dark
                   ),
                 ],
               ),
@@ -379,18 +425,24 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _socialButton(String text, VoidCallback onPressed, IconData icon) {
+  Widget _socialButton(String text, VoidCallback onPressed, IconData icon,
+      [Color? iconColor]) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: Color(0xFFAA6B94), size: 24),
-        label: Text(text, style: TextStyle(color: Color(0xFFAA6B94))),
+        icon: Icon(icon, color: iconColor ?? Color(0xFFAA6B94), size: 24),
+        label: Text(text,
+            style: TextStyle(
+              color: iconColor ?? Color(0xFFAA6B94),
+              fontWeight: FontWeight.w500,
+            )),
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFFFDFDFD),
-          side: BorderSide(color: Color(0xFFAA6B94)),
+          side: BorderSide(color: iconColor ?? Color(0xFFAA6B94)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 1,
         ),
       ),
     );
