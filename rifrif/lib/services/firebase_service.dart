@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
-import '../utils/auth_fix.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class FirebaseService {
   static void debugPrintAuth(String message) {
@@ -10,6 +11,233 @@ class FirebaseService {
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static bool _isInitialized = false;
+
+  // Check if email exists in Firebase Auth database
+  static Future<bool> checkEmailExists(String email) async {
+    try {
+      debugPrintAuth('Checking if email exists in Firebase Auth: $email');
+
+      // Use a dry-run approach: try to send password reset but catch specific errors
+      try {
+        // Create a temporary password reset request to check email existence
+        await _auth.sendPasswordResetEmail(email: email);
+        debugPrintAuth(
+            'Password reset email sent successfully, email exists: $email');
+        return true;
+      } on FirebaseAuthException catch (e) {
+        debugPrintAuth(
+            'FirebaseAuthException during email check: ${e.code} - ${e.message}');
+        switch (e.code) {
+          case 'user-not-found':
+            debugPrintAuth('Email does not exist in Firebase Auth: $email');
+            return false;
+          case 'invalid-email':
+            debugPrintAuth('Invalid email format: $email');
+            return false;
+          case 'user-disabled':
+            debugPrintAuth('User account is disabled but exists: $email');
+            return true;
+          case 'too-many-requests':
+            debugPrintAuth(
+                'Too many requests, but email likely exists: $email');
+            return true;
+          default:
+            debugPrintAuth(
+                'Other Firebase error, assuming email exists: ${e.code}');
+            return true;
+        }
+      } catch (e) {
+        debugPrintAuth('Non-Firebase error during email check: $e');
+        return true; // Assume exists for non-Firebase errors
+      }
+    } catch (e) {
+      debugPrintAuth('General error checking email existence: $e');
+      return true; // Assume exists on general error
+    }
+  }
+
+  // Generate a simple 4-digit verification code
+  static String generateVerificationCode() {
+    return (1000 + DateTime.now().millisecond % 9000).toString();
+  }
+
+  // Send verification email using multiple service options
+  static Future<bool> sendVerificationEmail(String email, String code) async {
+    try {
+      debugPrintAuth('Sending verification email to: $email with code: $code');
+
+      // Try multiple email services in order of preference
+
+      // Option 1: EmailJS (if configured)
+      bool emailJSResult = await _sendViaEmailJS(email, code);
+      if (emailJSResult) return true;
+
+      // Option 2: Formspree (easier to set up)
+      bool formspreeResult = await _sendViaFormspree(email, code);
+      if (formspreeResult) return true;
+
+      // Option 3: Web3Forms (free service)
+      bool web3FormsResult = await _sendViaWeb3Forms(email, code);
+      if (web3FormsResult) return true;
+
+      // Fallback: Console output for development
+      debugPrintAuth('All email services failed. Using console output.');
+      print('===== VERIFICATION CODE =====');
+      print('Email: $email');
+      print('Code: $code');
+      print('Enter this code in the verification screen');
+      print('==============================');
+      return true;
+    } catch (e) {
+      debugPrintAuth('Error in sendVerificationEmail: $e');
+      print('===== VERIFICATION CODE (Error Fallback) =====');
+      print('Email: $email');
+      print('Code: $code');
+      print('===============================================');
+      return true;
+    }
+  }
+
+  // EmailJS implementation
+  static Future<bool> _sendViaEmailJS(String email, String code) async {
+    try {
+      const String serviceId = 'YOUR_SERVICE_ID';
+      const String templateId = 'YOUR_TEMPLATE_ID';
+      const String publicKey = 'YOUR_PUBLIC_KEY';
+
+      if (serviceId == 'YOUR_SERVICE_ID') {
+        debugPrintAuth('EmailJS not configured, skipping...');
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'service_id': serviceId,
+          'template_id': templateId,
+          'user_id': publicKey,
+          'template_params': {
+            'to_email': email,
+            'verification_code': code,
+            'app_name': 'Rif App',
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrintAuth('Email sent successfully via EmailJS');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrintAuth('EmailJS failed: $e');
+      return false;
+    }
+  }
+
+  // Formspree implementation (free service)
+  static Future<bool> _sendViaFormspree(String email, String code) async {
+    try {
+      // You need to create a form at https://formspree.io/ and replace YOUR_FORM_ID
+      const String formId =
+          'YOUR_FORM_ID'; // Replace with your Formspree form ID
+
+      if (formId == 'YOUR_FORM_ID') {
+        debugPrintAuth('Formspree not configured, skipping...');
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://formspree.io/f/$formId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'subject': 'Code de vérification - Rif App',
+          'message':
+              'Votre code de vérification est: $code\n\nCe code expire dans 10 minutes.',
+          '_replyto': email,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrintAuth('Email sent successfully via Formspree');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrintAuth('Formspree failed: $e');
+      return false;
+    }
+  }
+
+  // Web3Forms implementation (completely free)
+  static Future<bool> _sendViaWeb3Forms(String email, String code) async {
+    try {
+      // Get free access key at https://web3forms.com/
+      const String accessKey =
+          'fc7e3628-59f8-4854-8fb4-16a985b9446b'; // Your Web3Forms access key configured
+
+      if (accessKey == 'YOUR_WEB3FORMS_KEY') {
+        debugPrintAuth('Web3Forms not configured, skipping...');
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://api.web3forms.com/submit'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'access_key': accessKey,
+          'email': email,
+          'subject': 'RIF - Code de vérification de votre compte',
+          'message': '''
+Bonjour,
+
+Bienvenue sur RIF (Réseau Informatique Facultaire) !
+
+Pour finaliser la création de votre compte, veuillez utiliser le code de vérification ci-dessous :
+
+CODE DE VÉRIFICATION : $code
+
+Instructions :
+1. Entrez ce code dans l'application RIF
+2. Le code est valide pendant 10 minutes
+3. Si vous n'avez pas créé de compte, ignorez cet email
+
+Sécurité :
+- Ne partagez jamais ce code avec personne
+- Ce code expire automatiquement dans 10 minutes
+- Si vous avez des problèmes, réessayez la création de compte
+
+Cordialement,
+L'équipe RIF - Réseau Informatique Facultaire
+Université
+
+---
+Cet email a été envoyé automatiquement à : $email
+© 2025 RIF - Réseau Informatique Facultaire
+''',
+          'from_name': 'RIF - Réseau Informatique Facultaire',
+          'reply_to': 'noreply@rif-univ.edu',
+          // Additional parameters to avoid spam
+          '_captcha': false,
+          '_autoresponse': false,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success'] == true) {
+          debugPrintAuth('Email sent successfully via Web3Forms');
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrintAuth('Web3Forms failed: $e');
+      return false;
+    }
+  }
 
   static void initialize() {
     if (!_isInitialized) {
@@ -88,6 +316,66 @@ class FirebaseService {
     }
   }
 
+  // Email + password sign up with verification
+  static Future<Map<String, dynamic>> signUpWithEmailAndVerification(
+    String email,
+    String password,
+  ) async {
+    debugPrintAuth('Attempting to create account with email: $email');
+    try {
+      if (email.isEmpty || password.isEmpty) {
+        debugPrintAuth('Email or password is empty');
+        throw FirebaseAuthException(
+          code: 'invalid-input',
+          message: 'Email and password cannot be empty',
+        );
+      }
+
+      if (password.length < 6) {
+        debugPrintAuth('Password is too short');
+        throw FirebaseAuthException(
+          code: 'weak-password',
+          message: 'Password should be at least 6 characters',
+        );
+      }
+
+      debugPrintAuth('Calling Firebase createUserWithEmailAndPassword');
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      debugPrintAuth('Successfully created account: ${credential.user?.email}');
+
+      // Generate verification code
+      final verificationCode = generateVerificationCode();
+
+      // Send verification email
+      final emailSent = await sendVerificationEmail(email, verificationCode);
+
+      if (!emailSent) {
+        throw FirebaseAuthException(
+          code: 'verification-email-failed',
+          message: 'Failed to send verification email',
+        );
+      }
+
+      return {
+        'credential': credential,
+        'verificationCode': verificationCode,
+      };
+    } catch (e) {
+      debugPrintAuth('Error creating account: $e');
+      if (e is FirebaseAuthException) {
+        rethrow;
+      }
+      throw FirebaseAuthException(
+        code: 'unknown',
+        message: 'An unexpected error occurred: ${e.toString()}',
+      );
+    }
+  }
+
   // Email + password sign in
   static Future<UserCredential> signInWithEmail(
     String email,
@@ -124,9 +412,19 @@ class FirebaseService {
     }
   }
 
-  // Send password reset email
+  // Send password reset email using Firebase
   static Future<void> sendPasswordReset(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+    try {
+      debugPrintAuth('Sending Firebase password reset email to: $email');
+
+      // Send Firebase's official password reset email with the actual reset link
+      await _auth.sendPasswordResetEmail(email: email);
+      debugPrintAuth(
+          'Firebase password reset email sent successfully to: $email');
+    } catch (e) {
+      debugPrintAuth('Error sending password reset email to $email: $e');
+      rethrow; // Re-throw the error so the UI can handle it
+    }
   }
 
   // Google Sign-In
@@ -222,8 +520,7 @@ class FirebaseService {
         // Utilisation de signInWithCredential avec gestion spécifique pour Pigeon
         UserCredential? userCredential;
         try {
-          final tempCred = await _auth.signInWithCredential(credential);
-          userCredential = tempCred.safe;
+          userCredential = await _auth.signInWithCredential(credential);
 
           // Vérification immédiate de l'état de l'authentification
           if (_auth.currentUser == null) {
@@ -293,16 +590,31 @@ class FirebaseService {
 
   // GitHub Sign-In
   static Future<UserCredential> signInWithGithub() async {
-    // Create a GitHub provider
-    GithubAuthProvider githubProvider = GithubAuthProvider();
-
     try {
+      debugPrintAuth('Starting GitHub Sign In process...');
+
+      // Create a GitHub provider
+      GithubAuthProvider githubProvider = GithubAuthProvider();
+
+      // Add scopes for better user information
+      githubProvider.addScope('user:email');
+      githubProvider.addScope('read:user');
+
+      debugPrintAuth('Requesting GitHub authentication...');
+
       final UserCredential userCredential = await _auth.signInWithProvider(
         githubProvider,
       );
+
+      debugPrintAuth(
+          'GitHub authentication successful: ${userCredential.user?.email}');
+
       return userCredential;
     } catch (e) {
-      print('Error signing in with GitHub: $e');
+      debugPrintAuth('Error signing in with GitHub: $e');
+      if (e is FirebaseAuthException) {
+        debugPrintAuth('FirebaseAuthException: ${e.code} - ${e.message}');
+      }
       rethrow;
     }
   }

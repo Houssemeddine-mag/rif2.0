@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/program.css";
 import "../styles/program-form-restore.css";
+import FirebaseAdminService from "../services/FirebaseAdminService";
 
 const Program = () => {
   const [sessions, setSessions] = useState([]);
@@ -39,14 +40,40 @@ const Program = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingConferenceIdx, setEditingConferenceIdx] = useState(null);
 
-  // Simulate fetching sessions from backend
+  // Fetch sessions from Firebase
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        // Example: new session structure with keynote and conferences
-        const response = [
+        setLoading(true);
+        console.log("Initializing Firebase Admin Service...");
+
+        // Initialize the service first
+        await FirebaseAdminService.initialize();
+
+        console.log("Fetching programs from Firebase...");
+        const programs = await FirebaseAdminService.getPrograms();
+        console.log("Fetched programs:", programs);
+        setSessions(programs);
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+
+        // Show specific error message for common issues
+        if (
+          error.message.includes("Permission denied") ||
+          error.message.includes("security rules")
+        ) {
+          console.warn(
+            "Firebase security rules may need to be configured for development access."
+          );
+        }
+
+        // Fallback to example data if Firebase fails
+        console.log(
+          "Using fallback example data due to Firebase connection issues"
+        );
+        const exampleData = [
           {
-            id: 1,
+            id: "example-1",
             title: "Artificial Intelligence and Healthcare",
             date: "2025-12-08",
             chairs: ["Pr Nawres Khlifa", "Pr Faiza Belala"],
@@ -85,10 +112,8 @@ const Program = () => {
             ],
           },
         ];
-        setSessions(response);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching sessions:", error);
+        setSessions(exampleData);
+      } finally {
         setLoading(false);
       }
     };
@@ -132,75 +157,113 @@ const Program = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let conferences = [...formData.conferences];
-    // If keynoteHasConference, ensure the keynote's conference is the first in the list
-    if (formData.keynoteHasConference) {
-      const keynoteConf = {
-        title:
-          formData.keynoteConference.title ||
-          `${formData.keynote.name} (Keynote)`,
-        presenter: formData.keynote.name,
-        affiliation: formData.keynote.affiliation,
-        start: formData.keynoteConference.start,
-        end: formData.keynoteConference.end,
-        isKeynote: true,
-      };
-      // Replace or add as first conference
-      if (conferences.length > 0 && conferences[0].isKeynote) {
-        conferences[0] = keynoteConf;
+    setLoading(true);
+
+    try {
+      // Basic validation
+      if (!formData.title.trim()) {
+        alert("Please enter a session title");
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.date) {
+        alert("Please select a date");
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.start || !formData.end) {
+        alert("Please enter start and end times");
+        setLoading(false);
+        return;
+      }
+
+      let conferences = [...formData.conferences];
+      // If keynoteHasConference, ensure the keynote's conference is the first in the list
+      if (formData.keynoteHasConference) {
+        const keynoteConf = {
+          title:
+            formData.keynoteConference.title ||
+            `${formData.keynote.name} (Keynote)`,
+          presenter: formData.keynote.name,
+          affiliation: formData.keynote.affiliation,
+          start: formData.keynoteConference.start,
+          end: formData.keynoteConference.end,
+          isKeynote: true,
+        };
+        // Replace or add as first conference
+        if (conferences.length > 0 && conferences[0].isKeynote) {
+          conferences[0] = keynoteConf;
+        } else {
+          conferences = [keynoteConf, ...conferences];
+        }
       } else {
-        conferences = [keynoteConf, ...conferences];
+        // Remove keynote conference if unchecked
+        if (conferences.length > 0 && conferences[0].isKeynote) {
+          conferences = conferences.slice(1);
+        }
       }
-    } else {
-      // Remove keynote conference if unchecked
-      if (conferences.length > 0 && conferences[0].isKeynote) {
-        conferences = conferences.slice(1);
-      }
-    }
-    const sessionData = {
-      ...formData,
-      conferences,
-      keynoteDescription: formData.keynoteDescription,
-    };
-    if (editingId) {
-      setSessions((prev) =>
-        prev.map((session) =>
-          session.id === editingId ? { ...sessionData, id: editingId } : session
-        )
-      );
-    } else {
-      const newSession = {
-        ...sessionData,
-        id:
-          sessions.length > 0 ? Math.max(...sessions.map((s) => s.id)) + 1 : 1,
+
+      const sessionData = {
+        ...formData,
+        conferences,
+        keynoteDescription: formData.keynoteDescription,
       };
-      setSessions((prev) => [...prev, newSession]);
-    }
-    setFormData({
-      type: "session",
-      title: "",
-      date: "",
-      start: "",
-      end: "",
-      chairs: [],
-      chairInput: "",
-      keynote: { name: "", affiliation: "", bio: "", image: "" },
-      keynoteDescription: "",
-      keynoteHasConference: false,
-      keynoteConference: { title: "", start: "", end: "" },
-      conferences: [],
-      conferenceInput: {
+
+      if (editingId) {
+        // Update existing session
+        const updatedSession = { ...sessionData, id: editingId };
+        await FirebaseAdminService.updateProgram(editingId, sessionData);
+
+        // Update local state
+        setSessions((prev) =>
+          prev.map((session) =>
+            session.id === editingId ? updatedSession : session
+          )
+        );
+        console.log("Program updated successfully");
+      } else {
+        // Add new session
+        const newSession = await FirebaseAdminService.addProgram(sessionData);
+
+        // Update local state
+        setSessions((prev) => [...prev, newSession]);
+        console.log("Program added successfully");
+      }
+
+      // Reset form
+      setFormData({
+        type: "session",
         title: "",
-        presenter: "",
-        affiliation: "",
+        date: "",
         start: "",
         end: "",
-        resume: "",
-      },
-    });
-    setEditingId(null);
+        chairs: [],
+        chairInput: "",
+        keynote: { name: "", affiliation: "", bio: "", image: "" },
+        keynoteDescription: "",
+        keynoteHasConference: false,
+        keynoteConference: { title: "", start: "", end: "" },
+        conferences: [],
+        conferenceInput: {
+          title: "",
+          presenter: "",
+          affiliation: "",
+          start: "",
+          end: "",
+          resume: "",
+        },
+      });
+      setEditingId(null);
+    } catch (error) {
+      console.error("Error saving program:", error);
+      alert("Failed to save program. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (session) => {
@@ -254,9 +317,22 @@ const Program = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this session?")) {
-      setSessions((prev) => prev.filter((session) => session.id !== id));
+      setLoading(true);
+
+      try {
+        await FirebaseAdminService.deleteProgram(id);
+
+        // Update local state
+        setSessions((prev) => prev.filter((session) => session.id !== id));
+        console.log("Program deleted successfully");
+      } catch (error) {
+        console.error("Error deleting program:", error);
+        alert("Failed to delete program. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -274,10 +350,39 @@ const Program = () => {
     return <div className="loading">Loading program data...</div>;
   }
 
+  const testFirebaseConnection = async () => {
+    try {
+      console.log("Testing Firebase connection...");
+      await FirebaseAdminService.testConnection();
+      alert("✅ Firebase connection successful!");
+    } catch (error) {
+      console.error("Firebase connection test failed:", error);
+      alert("❌ Firebase connection failed: " + error.message);
+    }
+  };
+
   return (
     <div className="program-container">
       <h1>Program Management</h1>
       <p className="subtitle">Manage conference schedule and sessions</p>
+
+      {/* Firebase Connection Test */}
+      <div style={{ marginBottom: "20px", textAlign: "center" }}>
+        <button
+          onClick={testFirebaseConnection}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          Test Firebase Connection
+        </button>
+      </div>
 
       {/* Session Form */}
       <div className="form-section">

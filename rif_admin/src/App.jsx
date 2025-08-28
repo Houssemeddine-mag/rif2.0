@@ -1,10 +1,22 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-import ScrollToTop from "./components/ScrollToTop";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import Sidebar from "./Components/Sidebar";
+import Topbar from "./Components/Topbar";
+import ScrollToTop from "./Components/ScrollToTop";
 import "./styles/sidebar.css";
 
 const App = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const adminUser = localStorage.getItem("rifAdminUser");
+    if (!adminUser) {
+      // If not authenticated, redirect to login
+      navigate("/login");
+    }
+  }, [navigate]);
+
   return (
     <div className="app-container">
       {/* Navigation Sidebar */}

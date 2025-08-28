@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firebase_service.dart';
-import '../models/user_model.dart';
+import 'verification.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -40,10 +40,13 @@ class _SignupPageState extends State<SignupPage> {
       }
 
       print('[Signup] Creating account with email: ${emailController.text}');
-      final credential = await FirebaseService.signUpWithEmail(
+      final result = await FirebaseService.signUpWithEmailAndVerification(
         emailController.text.trim(),
         passwordController.text,
       );
+
+      final credential = result['credential'] as UserCredential;
+      final verificationCode = result['verificationCode'] as String;
 
       if (credential.user != null) {
         print('[Signup] Account created successfully');
@@ -62,8 +65,16 @@ class _SignupPageState extends State<SignupPage> {
             );
           }
 
-          // Navigation vers Home si tout est OK
-          Navigator.pushReplacementNamed(context, '/home');
+          // Navigate to verification page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerificationPage(
+                email: emailController.text.trim(),
+                verificationCode: verificationCode,
+              ),
+            ),
+          );
         } catch (profileError) {
           print('[Signup] Error updating user profile: $profileError');
           throw FirebaseAuthException(
@@ -188,21 +199,64 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  void signupWithFacebook() {
-    // TODO: Implement Facebook Sign-Up
-  }
-
   Future<void> signupWithGithub() async {
     setState(() => isLoading = true);
     try {
-      final cred = await FirebaseService.signInWithGithub();
-      if (cred.user != null) {
+      print('[Signup] Starting GitHub signup process...');
+
+      final userCredential = await FirebaseService.signInWithGithub();
+
+      if (userCredential.user != null) {
+        print(
+            '[Signup] GitHub signup successful: ${userCredential.user!.email}');
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                "Inscription GitHub réussie ! Bienvenue ${userCredential.user!.displayName ?? userCredential.user!.email}"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // Navigate to home
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      print('[Signup] GitHub signup error: $e');
+      String errorMessage = "Erreur lors de l'inscription avec GitHub";
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'popup-closed-by-user':
+          case 'user-cancelled':
+            errorMessage = "Inscription annulée par l'utilisateur";
+            break;
+          case 'network-request-failed':
+            errorMessage =
+                "Erreur de connexion réseau. Vérifiez votre connexion internet.";
+            break;
+          case 'invalid-credential':
+            errorMessage =
+                "Erreur d'authentification GitHub. Veuillez réessayer.";
+            break;
+          case 'account-exists-with-different-credential':
+            errorMessage =
+                "Un compte existe déjà avec cette adresse email via un autre fournisseur.";
+            break;
+          default:
+            errorMessage = e.message ?? "Erreur d'inscription GitHub";
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
     } finally {
       setState(() => isLoading = false);
     }
@@ -325,11 +379,19 @@ class _SignupPageState extends State<SignupPage> {
               // Social signup buttons
               Column(
                 children: [
-                  _socialButton("Google", signupWithGoogle, Icons.g_mobiledata),
+                  _socialButton(
+                    "S'inscrire avec Google",
+                    signupWithGoogle,
+                    Icons.g_mobiledata,
+                    Color(0xFFDB4437), // Google red
+                  ),
                   SizedBox(height: 10),
-                  _socialButton("Facebook", signupWithFacebook, Icons.facebook),
-                  SizedBox(height: 10),
-                  _socialButton("GitHub", signupWithGithub, Icons.code),
+                  _socialButton(
+                    "S'inscrire avec GitHub",
+                    signupWithGithub,
+                    Icons.code,
+                    Color(0xFF333333), // GitHub dark
+                  ),
                 ],
               ),
             ],
@@ -339,17 +401,25 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Widget _socialButton(String text, VoidCallback onPressed, IconData icon) {
+  Widget _socialButton(
+      String text, VoidCallback onPressed, IconData icon, Color color) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: Color(0xFFAA6B94), size: 24),
-        label: Text(text, style: TextStyle(color: Color(0xFFAA6B94))),
+        icon: Icon(icon, color: Colors.white, size: 24),
+        label: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFFFDFDFD),
-          side: BorderSide(color: Color(0xFFAA6B94)),
+          backgroundColor: color,
+          elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),

@@ -53,6 +53,49 @@
   font-family: "Poppins", sans-serif;
 }
 
+.topbar-user-section {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(162, 89, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(162, 89, 255, 0.2);
+}
+
+.admin-email {
+  font-size: 0.9rem;
+  color: #232946;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: #a259ff;
+  border: none;
+  color: white;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #8a47e0;
+}
+
+.logout-btn:active {
+  transform: scale(0.95);
+}
+
 .topbar-datetime {
   display: flex;
   flex-direction: column;

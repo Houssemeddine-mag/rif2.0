@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login as apiLogin } from "../services/authApi";
 import "../styles/login.css";
 
 const Login = () => {
@@ -14,21 +13,38 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    // TESTING: allow static login for test user
-    if (email === "h@h.com" && password === "1234") {
+
+    // Hardcoded admin credentials
+    const adminCredentials = [
+      { email: "Admin1@RIF.com", password: "G7ySjd98hM" },
+      { email: "Admin2@RIF.com", password: "J9syT23oD" },
+    ];
+
+    // Check if the entered credentials match any admin account
+    const validAdmin = adminCredentials.find(
+      (admin) => admin.email === email && admin.password === password
+    );
+
+    if (validAdmin) {
       setLoading(false);
       setError("");
-      navigate("/app/dashboard");
+      // Store the logged-in admin info in localStorage
+      localStorage.setItem(
+        "rifAdminUser",
+        JSON.stringify({
+          email: validAdmin.email,
+          loginTime: new Date().toISOString(),
+        })
+      );
+      navigate("/app/program"); // Go directly to program management
       return;
     }
-    try {
-      await apiLogin(email, password);
-      navigate("/app/dashboard");
-    } catch (err) {
-      setError(err.message || "Login failed.");
-    } finally {
-      setLoading(false);
-    }
+
+    // If credentials don't match, show error
+    setError(
+      "Invalid admin credentials. Please check your email and password."
+    );
+    setLoading(false);
   };
 
   return (
@@ -39,16 +55,16 @@ const Login = () => {
           alt="RIF Logo"
           className="login-logo"
         />
-        <h1 className="login-title">Login to RIF</h1>
+        <h1 className="login-title">RIF Admin Panel</h1>
         <p className="login-subtitle">
-          Welcome back! Please login to your account.
+          Admin access only. Please enter your credentials.
         </p>
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-form-group">
-            <label>Email</label>
+            <label>Admin Email</label>
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter admin email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -58,7 +74,7 @@ const Login = () => {
             <label>Password</label>
             <input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Enter admin password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -71,27 +87,25 @@ const Login = () => {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : "Login to Admin Panel"}
             </button>
-            <a href="#" className="forgot-password-link">
-              Forgot password?
-            </a>
           </div>
         </form>
-        <div className="login-divider">
-          <span>or login with</span>
-        </div>
-        <div className="login-icons">
-          <button className="login-icon-btn google" title="Google">
-            <img
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
-              alt="Google"
-            />
-          </button>
-        </div>
-        <div className="login-footer">
-          <span>Don't have an account?</span>
-          <a href="/signin">Sign up</a>
+        <div
+          className="admin-info"
+          style={{
+            marginTop: "20px",
+            padding: "15px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "8px",
+            fontSize: "12px",
+            color: "#666",
+          }}
+        >
+          <strong>For Administrators:</strong>
+          <br />
+          Use your assigned admin credentials to access the program management
+          system.
         </div>
       </div>
     </div>

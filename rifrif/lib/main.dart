@@ -20,11 +20,6 @@ void main() async {
     FirebaseService.initialize();
     print('[Firebase Init] Firebase Service initialized');
 
-    if (FirebaseAuth.instance.currentUser != null) {
-      print(
-          '[Firebase Init] User already logged in: ${FirebaseAuth.instance.currentUser?.email}');
-    }
-
     runApp(const MyApp());
   } catch (e, stackTrace) {
     print('[Firebase Init] Error initializing Firebase:');
@@ -44,10 +39,59 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'RIF 2025',
       theme: AppTheme.theme,
-      initialRoute: '/',
+      home: const AuthWrapper(), // Use AuthWrapper instead of direct routes
       routes: {
-        '/': (context) => const LoginPage(),
+        '/login': (context) => const LoginPage(),
         '/home': (context) => const MainLayout(userRole: 'user'),
+      },
+    );
+  }
+}
+
+// Authentication Wrapper to handle persistent login
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Show loading while checking authentication state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFFDFDFD),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Color(0xFFAA6B94),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Vérification de l\'authentification...',
+                    style: TextStyle(
+                      color: Color(0xFFAA6B94),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Check if user is logged in
+        if (snapshot.hasData && snapshot.data != null) {
+          print('[Auth] User is already logged in: ${snapshot.data!.email}');
+          // User is logged in, go to home
+          return const MainLayout(userRole: 'user');
+        } else {
+          print('[Auth] No user logged in, showing login page');
+          // User is not logged in, show login page
+          return const LoginPage();
+        }
       },
     );
   }

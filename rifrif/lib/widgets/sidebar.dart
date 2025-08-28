@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/firebase_service.dart';
 
 class Sidebar extends StatelessWidget {
   final Function(int) onItemSelected;
@@ -83,8 +84,15 @@ class Sidebar extends StatelessWidget {
             icon: Icons.logout_outlined,
             title: 'Déconnexion',
             index: 5,
-            onTap: () {
-              Navigator.of(context).pushReplacementNamed('/');
+            onTap: () async {
+              // Sign out the user
+              await FirebaseService.signOut();
+
+              // Navigate to login page (AuthWrapper will handle the routing)
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login',
+                (route) => false,
+              );
             },
           ),
           SizedBox(height: 20),
@@ -110,8 +118,7 @@ class Sidebar extends StatelessWidget {
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
-      onTap:
-          onTap ??
+      onTap: onTap ??
           () {
             onItemSelected(index);
             Navigator.pop(context); // Close drawer
