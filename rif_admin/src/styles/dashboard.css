@@ -1,0 +1,234 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0 0 40px 0;
+}
+
+.dashboard-container h1 {
+  color: #232946;
+  margin-bottom: 0;
+  font-weight: 700;
+  font-size: 2.3rem;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  color: #7f8c8d;
+  margin-bottom: 32px;
+  font-size: 1.13rem;
+  font-weight: 500;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-bottom: 36px;
+}
+
+.stat-card {
+  position: relative;
+  text-align: center;
+  border-radius: 18px;
+  padding: 32px 18px 24px 18px;
+  min-width: 0;
+  overflow: hidden;
+  background: linear-gradient(120deg, #f4f6fb 60%, #e9e6f7 100%);
+  box-shadow: 0 4px 24px 0 rgba(79, 140, 255, 0.1);
+  border-top: 4px solid #a259ff;
+  border-bottom: 2px solid #e9e6f7;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+.stat-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(162, 89, 255, 0.13);
+  transform: translateY(-4px) scale(1.025);
+}
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  height: 38px;
+}
+.stat-card h3 {
+  color: #7f8c8d;
+  margin-top: 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin-bottom: 0;
+}
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #232946;
+  margin: 10px 0 0;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(162, 89, 255, 0.08);
+}
+
+.dashboard-section {
+  background: linear-gradient(120deg, #f4f6fb 60%, #e9e6f7 100%);
+  border-radius: 18px;
+  padding: 32px 18px 24px 18px;
+  margin-bottom: 36px;
+  box-shadow: 0 4px 24px 0 rgba(79, 140, 255, 0.1);
+  border-top: 4px solid #a259ff;
+  border-bottom: 2px solid #e9e6f7;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+.dashboard-section:hover {
+  box-shadow: 0 8px 32px 0 rgba(162, 89, 255, 0.13);
+  transform: translateY(-4px) scale(1.015);
+}
+
+.presenters-table-container {
+  overflow-x: auto;
+}
+
+.presenters-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.presenters-table th,
+.presenters-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+  font-size: 1.04rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.presenters-table th {
+  background: #f3f4f7;
+  color: #232946;
+  font-weight: 700;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.presenters-table tr:hover {
+  background: rgba(162, 89, 255, 0.08);
+  transition: background 0.18s;
+}
+
+.rating {
+  font-weight: 300;
+  margin-right: 5px;
+  color: #b71b97;
+}
+
+.stars {
+  color: #f1c40f;
+}
+
+.ratings-chart {
+  margin-top: 20px;
+}
+
+.rating-bar {
+  margin-bottom: 15px;
+}
+
+.session-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.session-title {
+  font-weight: 400;
+}
+
+.session-rating {
+  color: #000000;
+  font-weight: 300;
+}
+
+.bar-container {
+  height: 10px;
+  background-color: #ecf0f1;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background-color: #9b59b6;
+  border-radius: 5px;
+}
+
+.session-attendees {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 3px;
+}
+
+.questions-list {
+  margin-top: 20px;
+}
+
+.question-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.session {
+  font-weight: 400;
+  color: #b71b97;
+}
+
+.date {
+  color: #7f8c8d;
+}
+
+.question-text {
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.asked-by {
+  color: #7f8c8d;
+}
+
+.action-button {
+  background: #b71b97;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.action-button:hover {
+  background: #9b59b6;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #7f8c8d;
+}

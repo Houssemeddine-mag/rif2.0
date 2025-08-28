@@ -1,0 +1,23 @@
+.form-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

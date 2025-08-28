@@ -1,0 +1,129 @@
+.signin-container {
+  min-height: 10em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.signin-card {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.2);
+  padding: 3px 36px 20px 36px;
+  max-width: 50em;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signin-title {
+  font-size: 2rem;
+  font-weight: 400;
+  color: #b71b97;
+  font-family: poppins, sans-serif;
+  margin-bottom: 8px;
+  font-family: "Poppins", sans-serif;
+}
+
+.signin-logo {
+  width: 200px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.signin-subtitle {
+  color: #7f8c8d;
+  font-size: 1rem;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.signin-socials {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.signin-btn {
+  background: #fff;
+  border: 1.5px solid #fc86e5;
+  border-radius: 8px;
+  width: 100%;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+  padding: 0 18px;
+  font-size: 1.08rem;
+  color: #b71b97;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  gap: 16px;
+}
+.signin-btn.img-rect {
+  border-radius: 8px;
+  width: 160px;
+  height: 48px;
+  background: #fff;
+  font-size: 1rem;
+  color: #b71b97;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #fc86e5;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+}
+.signin-btn img {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+.signin-btn.google:hover {
+  box-shadow: 0 2px 8px rgba(252, 134, 229, 0.15);
+  border-color: #ea4335;
+}
+.signin-btn.facebook:hover {
+  box-shadow: 0 2px 8px rgba(66, 103, 178, 0.15);
+  border-color: #4267b2;
+}
+.signin-btn.linkedin:hover {
+  box-shadow: 0 2px 8px rgba(0, 119, 181, 0.15);
+  border-color: #0077b5;
+}
+.signin-btn.icloud:hover {
+  box-shadow: 0 2px 8px rgba(161, 161, 161, 0.15);
+  border-color: #bdbdbd;
+}
+.signin-btn.email:hover {
+  box-shadow: 0 2px 8px rgba(252, 134, 229, 0.15);
+  border-color: #b71b97;
+}
+
+.signin-footer {
+  margin-top: 10px;
+  font-size: 0.98rem;
+  color: #7f8c8d;
+  text-align: center;
+}
+.signin-footer a {
+  color: #b71b97;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 6px;
+  transition: color 0.2s;
+}
+.signin-footer a:hover {
+  color: #fc86e5;
+}

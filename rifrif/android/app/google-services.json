@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "728410557347",
+    "project_id": "rifuniv",
+    "storage_bucket": "rifuniv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728410557347:android:d61681beb73b1cd4ece816",
+        "android_client_info": {
+          "package_name": "com.example.rifrif"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728410557347-6dmarrg2u0a9n8h39c2sle5fjcab28hh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rifrif",
+            "certificate_hash": "c246a2ce14c42a19f61b433938989b0cbc18f03a"
+          }
+        },
+        {
+          "client_id": "728410557347-msrrftlaonoakjo5q6l0vip4knme1o99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwzj65CNrSPLeoShOtNdcUviwaBIEcgPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728410557347-msrrftlaonoakjo5q6l0vip4knme1o99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

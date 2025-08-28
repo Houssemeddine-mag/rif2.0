@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart'; // REST API service
+import '../services/firebase_service.dart'; // Firebase auth service
 
 class RecoverPage extends StatefulWidget {
   const RecoverPage({Key? key}) : super(key: key);
@@ -26,78 +26,19 @@ class _RecoverPageState extends State<RecoverPage> {
     newPasswordController.text = '12345';
   }
 
-  // Step 1: Send code
-  Future<void> sendCode() async {
+  // Send a password reset email using Firebase
+  Future<void> sendPasswordResetEmail() async {
     setState(() => isLoading = true);
     try {
-      final response = await ApiService.sendRecoveryCode(emailController.text);
-      if (response.success) {
-        setState(() => isCodeSent = true);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Code envoyé à votre email")));
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response.message)));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Erreur lors de l'envoi du code")));
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
-
-  // Step 2: Verify code
-  Future<void> verifyCode() async {
-    setState(() => isLoading = true);
-    try {
-      final response = await ApiService.verifyRecoveryCode(
-        emailController.text,
-        codeController.text,
-      );
-      if (response.success) {
-        setState(() => isVerified = true);
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Code incorrect")));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Erreur de vérification")));
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
-
-  // Step 3: Reset password
-  Future<void> resetPassword() async {
-    setState(() => isLoading = true);
-    try {
-      final response = await ApiService.resetPassword(
-        emailController.text,
-        newPasswordController.text,
-      );
-      if (response.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Mot de passe mis à jour avec succès")),
-        );
-        Navigator.pop(context); // Go back to login
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response.message)));
-      }
-    } catch (e) {
+      await FirebaseService.sendPasswordReset(emailController.text.trim());
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Erreur lors de la mise à jour du mot de passe"),
-        ),
+        SnackBar(content: Text("Email de réinitialisation envoyé.")),
       );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => isLoading = false);
     }
@@ -148,128 +89,44 @@ class _RecoverPageState extends State<RecoverPage> {
                 ),
               ),
 
-              // Step 1: Email
-              if (!isCodeSent)
-                Column(
-                  children: [
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(color: Color(0xFFAA6B94)),
-                        border: OutlineInputBorder(
+              // Password reset - send reset email
+              Column(
+                children: [
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : sendPasswordResetEmail,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFC87AAA),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : sendCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFC87AAA),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: isLoading
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text(
-                                "Envoyer le code",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
+                      child: isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              "Envoyer l'email de réinitialisation",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
                               ),
-                      ),
+                            ),
                     ),
-                  ],
-                ),
-
-              // Step 2: Enter 4-digit code
-              if (isCodeSent && !isVerified)
-                Column(
-                  children: [
-                    TextField(
-                      controller: codeController,
-                      maxLength: 4,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Code à 4 chiffres",
-                        labelStyle: TextStyle(color: Color(0xFFAA6B94)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : verifyCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFC87AAA),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: isLoading
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text(
-                                "Vérifier le code",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-
-              // Step 3: New password
-              if (isVerified)
-                Column(
-                  children: [
-                    TextField(
-                      controller: newPasswordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: "Nouveau mot de passe",
-                        labelStyle: TextStyle(color: Color(0xFFAA6B94)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : resetPassword,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFC87AAA),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: isLoading
-                            ? CircularProgressIndicator(color: Colors.white)
-                            : Text(
-                                "Réinitialiser le mot de passe",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

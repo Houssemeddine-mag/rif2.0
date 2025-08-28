@@ -1,0 +1,221 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: 280px;
+}
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(120deg, #232946 60%, #4f8cff 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px 0 0 0;
+  height: 100vh;
+  min-height: 100vh;
+  box-shadow: 2px 0 16px rgba(79, 140, 255, 0.08);
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 101;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.sidebar-header {
+  width: 100%;
+  padding: 0 24px 20px 24px;
+  border-bottom: 1.5px solid #a259ff;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-header h2 {
+  font-size: 1.45em;
+  font-weight: 600;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 0;
+}
+
+.sidebar-nav {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  flex: 1;
+}
+
+.sidebar-nav li {
+  width: 100%;
+}
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  color: #fff;
+  font-size: 1.08rem;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-left: 4px solid transparent;
+  border-radius: 8px 0 0 8px;
+  margin-bottom: 2px;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+}
+
+.sidebar-nav li a.active,
+.sidebar-nav li a:hover {
+  background: linear-gradient(90deg, #a259ff 0%, #4f8cff 100%);
+  color: #fff;
+  border-left: 4px solid #fff;
+  box-shadow: 0 2px 12px rgba(162, 89, 255, 0.08);
+}
+
+.sidebar-logout-wrapper {
+  width: 100%;
+  margin-top: auto;
+  padding: 0 24px 32px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(90deg, #a259ff 0%, #4f8cff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(162, 89, 255, 0.1);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.sidebar-logout-btn:hover {
+  background: linear-gradient(90deg, #4f8cff 0%, #a259ff 100%);
+  box-shadow: 0 4px 16px rgba(162, 89, 255, 0.18);
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px 32px;
+  background: #f4f6fb;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar styles for all browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  background: #232946;
+}
+::-webkit-scrollbar-thumb {
+  background: #fc86e5;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff69e1;
+}
+
+/* For Firefox */
+html {
+  scrollbar-color: #fc86e5 #232946;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+  .content-wrapper {
+    margin-left: 200px;
+  }
+  .logo-img {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 64px;
+    min-width: 64px;
+    padding: 16px 0 0 0;
+    z-index: 200;
+    transition: width 0.2s;
+  }
+  .sidebar-header h2,
+  .sidebar-nav li a span,
+  .sidebar-logout-btn span {
+    display: none !important;
+  }
+  .sidebar-nav li a {
+    justify-content: center;
+    padding: 16px 0;
+  }
+  .sidebar-logout-btn {
+    width: 48px !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .content-wrapper {
+    margin-left: 64px;
+    padding: 16px 8px;
+  }
+  .main-content {
+    padding: 24px 4px;
+  }
+  .topbar {
+    padding: 0 12px;
+    height: 64px;
+  }
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .content-wrapper {
+    margin-left: 0;
+    padding: 0 2px;
+  }
+  .main-content {
+    padding: 8px 0;
+  }
+  .topbar {
+    padding: 0 4px;
+    height: 48px;
+  }
+  .logo-img {
+    width: 28px;
+    height: 28px;
+  }
+}

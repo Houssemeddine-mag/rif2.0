@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-// import '../services/api_service.dart'; // Uncomment when API is ready
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/firebase_service.dart';
+import '../models/user_model.dart';
 import 'signup.dart';
 import 'recover.dart';
 
@@ -15,65 +17,211 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    // Initialize test credentials
-    emailController.text = 'h@h.com';
-    passwordController.text = '12345';
-  }
-
-  /* TODO: API Integration Steps:
-   * 1. Make sure the ApiService.login method is implemented in '../services/api_service.dart'
-   * 2. The login method should return a response with:
-   *    - success: boolean
-   *    - message: string
-   *    - token: string (optional for authentication)
-   * 3. Uncomment the API integration code below
-   * 4. Remove the temporary direct navigation
-   */
   Future<void> loginWithEmail() async {
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veuillez remplir tous les champs")),
+      );
+      return;
+    }
+
     setState(() => isLoading = true);
-
-    // Temporary direct navigation - REMOVE THIS when API is ready
-    await Future.delayed(Duration(milliseconds: 500)); // Simulated loading
-    Navigator.pushReplacementNamed(context, '/home');
-    setState(() => isLoading = false);
-
-    /* Uncomment this when API is ready:
     try {
-      final response = await ApiService.login(
-        emailController.text,
+      print(
+          '[Login] Attempting to sign in with email: ${emailController.text}');
+
+      final credential = await FirebaseService.signInWithEmail(
+        emailController.text.trim(),
         passwordController.text,
       );
-      if (response.success) {
-        Navigator.pushReplacementNamed(context, '/home');
+
+      print('[Login] Sign in successful');
+
+      if (credential.user != null) {
+        try {
+          // Create user model
+          final userModel = UserModel.fromFirebaseUser(credential.user!);
+          print('[Login] User model created: ${userModel.email}');
+
+          // Navigate to home
+          Navigator.pushReplacementNamed(context, '/home');
+        } catch (e) {
+          print('[Login] Error creating user model: $e');
+          throw FirebaseAuthException(
+            code: 'user-model-error',
+            message: 'Error creating user profile',
+          );
+        }
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response.message)));
+        print('[Login] Credential user is null');
+        throw FirebaseAuthException(
+          code: 'null-user',
+          message: 'No user data received',
+        );
+      }
+    } catch (e) {
+      print('[Login] Error: $e');
+      String errorMessage = "Une erreur s'est produite";
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = "Aucun utilisateur trouvé avec cet email";
+            break;
+          case 'wrong-password':
+            errorMessage = "Mot de passe incorrect";
+            break;
+          case 'invalid-email':
+            errorMessage = "Email invalide";
+            break;
+          case 'user-disabled':
+            errorMessage = "Ce compte a été désactivé";
+            break;
+          case 'too-many-requests':
+            errorMessage =
+                "Trop de tentatives de connexion. Veuillez réessayer plus tard";
+            break;
+          case 'operation-not-allowed':
+            errorMessage =
+                "La connexion par email/mot de passe n'est pas activée";
+            break;
+          case 'network-request-failed':
+            errorMessage =
+                "Erreur de connexion réseau. Vérifiez votre connexion internet";
+            break;
+          default:
+            errorMessage = e.message ?? errorMessage;
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  // Social login methods
+  Future<void> loginWithGoogle() async {
+    setState(() => isLoading = true);
+    try {
+      print('[Login] Starting Google login process...');
+
+      // Pre-check: Verify if user is already signed in with Firebase
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        print(
+            '[Login] User already signed in with Firebase, signing out first: ${currentUser.email}');
+        await FirebaseService.signOut(); // Utilisation de la méthode du service
+      }
+
+      print('[Login] Calling FirebaseService.signInWithGoogle()');
+      final UserCredential? userCredential =
+          await FirebaseService.signInWithGoogle();
+
+      if (userCredential == null) {
+        print('[Login] Sign in result is null');
+        throw FirebaseAuthException(
+          code: 'error-null-result',
+          message: 'La connexion a échoué',
+        );
+      }
+
+      final user = userCredential.user;
+      if (user == null) {
+        print('[Login] User is null after successful sign in');
+        throw FirebaseAuthException(
+          code: 'error-null-user',
+          message: 'Impossible de récupérer les informations utilisateur',
+        );
+      }
+
+      print('[Login] Got valid user: ${user.email}');
+
+      // Création du modèle utilisateur
+      try {
+        final userModel = UserModel.fromFirebaseUser(user);
+        print('[Login] Successfully created user model: ${userModel.email}');
+
+        // Navigation seulement si tout est OK
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (modelError) {
+        print('[Login] Error creating user model: $modelError');
+        print('[Login] Stack trace: ${StackTrace.current}');
+        throw FirebaseAuthException(
+          code: 'error-user-model',
+          message: 'Erreur lors de la création du profil utilisateur',
+        );
+      }
+    } catch (e) {
+      print('[Login] Error in loginWithGoogle: $e');
+      String errorMessage =
+          "Une erreur s'est produite lors de la connexion avec Google";
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'ERROR_ABORTED_BY_USER':
+          case 'error-null-result':
+            errorMessage = "La connexion avec Google a été annulée";
+            break;
+          case 'network_error':
+            errorMessage =
+                "Erreur de connexion réseau. Vérifiez votre connexion internet.";
+            break;
+          case 'popup_closed_by_user':
+            errorMessage = "La fenêtre de connexion Google a été fermée";
+            break;
+          case 'ERROR_MISSING_GOOGLE_AUTH_TOKEN':
+            errorMessage = "Erreur d'authentification avec Google";
+            break;
+          case 'error-null-user':
+          case 'error-user-model':
+            errorMessage = e.message ?? errorMessage;
+            break;
+          case 'ERROR_INVALID_USER_DATA':
+            errorMessage =
+                "Les données utilisateur sont invalides ou incomplètes";
+            break;
+          default:
+            if (e.message != null && e.message!.isNotEmpty) {
+              errorMessage = e.message!;
+            }
+        }
+      } else if (e.toString().contains('PlatformException')) {
+        errorMessage = "Erreur de plateforme lors de la connexion Google";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorMessage),
+        duration: Duration(seconds: 4),
+      ));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> loginWithGithub() async {
+    setState(() => isLoading = true);
+    try {
+      final cred = await FirebaseService.signInWithGithub();
+      if (cred.user != null) {
+        Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Erreur de connexion")));
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => isLoading = false);
     }
-    */
-  }
-
-  // Social login placeholders
-  void loginWithGoogle() {
-    // TODO: Implement Google Sign-In
   }
 
   void loginWithFacebook() {
     // TODO: Implement Facebook Sign-In
-  }
-
-  void loginWithLinkedIn() {
-    // TODO: Implement LinkedIn Sign-In
   }
 
   @override
@@ -206,21 +354,21 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 children: [
                   _socialButton(
-                    "Login withGoogle",
+                    "Login with Google",
                     loginWithGoogle,
                     Icons.g_mobiledata,
+                  ),
+                  SizedBox(height: 10),
+                  _socialButton(
+                    "Login with GitHub",
+                    loginWithGithub,
+                    Icons.code,
                   ),
                   SizedBox(height: 10),
                   _socialButton(
                     "Login with Facebook",
                     loginWithFacebook,
                     Icons.facebook,
-                  ),
-                  SizedBox(height: 10),
-                  _socialButton(
-                    "Login with LinkedIn",
-                    loginWithLinkedIn,
-                    Icons.work,
                   ),
                 ],
               ),

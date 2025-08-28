@@ -1,0 +1,131 @@
+.topbar {
+  width: 100%;
+  height: 90px;
+  background: linear-gradient(90deg, #f4f6fb 60%, #e9e6f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(79, 140, 255, 0.08);
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2.5px solid #a259ff;
+  font-family: "Poppins", sans-serif;
+}
+
+.topbar-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  width: 64px;
+  height: 64px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #a259ff;
+}
+
+.logo-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #f3e6f7;
+  display: block;
+}
+
+.topbar-title {
+  font-size: 2.1em;
+  font-weight: 700;
+  color: #232946;
+  letter-spacing: 1px;
+  text-align: left;
+  flex: 1;
+  margin: 0 40px;
+  font-family: "Poppins", sans-serif;
+}
+
+.topbar-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 140px;
+  font-family: "Poppins", sans-serif;
+}
+
+.topbar-time {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #232946;
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+
+.topbar-date {
+  font-size: 1rem;
+  color: #393e6a;
+  font-weight: 400;
+  margin-top: 2px;
+  line-height: 1.1;
+  text-align: right;
+}
+
+@media (max-width: 1024px) {
+  .topbar {
+    height: 64px;
+    padding: 0 16px;
+  }
+  .topbar-title {
+    font-size: 1.2em;
+    margin: 0 16px;
+  }
+  .logo-img {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    height: 48px;
+    padding: 0 8px;
+  }
+  .topbar-title {
+    font-size: 1em;
+    margin: 0 8px;
+  }
+  .logo-img {
+    width: 36px;
+    height: 36px;
+  }
+  .topbar-datetime {
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    height: 36px;
+    padding: 0 2px;
+  }
+  .topbar-title {
+    font-size: 0.9em;
+    margin: 0 2px;
+  }
+  .logo-img {
+    width: 24px;
+    height: 24px;
+  }
+  .topbar-datetime {
+    min-width: 40px;
+  }
+}

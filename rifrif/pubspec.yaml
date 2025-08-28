@@ -4,12 +4,17 @@ publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ^3.8.1
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.17.3
+  google_sign_in: ^6.2.1
   http: ^1.2.0
+  cloud_firestore: ^4.15.3
+  firebase_analytics: ^10.8.0 # Add analytics for better error tracking
 
 dev_dependencies:
   flutter_test:
@@ -22,3 +27,5 @@ flutter:
   assets:
     - lib/resource/rifnonbgcopy.png
     - lib/resource/Logo NTIC.png
+    - lib/resource/labolire_T.png
+    - lib/resource/LOGO_Univ2-removebg-preview.png
