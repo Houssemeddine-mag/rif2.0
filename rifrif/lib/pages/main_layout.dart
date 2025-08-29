@@ -23,7 +23,14 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(userRole: widget.userRole),
+      HomePage(
+        userRole: widget.userRole,
+        onNavigateToProgram: () {
+          setState(() {
+            _selectedIndex = 1; // Navigate to program page
+          });
+        },
+      ),
       ProgramPage(),
       DirectPage(),
       ProfilePage(),
