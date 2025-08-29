@@ -175,8 +175,8 @@ const Program = () => {
         return;
       }
 
-      if (!formData.start || !formData.end) {
-        alert("Please enter start and end times");
+      if (!formData.start) {
+        alert("Please enter start time");
         setLoading(false);
         return;
       }
@@ -405,6 +405,19 @@ const Program = () => {
                 type="text"
                 name="title"
                 value={formData.title}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Session Start Time</label>
+              <input
+                type="time"
+                name="start"
+                value={formData.start}
                 onChange={handleInputChange}
                 required
               />

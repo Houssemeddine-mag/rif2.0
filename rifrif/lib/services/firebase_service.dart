@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+import '../models/program_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -622,5 +624,181 @@ Cet email a été envoyé automatiquement à : $email
   static Future<void> signOut() async {
     await GoogleSignIn().signOut();
     await _auth.signOut();
+  }
+
+  // ===== FIRESTORE PROGRAM METHODS =====
+
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Fetch all program sessions from Firestore
+  static Future<List<ProgramSession>> getAllPrograms() async {
+    try {
+      debugPrintAuth('Fetching all programs from Firestore...');
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('programs')
+          .orderBy('date', descending: false)
+          .get();
+
+      debugPrintAuth('Found ${querySnapshot.docs.length} program documents');
+
+      List<ProgramSession> programs = [];
+
+      for (var doc in querySnapshot.docs) {
+        try {
+          debugPrintAuth('Processing document ${doc.id}');
+          final data = doc.data() as Map<String, dynamic>;
+          debugPrintAuth('Document data: $data');
+
+          final program = ProgramSession.fromMap(doc.id, data);
+          programs.add(program);
+
+          debugPrintAuth('Successfully processed program: ${program.title}');
+        } catch (e) {
+          debugPrintAuth('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      debugPrintAuth('Successfully fetched ${programs.length} programs');
+      return programs;
+    } catch (e) {
+      debugPrintAuth('Error fetching programs: $e');
+      return [];
+    }
+  }
+
+  /// Fetch upcoming program sessions (today and future)
+  static Future<List<ProgramSession>> getUpcomingPrograms(
+      {int limit = 10}) async {
+    try {
+      debugPrintAuth('Fetching upcoming programs from Firestore...');
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('programs')
+          .orderBy('date', descending: false)
+          .limit(limit)
+          .get();
+
+      List<ProgramSession> allPrograms = querySnapshot.docs.map((doc) {
+        return ProgramSession.fromMap(
+            doc.id, doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      // Filter for upcoming sessions
+      List<ProgramSession> upcomingPrograms =
+          allPrograms.where((program) => program.isUpcoming).toList();
+
+      debugPrintAuth(
+          'Successfully fetched ${upcomingPrograms.length} upcoming programs');
+      return upcomingPrograms;
+    } catch (e) {
+      debugPrintAuth('Error fetching upcoming programs: $e');
+      return [];
+    }
+  }
+
+  /// Fetch programs for a specific date
+  static Future<List<ProgramSession>> getProgramsByDate(String date) async {
+    try {
+      debugPrintAuth('Fetching programs for date: $date');
+
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('programs')
+          .where('date', isEqualTo: date)
+          .orderBy('start', descending: false)
+          .get();
+
+      List<ProgramSession> programs = querySnapshot.docs.map((doc) {
+        return ProgramSession.fromMap(
+            doc.id, doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      debugPrintAuth(
+          'Successfully fetched ${programs.length} programs for $date');
+      return programs;
+    } catch (e) {
+      debugPrintAuth('Error fetching programs for date $date: $e');
+      return [];
+    }
+  }
+
+  /// Get real-time stream of programs
+  static Stream<List<ProgramSession>> getProgramsStream() {
+    try {
+      debugPrintAuth('Setting up real-time programs stream...');
+
+      return _firestore
+          .collection('programs')
+          .orderBy('date', descending: false)
+          .snapshots()
+          .map((snapshot) {
+        List<ProgramSession> programs = [];
+
+        for (var doc in snapshot.docs) {
+          try {
+            final data = doc.data();
+            final program = ProgramSession.fromMap(doc.id, data);
+            programs.add(program);
+          } catch (e) {
+            debugPrintAuth('Error processing document ${doc.id} in stream: $e');
+          }
+        }
+
+        debugPrintAuth('Stream updated: ${programs.length} programs');
+        return programs;
+      });
+    } catch (e) {
+      debugPrintAuth('Error setting up programs stream: $e');
+      return Stream.value([]);
+    }
+  }
+
+  /// Get conference statistics
+  static Future<Map<String, int>> getProgramStatistics() async {
+    try {
+      debugPrintAuth('Fetching program statistics...');
+
+      final QuerySnapshot querySnapshot =
+          await _firestore.collection('programs').get();
+
+      List<ProgramSession> allPrograms = querySnapshot.docs.map((doc) {
+        return ProgramSession.fromMap(
+            doc.id, doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      int totalSessions = allPrograms.length;
+      int totalConferences = allPrograms.fold(
+          0, (sum, program) => sum + program.conferences.length);
+
+      // Count unique speakers
+      Set<String> uniqueSpeakers = {};
+      for (var program in allPrograms) {
+        uniqueSpeakers.addAll(program.allSpeakers);
+      }
+
+      // Count keynote sessions
+      int keynoteSessionsCount = allPrograms
+          .where((program) =>
+              program.keynote != null && program.keynote!.name.isNotEmpty)
+          .length;
+
+      Map<String, int> stats = {
+        'totalSessions': totalSessions,
+        'totalConferences': totalConferences,
+        'totalSpeakers': uniqueSpeakers.length,
+        'keynoteSessions': keynoteSessionsCount,
+      };
+
+      debugPrintAuth('Program statistics: $stats');
+      return stats;
+    } catch (e) {
+      debugPrintAuth('Error fetching program statistics: $e');
+      return {
+        'totalSessions': 0,
+        'totalConferences': 0,
+        'totalSpeakers': 0,
+        'keynoteSessions': 0,
+      };
+    }
   }
 }
