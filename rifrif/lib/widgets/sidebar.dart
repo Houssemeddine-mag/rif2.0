@@ -4,11 +4,13 @@ import '../services/firebase_service.dart';
 class Sidebar extends StatelessWidget {
   final Function(int) onItemSelected;
   final int selectedIndex;
+  final VoidCallback? onDisconnectRequested;
 
   const Sidebar({
     Key? key,
     required this.onItemSelected,
     required this.selectedIndex,
+    this.onDisconnectRequested,
   }) : super(key: key);
 
   @override
@@ -84,15 +86,14 @@ class Sidebar extends StatelessWidget {
             icon: Icons.logout_outlined,
             title: 'Déconnexion',
             index: 5,
-            onTap: () async {
-              // Sign out the user
-              await FirebaseService.signOut();
-
-              // Navigate to login page (AuthWrapper will handle the routing)
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
-                (route) => false,
-              );
+            onTap: () {
+              Navigator.pop(context); // Close drawer first
+              if (onDisconnectRequested != null) {
+                onDisconnectRequested!();
+              } else {
+                // Fallback: direct logout without confirmation
+                _performLogout(context);
+              }
             },
           ),
           SizedBox(height: 20),
@@ -126,5 +127,27 @@ class Sidebar extends StatelessWidget {
       selected: isSelected,
       selectedTileColor: Color(0xFFEACBE5).withOpacity(0.2),
     );
+  }
+
+  Future<void> _performLogout(BuildContext context) async {
+    try {
+      // Sign out the user
+      await FirebaseService.signOut();
+
+      // Navigate to login page (AuthWrapper will handle the routing)
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/login',
+        (route) => false,
+      );
+    } catch (e) {
+      print('Error during logout: $e');
+      // Show error message if logout fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la déconnexion'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

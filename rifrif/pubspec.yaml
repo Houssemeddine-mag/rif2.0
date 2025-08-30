@@ -1,5 +1,5 @@
 name: rifrif
-description: "A new Flutter project."
+description: "RIF 2025 - International Conference on Women in Computer Science Research"
 publish_to: "none"
 version: 0.1.0
 
@@ -17,11 +17,13 @@ dependencies:
   cloud_firestore: ^4.15.3
   firebase_analytics: ^10.8.0 # Add analytics for better error tracking
   emailjs: ^4.0.0 # For sending emails
+  image_picker: ^1.0.4 # For profile picture selection
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -31,3 +33,18 @@ flutter:
     - lib/resource/Logo NTIC.png
     - lib/resource/labolire_T.png
     - lib/resource/LOGO_Univ2-removebg-preview.png
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/resource/rifnonbgcopy.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "lib/resource/rifnonbgcopy.png"
+    background_color: "#AA6B94"
+    theme_color: "#AA6B94"
+  windows:
+    generate: true
+    image_path: "lib/resource/rifnonbgcopy.png"
+    icon_size: 48 # min:48, max:256, default: 48

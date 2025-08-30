@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'RIF 2025',
+      title: 'RIF',
       theme: AppTheme.theme,
       home: const AuthWrapper(), // Use AuthWrapper instead of direct routes
       routes: {

@@ -17,7 +17,7 @@ const Login = () => {
     // Hardcoded admin credentials
     const adminCredentials = [
       { email: "Admin1@RIF.com", password: "G7ySjd98hM" },
-      { email: "Admin2@RIF.com", password: "J9syT23oD" },
+      { email: "Admin2@RIF.com", password: "J9BsyT23oD" },
     ];
 
     // Check if the entered credentials match any admin account

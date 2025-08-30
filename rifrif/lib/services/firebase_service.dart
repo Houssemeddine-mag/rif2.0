@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../models/program_model.dart';
+import '../models/user_profile_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -799,6 +800,133 @@ Cet email a été envoyé automatiquement à : $email
         'totalSpeakers': 0,
         'keynoteSessions': 0,
       };
+    }
+  }
+
+  // User Profile Management Methods
+  Future<UserProfile?> getUserProfile(String uid) async {
+    try {
+      final doc = await _firestore.collection('user_profiles').doc(uid).get();
+      if (doc.exists) {
+        return UserProfile.fromMap(doc.data()!);
+      }
+      return null;
+    } catch (e) {
+      debugPrintAuth('Error fetching user profile: $e');
+      return null;
+    }
+  }
+
+  Future<void> saveUserProfile(UserProfile profile) async {
+    try {
+      await _firestore
+          .collection('user_profiles')
+          .doc(profile.uid)
+          .set(profile.toMap());
+      debugPrintAuth('User profile saved successfully');
+    } catch (e) {
+      debugPrintAuth('Error saving user profile: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateUserProfile(
+      String uid, Map<String, dynamic> updates) async {
+    try {
+      updates['updatedAt'] = Timestamp.now();
+      await _firestore.collection('user_profiles').doc(uid).update(updates);
+      debugPrintAuth('User profile updated successfully');
+    } catch (e) {
+      debugPrintAuth('Error updating user profile: $e');
+      throw e;
+    }
+  }
+
+  Future<UserProfile> createOrUpdateUserProfile({
+    required String uid,
+    required String email,
+    String? displayName,
+    String? photoURL,
+    String? school,
+    String? schoolLevel,
+    DateTime? birthday,
+    String? location,
+  }) async {
+    try {
+      final existing = await getUserProfile(uid);
+
+      if (existing != null) {
+        // Update existing profile
+        final updatedProfile = existing.copyWith(
+          email: email,
+          displayName: displayName ?? existing.displayName,
+          photoURL: photoURL ?? existing.photoURL,
+          school: school ?? existing.school,
+          schoolLevel: schoolLevel ?? existing.schoolLevel,
+          birthday: birthday ?? existing.birthday,
+          location: location ?? existing.location,
+        );
+        await saveUserProfile(updatedProfile);
+        return updatedProfile;
+      } else {
+        // Create new profile
+        final newProfile = UserProfile(
+          uid: uid,
+          email: email,
+          displayName: displayName,
+          photoURL: photoURL,
+          school: school,
+          schoolLevel: schoolLevel,
+          birthday: birthday,
+          location: location,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        await saveUserProfile(newProfile);
+        return newProfile;
+      }
+    } catch (e) {
+      debugPrintAuth('Error creating/updating user profile: $e');
+      throw e;
+    }
+  }
+
+  Future<void> completeUserProfile({
+    required String uid,
+    required String school,
+    required String schoolLevel,
+    required String gender,
+    required DateTime birthday,
+    required String location,
+  }) async {
+    try {
+      await updateUserProfile(uid, {
+        'school': school,
+        'schoolLevel': schoolLevel,
+        'gender': gender,
+        'birthday': Timestamp.fromDate(birthday),
+        'location': location,
+        'isProfileComplete': true,
+      });
+      debugPrintAuth('User profile completed successfully');
+    } catch (e) {
+      debugPrintAuth('Error completing user profile: $e');
+      throw e;
+    }
+  }
+
+  Future<void> updateProfilePicture({
+    required String uid,
+    required String base64Image,
+  }) async {
+    try {
+      await updateUserProfile(uid, {
+        'photoURL': base64Image,
+      });
+      debugPrintAuth('Profile picture updated successfully');
+    } catch (e) {
+      debugPrintAuth('Error updating profile picture: $e');
+      throw e;
     }
   }
 }

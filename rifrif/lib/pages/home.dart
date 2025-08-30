@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/firebase_service.dart';
 import '../models/program_model.dart';
 import 'program.dart';
@@ -267,6 +269,92 @@ class _HomePageState extends State<HomePage> {
     return "$speakerCount+ Participantes";
   }
 
+  Future<void> _launchURL(String url) async {
+    try {
+      final Uri uri = Uri.parse(url);
+
+      // Try different launch modes for better compatibility
+      bool launched = false;
+
+      // First try: External application (browser)
+      if (await canLaunchUrl(uri)) {
+        try {
+          launched = await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication,
+          );
+        } catch (e) {
+          print('External application launch failed: $e');
+        }
+      }
+
+      // Second try: Platform default (in-app browser)
+      if (!launched) {
+        try {
+          launched = await launchUrl(
+            uri,
+            mode: LaunchMode.platformDefault,
+          );
+        } catch (e) {
+          print('Platform default launch failed: $e');
+        }
+      }
+
+      // Third try: In-app web view
+      if (!launched) {
+        try {
+          launched = await launchUrl(
+            uri,
+            mode: LaunchMode.inAppWebView,
+            webViewConfiguration: const WebViewConfiguration(
+              enableJavaScript: true,
+              enableDomStorage: true,
+            ),
+          );
+        } catch (e) {
+          print('In-app web view launch failed: $e');
+        }
+      }
+
+      // If all methods failed, show error
+      if (!launched) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Impossible d\'ouvrir le lien: $url'),
+              backgroundColor: Colors.red,
+              action: SnackBarAction(
+                label: 'Copier',
+                textColor: Colors.white,
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: url));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Lien copié dans le presse-papiers'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error launching URL: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Erreur lors de l\'ouverture du lien: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -424,12 +512,60 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
 
             // About Section
+            Text(
+              "À Propos de RIF 2025",
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Color(0xFFAA6B94),
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            SizedBox(height: 12),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  "La Conférence Internationale sur la Recherche en Informatique au Féminin (RIF) réunit chercheuses, ingénieures et praticiennes en informatique. RIF favorise la collaboration et l'innovation, avec un focus sur les technologies émergentes. L'édition 2025 met l'accent sur les contributions des femmes à l'intelligence artificielle, invitant des recherches originales et des travaux pratiques en informatique, à travers des articles réguliers ou courts, et offre une participation hybride pour une accessibilité élargie.",
-                  style: TextStyle(color: Colors.black87, height: 1.4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "La Conférence Internationale sur la Recherche en Informatique au Féminin (RIF) réunit chercheuses, ingénieures et praticiennes en informatique. RIF favorise la collaboration et l'innovation, avec un focus sur les technologies émergentes. L'édition 2025 met l'accent sur les contributions des femmes à l'intelligence artificielle, invitant des recherches originales et des travaux pratiques en informatique, à travers des articles réguliers ou courts, et offre une participation hybride pour une accessibilité élargie.",
+                      style: TextStyle(color: Colors.black87, height: 1.4),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _launchURL(
+                                'https://www.univ-constantine2.dz/rif/25/'),
+                            icon: Icon(Icons.web, size: 18),
+                            label: Text("Consulter le site"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFAA6B94),
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _launchURL(
+                                'https://www.univ-constantine2.dz/rif/25/past-editions/'),
+                            icon: Icon(Icons.history, size: 18),
+                            label: Text("Éditions passées"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFEACBE5),
+                              foregroundColor: Color(0xFFAA6B94),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
