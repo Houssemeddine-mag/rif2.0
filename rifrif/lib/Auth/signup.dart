@@ -22,7 +22,7 @@ class _SignupPageState extends State<SignupPage> {
         emailController.text.isEmpty ||
         passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez remplir tous les champs")),
+        SnackBar(content: Text("Please fill in all fields")),
       );
       return;
     }
@@ -35,7 +35,7 @@ class _SignupPageState extends State<SignupPage> {
       if (passwordController.text.length < 6) {
         throw FirebaseAuthException(
           code: 'weak-password',
-          message: 'Le mot de passe doit contenir au moins 6 caractères',
+          message: 'Password must be at least 6 characters long',
         );
       }
 
@@ -61,7 +61,7 @@ class _SignupPageState extends State<SignupPage> {
           if (user.email == null || user.email!.isEmpty) {
             throw FirebaseAuthException(
               code: 'invalid-user-data',
-              message: 'Les données du compte sont incomplètes',
+              message: 'Account data is incomplete',
             );
           }
 
@@ -79,7 +79,7 @@ class _SignupPageState extends State<SignupPage> {
           print('[Signup] Error updating user profile: $profileError');
           throw FirebaseAuthException(
             code: 'profile-update-error',
-            message: 'Erreur lors de la mise à jour du profil',
+            message: 'Error updating profile',
           );
         }
       } else {
@@ -91,26 +91,25 @@ class _SignupPageState extends State<SignupPage> {
       }
     } catch (e) {
       print('[Signup] Error: $e');
-      String errorMessage = "Une erreur s'est produite lors de l'inscription";
+      String errorMessage = "An error occurred during registration";
 
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'email-already-in-use':
-            errorMessage = "Cet email est déjà utilisé";
+            errorMessage = "This email is already in use";
             break;
           case 'weak-password':
-            errorMessage = e.message ?? "Le mot de passe est trop faible";
+            errorMessage = e.message ?? "Password is too weak";
             break;
           case 'invalid-email':
-            errorMessage = "Email invalide";
+            errorMessage = "Invalid email";
             break;
           case 'operation-not-allowed':
-            errorMessage =
-                "L'inscription par email/mot de passe n'est pas activée";
+            errorMessage = "Email/password registration is not enabled";
             break;
           case 'network-request-failed':
             errorMessage =
-                "Erreur de connexion réseau. Vérifiez votre connexion internet";
+                "Network connection error. Check your internet connection";
             break;
           default:
             errorMessage = e.message ?? errorMessage;
@@ -214,7 +213,7 @@ class _SignupPageState extends State<SignupPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Inscription GitHub réussie ! Bienvenue ${userCredential.user!.displayName ?? userCredential.user!.email}"),
+                "GitHub registration successful! Welcome ${userCredential.user!.displayName ?? userCredential.user!.email}"),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
           ),
@@ -281,7 +280,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               SizedBox(height: 20),
               Text(
-                "Bienvenue sur Rif",
+                "Welcome to RIF",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -345,7 +344,7 @@ class _SignupPageState extends State<SignupPage> {
                   child: isLoading
                       ? CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          "S'inscrire",
+                          "Sign Up",
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                 ),
@@ -359,7 +358,7 @@ class _SignupPageState extends State<SignupPage> {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    "Déjà un compte ? Se connecter",
+                    "Already have an account? Sign In",
                     style: TextStyle(
                       color: Color(0xFFAA6B94),
                       decoration: TextDecoration.underline,
@@ -380,14 +379,14 @@ class _SignupPageState extends State<SignupPage> {
               Column(
                 children: [
                   _socialButton(
-                    "S'inscrire avec Google",
+                    "Sign up with Google",
                     signupWithGoogle,
                     Icons.g_mobiledata,
                     Color(0xFFDB4437), // Google red
                   ),
                   SizedBox(height: 10),
                   _socialButton(
-                    "S'inscrire avec GitHub",
+                    "Sign up with GitHub",
                     signupWithGithub,
                     Icons.code,
                     Color(0xFF333333), // GitHub dark

@@ -52,7 +52,7 @@ class Sidebar extends StatelessWidget {
           _buildNavItem(
             context,
             icon: Icons.home_outlined,
-            title: 'Accueil',
+            title: 'Home',
             index: 0,
           ),
           _buildNavItem(
@@ -70,7 +70,7 @@ class Sidebar extends StatelessWidget {
           _buildNavItem(
             context,
             icon: Icons.person_outline,
-            title: 'Profil',
+            title: 'Profile',
             index: 3,
           ),
           Spacer(),
@@ -78,13 +78,13 @@ class Sidebar extends StatelessWidget {
           _buildNavItem(
             context,
             icon: Icons.settings_outlined,
-            title: 'Paramètres',
+            title: 'Settings',
             index: 4,
           ),
           _buildNavItem(
             context,
             icon: Icons.logout_outlined,
-            title: 'Déconnexion',
+            title: 'Logout',
             index: 5,
             onTap: () {
               Navigator.pop(context); // Close drawer first
@@ -144,7 +144,7 @@ class Sidebar extends StatelessWidget {
       // Show error message if logout fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de la déconnexion'),
+          content: Text('Error during logout'),
           backgroundColor: Colors.red,
         ),
       );

@@ -196,7 +196,7 @@ class FirebaseService {
           'message': '''
 Bonjour,
 
-Bienvenue sur RIF (Réseau Informatique Facultaire) !
+Welcome to RIF (Faculty Computer Network) !
 
 Pour finaliser la création de votre compte, veuillez utiliser le code de vérification ci-dessous :
 
@@ -472,7 +472,7 @@ Cet email a été envoyé automatiquement à : $email
         if (e.toString().contains('network_error')) {
           throw FirebaseAuthException(
             code: 'network_error',
-            message: 'Erreur de connexion réseau lors de la connexion Google',
+            message: 'Network connection error during Google sign-in',
           );
         }
         rethrow;
@@ -535,10 +535,10 @@ Cet email a été envoyé automatiquement à : $email
         } catch (signInError) {
           print('Error in signInWithCredential: $signInError');
 
-          // Si c'est l'erreur PigeonUserDetails mais que l'utilisateur est connecté
+          // If it's the PigeonUserDetails error but the user is connected
           if (signInError.toString().contains('PigeonUserDetails') &&
               _auth.currentUser != null) {
-            // Dans ce cas, on continue car l'authentification a réussi malgré l'erreur
+            // In this case, we continue because authentication succeeded despite the error
             print(
                 'Continuing despite PigeonUserDetails error - user is authenticated');
             return await _auth.signInWithCredential(credential);

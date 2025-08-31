@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> loginWithEmail() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez remplir tous les champs")),
+        SnackBar(content: Text("Please fill in all fields")),
       );
       return;
     }
@@ -61,33 +61,31 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       print('[Login] Error: $e');
-      String errorMessage = "Une erreur s'est produite";
+      String errorMessage = "An error occurred";
 
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'user-not-found':
-            errorMessage = "Aucun utilisateur trouvé avec cet email";
+            errorMessage = "No user found with this email";
             break;
           case 'wrong-password':
-            errorMessage = "Mot de passe incorrect";
+            errorMessage = "Incorrect password";
             break;
           case 'invalid-email':
-            errorMessage = "Email invalide";
+            errorMessage = "Invalid email";
             break;
           case 'user-disabled':
-            errorMessage = "Ce compte a été désactivé";
+            errorMessage = "This account has been disabled";
             break;
           case 'too-many-requests':
-            errorMessage =
-                "Trop de tentatives de connexion. Veuillez réessayer plus tard";
+            errorMessage = "Too many login attempts. Please try again later";
             break;
           case 'operation-not-allowed':
-            errorMessage =
-                "La connexion par email/mot de passe n'est pas activée";
+            errorMessage = "Email/password login is not enabled";
             break;
           case 'network-request-failed':
             errorMessage =
-                "Erreur de connexion réseau. Vérifiez votre connexion internet";
+                "Network connection error. Check your internet connection";
             break;
           default:
             errorMessage = e.message ?? errorMessage;
@@ -127,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
         print('[Login] Sign in result is null');
         throw FirebaseAuthException(
           code: 'error-null-result',
-          message: 'La connexion a échoué',
+          message: 'Login failed',
         );
       }
 
@@ -136,37 +134,36 @@ class _LoginPageState extends State<LoginPage> {
         print('[Login] User is null after successful sign in');
         throw FirebaseAuthException(
           code: 'error-null-user',
-          message: 'Impossible de récupérer les informations utilisateur',
+          message: 'Unable to retrieve user information',
         );
       }
 
       print('[Login] Got valid user: ${user.email}');
 
-      // Création du modèle utilisateur
+      // User model creation
       try {
         final userModel = UserModel.fromFirebaseUser(user);
         print('[Login] Successfully created user model: ${userModel.email}');
 
-        // Navigation seulement si tout est OK
+        // Navigate only if everything is OK
         Navigator.pushReplacementNamed(context, '/home');
       } catch (modelError) {
         print('[Login] Error creating user model: $modelError');
         print('[Login] Stack trace: ${StackTrace.current}');
         throw FirebaseAuthException(
           code: 'error-user-model',
-          message: 'Erreur lors de la création du profil utilisateur',
+          message: 'Error creating user profile',
         );
       }
     } catch (e) {
       print('[Login] Error in loginWithGoogle: $e');
-      String errorMessage =
-          "Une erreur s'est produite lors de la connexion avec Google";
+      String errorMessage = "An error occurred while signing in with Google";
 
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'ERROR_ABORTED_BY_USER':
           case 'error-null-result':
-            errorMessage = "La connexion avec Google a été annulée";
+            errorMessage = "Google sign-in was cancelled";
             break;
           case 'network_error':
             errorMessage =
@@ -222,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Connexion GitHub réussie ! Bienvenue ${userModel.displayName ?? userModel.email}"),
+                "GitHub sign-in successful! Welcome ${userModel.displayName ?? userModel.email}"),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
           ),
@@ -344,7 +341,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: isLoading
                       ? CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          "Se connecter",
+                          "Sign In",
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                 ),
@@ -365,7 +362,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: Text(
-                      "Mot de passe oublié ?",
+                      "Forgot Password?",
                       style: TextStyle(
                         color: Color(0xFFAA6B94),
                         decoration: TextDecoration.underline,
@@ -382,7 +379,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: Text(
-                      "Créer un compte",
+                      "Create Account",
                       style: TextStyle(
                         color: Color(0xFFAA6B94),
                         decoration: TextDecoration.underline,
@@ -395,7 +392,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20),
 
               Text(
-                "Ou connectez-vous avec",
+                "Or sign in with",
                 style: TextStyle(color: Color(0xFFAA6B94)),
               ),
               SizedBox(height: 15),
@@ -404,14 +401,14 @@ class _LoginPageState extends State<LoginPage> {
               Column(
                 children: [
                   _socialButton(
-                    "Continuer avec Google",
+                    "Continue with Google",
                     loginWithGoogle,
                     Icons.g_mobiledata,
                     Color(0xFFDB4437), // Google red
                   ),
                   SizedBox(height: 10),
                   _socialButton(
-                    "Continuer avec GitHub",
+                    "Continue with GitHub",
                     loginWithGithub,
                     Icons.code,
                     Color(0xFF333333), // GitHub dark

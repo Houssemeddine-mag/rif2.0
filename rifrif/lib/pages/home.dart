@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Duration remaining = Duration();
   Timer? countdownTimer;
   String conferenceStartDate =
-      "8-9 Décembre 2025"; // Will be updated from Firebase
+      "December 8-9, 2025"; // Will be updated from Firebase
 
   // Firebase data
   List<ProgramSession> upcomingEvents = [];
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     if (programs.isEmpty) {
       // When no programs are available, set default values
       setState(() {
-        conferenceStartDate = "Bientôt";
+        conferenceStartDate = "Coming Soon";
       });
       return;
     }
@@ -180,15 +180,15 @@ class _HomePageState extends State<HomePage> {
                 "${_formatConferenceDate(startDate)} - ${_formatConferenceDate(endDate)}";
           }
         } else {
-          conferenceStartDate = "Bientôt";
+          conferenceStartDate = "Coming Soon";
         }
       } else {
-        conferenceStartDate = "Bientôt";
+        conferenceStartDate = "Coming Soon";
       }
     } catch (e) {
       print('Error updating dates from programs: $e');
       setState(() {
-        conferenceStartDate = "Bientôt";
+        conferenceStartDate = "Coming Soon";
       });
     }
   }
@@ -196,18 +196,18 @@ class _HomePageState extends State<HomePage> {
   String _formatConferenceDate(DateTime date) {
     final months = [
       '',
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
 
     return "${date.day} ${months[date.month]} ${date.year}";
@@ -248,25 +248,25 @@ class _HomePageState extends State<HomePage> {
 
   String _getCountdownText() {
     // Check if we have valid program data
-    if (conferenceStartDate == "Bientôt" || allPrograms.isEmpty) {
-      return "Dates à confirmer - Bientôt";
+    if (conferenceStartDate == "Coming Soon" || allPrograms.isEmpty) {
+      return "Dates to be confirmed - Coming soon";
     }
 
     // Check if conference is ongoing or has passed
     if (remaining.isNegative || remaining == Duration.zero) {
-      return "La conférence est en cours!";
+      return "The conference is in progress!";
     }
 
     // Normal countdown
-    return "Début dans: ${_formatDuration(remaining)}";
+    return "Starting in: ${_formatDuration(remaining)}";
   }
 
   String _getParticipantText() {
     final speakerCount = programStats['totalSpeakers'] ?? 0;
     if (speakerCount == 0 || allPrograms.isEmpty) {
-      return "Participants - Bientôt";
+      return "Participants - Coming Soon";
     }
-    return "$speakerCount+ Participantes";
+    return "$speakerCount+ Participants";
   }
 
   Future<void> _launchURL(String url) async {
@@ -321,16 +321,16 @@ class _HomePageState extends State<HomePage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Impossible d\'ouvrir le lien: $url'),
+              content: Text('Unable to open link: $url'),
               backgroundColor: Colors.red,
               action: SnackBarAction(
-                label: 'Copier',
+                label: 'Copy',
                 textColor: Colors.white,
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: url));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Lien copié dans le presse-papiers'),
+                      content: Text('Link copied to clipboard'),
                       backgroundColor: Colors.green,
                       duration: Duration(seconds: 2),
                     ),
@@ -346,8 +346,7 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text('Erreur lors de l\'ouverture du lien: ${e.toString()}'),
+            content: Text('Error opening link: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -379,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Conférence Internationale RIF 2025",
+                    "RIF 2025 International Conference",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -388,7 +387,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "La Recherche en Informatique au Féminin - Constantine, Algérie",
+                    "Women in Computer Science Research - Constantine, Algeria",
                     style: TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                   SizedBox(height: 16),
@@ -397,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                     runSpacing: 8,
                     children: [
                       _iconText(Icons.calendar_today, conferenceStartDate),
-                      _iconText(Icons.location_on, "Université Constantine 2"),
+                      _iconText(Icons.location_on, "Constantine University 2"),
                       _iconText(Icons.people, _getParticipantText()),
                     ],
                   ),
@@ -421,9 +420,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _statCard(programStats['totalConferences']?.toString() ?? "0",
-                    "Conférences"),
+                    "Conferences"),
                 _statCard(programStats['totalSpeakers']?.toString() ?? "0",
-                    "Intervenantes"),
+                    "Speakers"),
                 _statCard(programStats['keynoteSessions']?.toString() ?? "0",
                     "Keynotes"),
               ],
@@ -433,7 +432,7 @@ class _HomePageState extends State<HomePage> {
 
             // Upcoming Events
             Text(
-              "Prochaines Sessions",
+              "Upcoming Sessions",
               style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(height: 8),
@@ -463,7 +462,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Aucune session à venir",
+                                  "No upcoming sessions",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Color(0xFFAA6B94),
@@ -471,7 +470,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 Text(
-                                  "Consultez le programme complet",
+                                  "Check the full program",
                                   style: TextStyle(
                                     color: Colors.black54,
                                   ),
@@ -501,7 +500,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                 },
-                child: Text("Voir le programme complet"),
+                child: Text("View full program"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFAA6B94),
                   foregroundColor: Colors.white,
@@ -513,7 +512,7 @@ class _HomePageState extends State<HomePage> {
 
             // About Section
             Text(
-              "À Propos de RIF 2025",
+              "About RIF 2025",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Color(0xFFAA6B94),
                     fontWeight: FontWeight.bold,
@@ -527,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "La Conférence Internationale sur la Recherche en Informatique au Féminin (RIF) réunit chercheuses, ingénieures et praticiennes en informatique. RIF favorise la collaboration et l'innovation, avec un focus sur les technologies émergentes. L'édition 2025 met l'accent sur les contributions des femmes à l'intelligence artificielle, invitant des recherches originales et des travaux pratiques en informatique, à travers des articles réguliers ou courts, et offre une participation hybride pour une accessibilité élargie.",
+                      "The International Conference on Women in Computer Science Research (RIF) brings together researchers, engineers and practitioners in computer science. RIF promotes collaboration and innovation, with a focus on emerging technologies. The 2025 edition emphasizes women's contributions to artificial intelligence, inviting original research and practical work in computer science, through regular or short papers, and offers hybrid participation for broader accessibility.",
                       style: TextStyle(color: Colors.black87, height: 1.4),
                     ),
                     SizedBox(height: 16),
@@ -539,7 +538,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () => _launchURL(
                                 'https://www.univ-constantine2.dz/rif/25/'),
                             icon: Icon(Icons.web, size: 18),
-                            label: Text("Consulter le site"),
+                            label: Text("Visit website"),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFAA6B94),
                               foregroundColor: Colors.white,
@@ -554,7 +553,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () => _launchURL(
                                 'https://www.univ-constantine2.dz/rif/25/past-editions/'),
                             icon: Icon(Icons.history, size: 18),
-                            label: Text("Éditions passées"),
+                            label: Text("Past editions"),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFEACBE5),
                               foregroundColor: Color(0xFFAA6B94),
@@ -584,7 +583,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Mode Organisateur",
+                        "Organizer Mode",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFAA6B94),
@@ -595,9 +594,9 @@ class _HomePageState extends State<HomePage> {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _organizerButton("Gérer les Notifications"),
-                          _organizerButton("Voir les Évaluations"),
-                          _organizerButton("Gérer le Chat Live"),
+                          _organizerButton("Manage Notifications"),
+                          _organizerButton("View Evaluations"),
+                          _organizerButton("Manage Live Chat"),
                           _organizerButton("Analytics Dashboard"),
                         ],
                       ),
@@ -649,7 +648,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildEventCard(ProgramSession event) {
     // Get the main speaker (keynote speaker or first conference speaker)
-    String mainSpeaker = "Intervenant non défini";
+    String mainSpeaker = "Speaker not defined";
     Widget? speakerImage;
 
     if (event.keynote != null && event.keynote!.name.isNotEmpty) {
@@ -683,7 +682,7 @@ class _HomePageState extends State<HomePage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Par $mainSpeaker"),
+            Text("By $mainSpeaker"),
             Text("${event.start}${event.end != null ? ' - ${event.end}' : ''}"),
             if (event.date.isNotEmpty)
               Text(
@@ -748,17 +747,17 @@ class _HomePageState extends State<HomePage> {
         final monthNames = [
           '',
           'Jan',
-          'Fév',
+          'Feb',
           'Mar',
-          'Avr',
-          'Mai',
+          'Apr',
+          'May',
           'Jun',
           'Jul',
-          'Aoû',
+          'Aug',
           'Sep',
           'Oct',
           'Nov',
-          'Déc'
+          'Dec'
         ];
         final monthName =
             int.parse(month) <= 12 ? monthNames[int.parse(month)] : month;

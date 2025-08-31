@@ -61,7 +61,7 @@ class _ProgramPageState extends State<ProgramPage>
           setState(() {
             isLoading = false;
             if (allPrograms.isEmpty) {
-              errorMessage = 'Erreur de connexion temps réel: $error';
+              errorMessage = 'Real-time connection error: $error';
             }
           });
         }
@@ -197,7 +197,7 @@ class _ProgramPageState extends State<ProgramPage>
         title: Row(
           children: [
             Text(
-              'Programme RIF 2025',
+              'RIF 2025 Program',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -251,7 +251,7 @@ class _ProgramPageState extends State<ProgramPage>
             ),
             SizedBox(height: 16),
             Text(
-              'Chargement du programme...',
+              'Loading program...',
               style: TextStyle(
                 color: Color(0xFFAA6B94),
                 fontSize: 16,
@@ -286,7 +286,7 @@ class _ProgramPageState extends State<ProgramPage>
               ),
               SizedBox(height: 16),
               Text(
-                'Les données se mettront à jour automatiquement.',
+                'Data will update automatically.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.grey[600],
@@ -313,7 +313,7 @@ class _ProgramPageState extends State<ProgramPage>
               ),
               SizedBox(height: 16),
               Text(
-                'Aucun programme disponible',
+                'No program available',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -322,7 +322,7 @@ class _ProgramPageState extends State<ProgramPage>
               ),
               SizedBox(height: 8),
               Text(
-                'Le programme sera publié prochainement par les organisateurs.',
+                'The program will be published soon by the organizers.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.grey[600],
@@ -331,7 +331,7 @@ class _ProgramPageState extends State<ProgramPage>
               ),
               SizedBox(height: 16),
               Text(
-                'Cette page se mettra à jour automatiquement.',
+                'This page will update automatically.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFFAA6B94),
@@ -386,12 +386,12 @@ class _ProgramPageState extends State<ProgramPage>
                 ),
                 _buildStatItem(
                   '${allPrograms.fold<int>(0, (sum, program) => sum + program.conferences.length)}',
-                  'Conférences',
+                  'Conferences',
                   Icons.mic,
                 ),
                 _buildStatItem(
                   '${_getUniqueSpeakers().length}',
-                  'Intervenants',
+                  'Speakers',
                   Icons.people,
                 ),
               ],
@@ -454,7 +454,7 @@ class _ProgramPageState extends State<ProgramPage>
           Expanded(
             child: selectedDate != null
                 ? _buildSessionsList()
-                : Center(child: Text('Sélectionnez un jour')),
+                : Center(child: Text('Select a day')),
           ),
         ],
       );
@@ -470,7 +470,7 @@ class _ProgramPageState extends State<ProgramPage>
             ),
             SizedBox(height: 16),
             Text(
-              'Aucun programme disponible',
+              'No program available',
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey[600],
@@ -478,7 +478,7 @@ class _ProgramPageState extends State<ProgramPage>
             ),
             SizedBox(height: 8),
             Text(
-              'Les sessions apparaîtront ici une fois ajoutées',
+              'Sessions will appear here once added',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -509,7 +509,7 @@ class _ProgramPageState extends State<ProgramPage>
   String _formatTabDate(String date) {
     try {
       final dateTime = DateTime.parse(date);
-      const weekdays = ['', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      const weekdays = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       return '${weekdays[dateTime.weekday]} ${dateTime.day}/${dateTime.month}';
     } catch (e) {
       return date;
@@ -677,7 +677,7 @@ class _ProgramPageState extends State<ProgramPage>
                     ],
                     Expanded(
                       child: Text(
-                        'Conférencier principal: ${program.keynote!.name}',
+                        'Keynote Speaker: ${program.keynote!.name}',
                         style: TextStyle(
                           color: Color(0xFFAA6B94),
                           fontWeight: FontWeight.w500,
@@ -710,7 +710,7 @@ class _ProgramPageState extends State<ProgramPage>
                     SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        'Présidé par: ${program.chairs.join(', ')}',
+                        'Chaired by: ${program.chairs.join(', ')}',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -729,7 +729,7 @@ class _ProgramPageState extends State<ProgramPage>
                     Icon(Icons.list, size: 16, color: Colors.grey[600]),
                     SizedBox(width: 4),
                     Text(
-                      '${program.conferences.length} présentation${program.conferences.length > 1 ? 's' : ''}',
+                      '${program.conferences.length} presentation${program.conferences.length > 1 ? 's' : ''}',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,
@@ -803,7 +803,7 @@ class _ProgramPageState extends State<ProgramPage>
                       // Keynote section
                       if (program.keynote != null &&
                           program.keynote!.name.isNotEmpty) ...[
-                        _buildSectionTitle('Conférencier Principal'),
+                        _buildSectionTitle('Keynote Speaker'),
                         _buildKeynoteCard(program.keynote!),
                         if (program.keynoteDescription != null &&
                             program.keynoteDescription!.isNotEmpty) ...[
@@ -821,7 +821,7 @@ class _ProgramPageState extends State<ProgramPage>
 
                       // Chairs section
                       if (program.chairs.isNotEmpty) ...[
-                        _buildSectionTitle('Présidé par'),
+                        _buildSectionTitle('Chaired by'),
                         ...program.chairs.map((chair) => Padding(
                               padding: EdgeInsets.only(bottom: 4),
                               child: Row(
@@ -839,7 +839,7 @@ class _ProgramPageState extends State<ProgramPage>
                       // Conferences section
                       if (program.conferences.isNotEmpty) ...[
                         _buildSectionTitle(
-                            'Présentations (${program.conferences.length})'),
+                            'Presentations (${program.conferences.length})'),
                         ...program.conferences.map(
                             (conference) => _buildConferenceCard(conference)),
                       ],

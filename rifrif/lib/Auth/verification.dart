@@ -53,14 +53,14 @@ class _VerificationPageState extends State<VerificationPage> {
   Future<void> verifyCode() async {
     if (codeController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Veuillez entrer le code de vérification")),
+        SnackBar(content: Text("Please enter the verification code")),
       );
       return;
     }
 
     if (codeController.text.trim().length != 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Le code doit contenir 4 chiffres")),
+        SnackBar(content: Text("Code must contain 4 digits")),
       );
       return;
     }
@@ -75,7 +75,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Compte vérifié avec succès!"),
+            content: Text("Account verified successfully!"),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -87,7 +87,7 @@ class _VerificationPageState extends State<VerificationPage> {
         print('[Verification] Code is incorrect');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Code de vérification incorrect"),
+            content: Text("Incorrect verification code"),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
           ),
@@ -97,7 +97,7 @@ class _VerificationPageState extends State<VerificationPage> {
       print('[Verification] Error during verification: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Erreur lors de la vérification"),
+          content: Text("Error during verification"),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
         ),
@@ -252,15 +252,15 @@ class _VerificationPageState extends State<VerificationPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Code pas reçu? ",
+                    "Code not received? ",
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   TextButton(
                     onPressed: canResendCode && !isLoading ? resendCode : null,
                     child: Text(
                       canResendCode
-                          ? "Renvoyer le code"
-                          : "Renvoyer dans ${resendTimer}s",
+                          ? "Resend code"
+                          : "Resend in ${resendTimer}s",
                       style: TextStyle(
                         color: canResendCode ? Color(0xFFAA6B94) : Colors.grey,
                         fontWeight: FontWeight.bold,
@@ -279,7 +279,7 @@ class _VerificationPageState extends State<VerificationPage> {
                         Navigator.pop(context);
                       },
                 child: Text(
-                  "← Retour à l'inscription",
+                  "← Back to Sign Up",
                   style: TextStyle(
                     color: Color(0xFFAA6B94),
                     decoration: TextDecoration.underline,

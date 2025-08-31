@@ -155,7 +155,7 @@ class _RecoverPageState extends State<RecoverPage> {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    "← Retour à la connexion",
+                    "← Back to Sign In",
                     style: TextStyle(
                       color: Color(0xFFAA6B94),
                       decoration: TextDecoration.underline,
@@ -192,7 +192,7 @@ class _RecoverPageState extends State<RecoverPage> {
                       child: isLoading
                           ? CircularProgressIndicator(color: Colors.white)
                           : Text(
-                              "Envoyer l'email de réinitialisation",
+                              "Send Password Reset Email",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
