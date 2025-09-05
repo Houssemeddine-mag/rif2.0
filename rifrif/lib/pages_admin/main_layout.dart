@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/sidebar.dart';
-import '../widgets/notification_bell.dart';
 import '../services/firebase_service.dart';
 import 'direct.dart';
 import 'home.dart';
@@ -243,9 +242,6 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           centerTitle: false,
           actions: [
-            // Notification bell for regular users
-            NotificationBell(),
-            SizedBox(width: 8),
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: Row(

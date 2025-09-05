@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'Auth/login.dart';
 import 'pages/main_layout.dart';
+import 'pages_admin/main_layout.dart' as admin;
 import 'theme.dart';
 import 'firebase_options.dart';
 import 'services/firebase_service.dart';
+import 'services/push_notification_service.dart';
+
+// Background message handler (must be top-level function)
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('[FCM] Background message received: ${message.notification?.title}');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Handle background message here
+}
 
 void main() async {
   try {
@@ -16,9 +27,16 @@ void main() async {
         options: DefaultFirebaseOptions.currentPlatform);
     print('[Firebase Init] Firebase initialized successfully');
 
+    // Set background message handler
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
     // Initialize Firebase Service
     FirebaseService.initialize();
     print('[Firebase Init] Firebase Service initialized');
+
+    // Initialize Push Notification Service
+    await PushNotificationService.initialize();
+    print('[Firebase Init] Push Notification Service initialized');
 
     runApp(const MyApp());
   } catch (e, stackTrace) {
@@ -43,6 +61,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const MainLayout(userRole: 'user'),
+        '/admin': (context) => const admin.MainLayout(userRole: 'admin'),
       },
     );
   }

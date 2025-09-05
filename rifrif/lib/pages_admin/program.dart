@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import '../models/program_model.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -236,6 +237,13 @@ class _ProgramPageState extends State<ProgramPage>
         elevation: 0,
       ),
       body: _buildBody(),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showNotificationManagement,
+        backgroundColor: Color(0xFFAA6B94),
+        foregroundColor: Colors.white,
+        icon: Icon(Icons.manage_history),
+        label: Text('Manage Notifications'),
+      ),
     );
   }
 
@@ -744,17 +752,35 @@ class _ProgramPageState extends State<ProgramPage>
                 SizedBox(height: 8),
               ],
 
-              // Conference count
+              // Conference count and admin actions
               if (program.conferences.isNotEmpty) ...[
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.list, size: 16, color: Colors.grey[600]),
-                    SizedBox(width: 4),
-                    Text(
-                      '${program.conferences.length} presentation${program.conferences.length > 1 ? 's' : ''}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
+                    Row(
+                      children: [
+                        Icon(Icons.list, size: 16, color: Colors.grey[600]),
+                        SizedBox(width: 4),
+                        Text(
+                          '${program.conferences.length} presentation${program.conferences.length > 1 ? 's' : ''}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Admin notification button
+                    ElevatedButton.icon(
+                      onPressed: () => _sendSessionNotification(program),
+                      icon: Icon(Icons.notifications, size: 16),
+                      label: Text('Notify'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFAA6B94),
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        textStyle: TextStyle(fontSize: 12),
                       ),
                     ),
                   ],
@@ -882,10 +908,35 @@ class _ProgramPageState extends State<ProgramPage>
 
                       // Conferences section
                       if (program.conferences.isNotEmpty) ...[
-                        _buildSectionTitle(
-                            'Presentations (${program.conferences.length})'),
-                        ...program.conferences.map(
-                            (conference) => _buildConferenceCard(conference)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Presentations (${program.conferences.length})',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFAA6B94),
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () =>
+                                  _sendSessionNotification(program),
+                              icon: Icon(Icons.notifications_active, size: 16),
+                              label: Text('Notify All'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFAA6B94),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                textStyle: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        ...program.conferences.map((conference) =>
+                            _buildConferenceCard(conference, program)),
                       ],
                     ],
                   ),
@@ -1004,7 +1055,8 @@ class _ProgramPageState extends State<ProgramPage>
     );
   }
 
-  Widget _buildConferenceCard(Conference conference) {
+  Widget _buildConferenceCard(Conference conference,
+      [ProgramSession? session]) {
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -1024,22 +1076,44 @@ class _ProgramPageState extends State<ProgramPage>
                     ),
                   ),
                 ),
-                if (conference.isKeynote)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.amber[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Keynote',
-                      style: TextStyle(
-                        color: Colors.amber[700],
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                Row(
+                  children: [
+                    if (conference.isKeynote)
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        margin: EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.amber[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Keynote',
+                          style: TextStyle(
+                            color: Colors.amber[700],
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    // Add notification button for individual conference
+                    if (session != null)
+                      ElevatedButton.icon(
+                        onPressed: () =>
+                            _sendConferenceNotification(conference, session),
+                        icon: Icon(Icons.notification_add, size: 14),
+                        label: Text('Notify'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFAA6B94).withOpacity(0.8),
+                          foregroundColor: Colors.white,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          textStyle: TextStyle(fontSize: 10),
+                          minimumSize: Size(60, 24),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -1099,5 +1173,527 @@ class _ProgramPageState extends State<ProgramPage>
         ),
       ),
     );
+  }
+
+  // Admin notification methods
+  Future<void> _sendSessionNotification(ProgramSession session) async {
+    await NotificationService.showNotificationDialog(
+      context: context,
+      title: 'Session Notification',
+      initialMessage: 'Session "${session.title}" is starting soon!',
+      onSend: (message) async {
+        try {
+          await NotificationService.sendSessionNotification(
+            sessionId: session.title.hashCode.toString(),
+            sessionTitle: session.title,
+            message: message,
+            sessionDate: session.formattedDate,
+            sessionTime: '${session.start} - ${session.end}',
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Session notification sent successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error sending notification: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _sendConferenceNotification(
+      Conference conference, ProgramSession session) async {
+    await NotificationService.showNotificationDialog(
+      context: context,
+      title: 'Conference Notification',
+      initialMessage:
+          'Conference "${conference.title}" by ${conference.presenter} is starting!',
+      onSend: (message) async {
+        try {
+          await NotificationService.sendConferenceNotification(
+            conferenceId: conference.title.hashCode.toString(),
+            conferenceTitle: conference.title,
+            presenter: conference.presenter,
+            message: message,
+            sessionDate: session.formattedDate,
+            sessionTime: '${conference.start} - ${conference.end}',
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Conference notification sent successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error sending notification: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  // Admin notification management
+  void _showNotificationManagement() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Notification Management',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFAA6B94),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => _showDeleteAllConfirmation(),
+                        icon: Icon(Icons.delete_sweep),
+                        color: Colors.red[600],
+                        tooltip: 'Delete All Notifications',
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.close),
+                        color: Colors.grey[600],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+
+              // Notifications list
+              Expanded(
+                child: StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: NotificationService.getNotificationsStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error, size: 48, color: Colors.red),
+                            SizedBox(height: 16),
+                            Text(
+                              'Error loading notifications',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final notifications = snapshot.data ?? [];
+
+                    if (notifications.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.notifications_none,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'No notifications sent yet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Text(
+                              'Notifications you send will appear here',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      controller: scrollController,
+                      itemCount: notifications.length,
+                      itemBuilder: (context, index) {
+                        final notification = notifications[index];
+                        return _buildAdminNotificationCard(notification);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminNotificationCard(Map<String, dynamic> notification) {
+    final type = notification['type'] ?? 'general';
+    final timestamp = notification['timestamp'];
+
+    // Format timestamp
+    String timeAgo = 'Now';
+    if (timestamp != null) {
+      final notificationTime = timestamp.toDate();
+      final difference = DateTime.now().difference(notificationTime);
+
+      if (difference.inDays > 0) {
+        timeAgo = '${difference.inDays}d ago';
+      } else if (difference.inHours > 0) {
+        timeAgo = '${difference.inHours}h ago';
+      } else if (difference.inMinutes > 0) {
+        timeAgo = '${difference.inMinutes}m ago';
+      } else {
+        timeAgo = 'Just now';
+      }
+    }
+
+    IconData iconData;
+    Color iconColor;
+
+    switch (type) {
+      case 'session':
+        iconData = Icons.event;
+        iconColor = Color(0xFFAA6B94);
+        break;
+      case 'conference':
+        iconData = Icons.mic;
+        iconColor = Colors.blue;
+        break;
+      default:
+        iconData = Icons.info;
+        iconColor = Colors.green;
+    }
+
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 4),
+      child: ListTile(
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(iconData, color: iconColor, size: 20),
+        ),
+        title: Text(
+          notification['title'] ?? 'Notification',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(notification['message'] ?? ''),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                if (notification['sessionTitle'] != null) ...[
+                  Icon(Icons.schedule, size: 12, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      notification['sessionTitle'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                ] else if (notification['conferenceTitle'] != null) ...[
+                  Icon(Icons.mic, size: 12, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${notification['conferenceTitle']} - ${notification['presenter'] ?? ''}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                ],
+                Text(
+                  timeAgo,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Priority indicator
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: notification['priority'] == 'high'
+                    ? Colors.red[100]
+                    : Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                notification['priority'] ?? 'normal',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: notification['priority'] == 'high'
+                      ? Colors.red[700]
+                      : Colors.grey[700],
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+            // Delete button
+            IconButton(
+              icon: Icon(
+                Icons.delete_outline,
+                color: Colors.red[400],
+                size: 20,
+              ),
+              onPressed: () =>
+                  _deleteNotificationWithConfirmation(notification),
+              padding: EdgeInsets.all(4),
+            ),
+          ],
+        ),
+        isThreeLine: true,
+      ),
+    );
+  }
+
+  Future<void> _deleteNotificationWithConfirmation(
+      Map<String, dynamic> notification) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Notification'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Are you sure you want to delete this notification?'),
+            SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    notification['title'] ?? 'Notification',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    notification['message'] ?? '',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              '⚠️ This will remove the notification from all users\' devices.',
+              style: TextStyle(
+                color: Colors.red[600],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete == true) {
+      try {
+        await NotificationService.deleteNotification(notification['id']);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Notification deleted successfully'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to delete notification: $e'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _showDeleteAllConfirmation() async {
+    final shouldDeleteAll = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete All Notifications'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Are you sure you want to delete ALL notifications?'),
+            SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red[600], size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This action cannot be undone. All notifications will be removed from all users\' devices.',
+                      style: TextStyle(
+                        color: Colors.red[700],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: Text('Delete All'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDeleteAll == true) {
+      try {
+        // Get all notifications
+        final notifications =
+            await NotificationService.getNotificationsStream().first;
+
+        // Delete all notifications
+        for (final notification in notifications) {
+          await NotificationService.deleteNotification(notification['id']);
+        }
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('All notifications deleted successfully'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+          Navigator.pop(context); // Close the management panel
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to delete notifications: $e'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
   }
 }

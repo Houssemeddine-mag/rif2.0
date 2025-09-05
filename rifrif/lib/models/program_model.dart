@@ -81,6 +81,7 @@ class ProgramSession {
   final String date;
   final String start;
   final String? end; // Made optional since not all sessions have end times
+  final String? room; // Room where the session takes place
   final List<String> chairs;
   final Keynote? keynote;
   final String? keynoteDescription;
@@ -96,6 +97,7 @@ class ProgramSession {
     required this.date,
     required this.start,
     this.end, // Made optional
+    this.room, // Optional room field
     required this.chairs,
     this.keynote,
     this.keynoteDescription,
@@ -113,6 +115,7 @@ class ProgramSession {
       date: map['date'] ?? '',
       start: map['start'] ?? '',
       end: map['end'], // Optional, can be null
+      room: map['room'], // Optional room field
       chairs: List<String>.from(map['chairs'] ?? []),
       keynote: map['keynote'] != null ? Keynote.fromMap(map['keynote']) : null,
       keynoteDescription: map['keynoteDescription'],
@@ -159,6 +162,7 @@ class ProgramSession {
       'date': date,
       'start': start,
       'end': end,
+      'room': room,
       'chairs': chairs,
       'keynote': keynote?.toMap(),
       'keynoteDescription': keynoteDescription,

@@ -12,6 +12,7 @@ const Program = () => {
     date: "",
     start: "",
     end: "",
+    room: "", // Added room field
     chairs: [],
     chairInput: "",
     keynote: {
@@ -181,6 +182,12 @@ const Program = () => {
         return;
       }
 
+      if (!formData.room.trim()) {
+        alert("Please specify the room for this session");
+        setLoading(false);
+        return;
+      }
+
       let conferences = [...formData.conferences];
       // If keynoteHasConference, ensure the keynote's conference is the first in the list
       if (formData.keynoteHasConference) {
@@ -241,6 +248,7 @@ const Program = () => {
         date: "",
         start: "",
         end: "",
+        room: "", // Reset room field
         chairs: [],
         chairInput: "",
         keynote: { name: "", affiliation: "", bio: "", image: "" },
@@ -273,6 +281,7 @@ const Program = () => {
       date: session.date || "",
       start: session.start || "",
       end: session.end || "",
+      room: session.room || "", // Include room in edit
       chairs: session.chairs || [],
       chairInput: "",
       keynote: session.keynote || {
@@ -419,6 +428,17 @@ const Program = () => {
                 name="start"
                 value={formData.start}
                 onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Room</label>
+              <input
+                type="text"
+                name="room"
+                value={formData.room}
+                onChange={handleInputChange}
+                placeholder="e.g., Amphitheater A, Room 101, Conference Hall"
                 required
               />
             </div>
@@ -928,6 +948,7 @@ const Program = () => {
                   date: "",
                   start: "",
                   end: "",
+                  room: "", // Reset room field
                   chairs: [],
                   chairInput: "",
                   keynote: { name: "", affiliation: "", bio: "", image: "" },
@@ -993,7 +1014,8 @@ const Program = () => {
                       {session.title}
                     </div>
                     <div style={{ color: "#7f8c8d", fontSize: 15 }}>
-                      {formatDate(session.date)}
+                      {formatDate(session.date)} • Room:{" "}
+                      {session.room || "Not specified"}
                     </div>
                     <div
                       style={{ color: "#a259ff", fontSize: 14, marginTop: 4 }}

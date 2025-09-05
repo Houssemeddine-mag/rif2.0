@@ -26,6 +26,33 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     setState(() => isLoading = true);
+
+    // Check for static admin credentials
+    if (emailController.text.trim() == 'M_admin@RIF.com' &&
+        passwordController.text == 'Di8dibXp') {
+      try {
+        print('[Login] Static admin login detected');
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Admin login successful!"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate to admin interface
+        Navigator.pushReplacementNamed(context, '/admin');
+        return;
+      } catch (e) {
+        print('[Login] Error in admin login: $e');
+      } finally {
+        setState(() => isLoading = false);
+      }
+      return;
+    }
+
     try {
       print(
           '[Login] Attempting to sign in with email: ${emailController.text}');
