@@ -929,4 +929,55 @@ Cet email a été envoyé automatiquement à : $email
       throw e;
     }
   }
+
+  // Rating and feedback functionality
+  static Future<void> updateConferenceRating(
+    Conference conference,
+    double presenterRating,
+    double presentationRating,
+    String comment,
+  ) async {
+    try {
+      debugPrintAuth('Updating conference rating...');
+
+      // Find the conference in all programs and update it
+      final snapshot =
+          await FirebaseFirestore.instance.collection('programs').get();
+
+      for (var doc in snapshot.docs) {
+        var programData = doc.data();
+        List conferences = programData['conferences'] ?? [];
+
+        // Find the conference to update
+        for (int i = 0; i < conferences.length; i++) {
+          var conf = conferences[i];
+          if (conf['title'] == conference.title &&
+              conf['presenter'] == conference.presenter &&
+              conf['start'] == conference.start) {
+            // Update the conference with new ratings
+            conferences[i] = {
+              ...conf,
+              'presenterRating': presenterRating > 0 ? presenterRating : null,
+              'presentationRating':
+                  presentationRating > 0 ? presentationRating : null,
+              'comment': comment.isNotEmpty ? comment : null,
+            };
+
+            // Update the document
+            await doc.reference.update({
+              'conferences': conferences,
+            });
+
+            debugPrintAuth('Conference rating updated successfully');
+            return;
+          }
+        }
+      }
+
+      throw Exception('Conference not found for rating update');
+    } catch (e) {
+      debugPrintAuth('Error updating conference rating: $e');
+      throw e;
+    }
+  }
 }

@@ -28,6 +28,7 @@ const Login = () => {
     if (validAdmin) {
       setLoading(false);
       setError("");
+      
       // Store the logged-in admin info in localStorage
       localStorage.setItem(
         "rifAdminUser",

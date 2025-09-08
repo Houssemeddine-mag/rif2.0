@@ -1664,14 +1664,8 @@ class _ProgramPageState extends State<ProgramPage>
 
     if (shouldDeleteAll == true) {
       try {
-        // Get all notifications
-        final notifications =
-            await NotificationService.getNotificationsStream().first;
-
-        // Delete all notifications
-        for (final notification in notifications) {
-          await NotificationService.deleteNotification(notification['id']);
-        }
+        // Delete all notifications using batch operation
+        await NotificationService.deleteAllNotifications();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

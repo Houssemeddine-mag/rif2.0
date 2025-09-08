@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
+import '../services/push_notification_service.dart';
 
 class DirectPage extends StatefulWidget {
   const DirectPage({Key? key}) : super(key: key);
@@ -40,6 +41,11 @@ class _DirectPageState extends State<DirectPage> {
     _messageController.dispose();
     _customDataController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   Future<void> _sendNotification() async {
@@ -491,48 +497,90 @@ class _DirectPageState extends State<DirectPage> {
               SizedBox(height: 32),
 
               // Action Buttons
-              Row(
+              Column(
                 children: [
-                  Expanded(
+                  // Test notification button
+                  SizedBox(
+                    width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: _titleController.text.isNotEmpty &&
-                              _messageController.text.isNotEmpty
-                          ? _showPreviewDialog
-                          : null,
-                      icon: Icon(Icons.preview),
-                      label: Text('Preview'),
+                      onPressed: () async {
+                        try {
+                          await PushNotificationService.testLocalNotification();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Test notification sent! Check your notification panel.'),
+                              backgroundColor: Colors.blue,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
+                      icon: Icon(Icons.bug_report, color: Colors.blue),
+                      label: Text('Test System Notification',
+                          style: TextStyle(color: Colors.blue)),
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        side: BorderSide(color: Color(0xFFAA6B94)),
-                        foregroundColor: Color(0xFFAA6B94),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(color: Colors.blue),
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton.icon(
-                      onPressed: _isSending ? null : _sendNotification,
-                      icon: _isSending
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : Icon(Icons.send),
-                      label:
-                          Text(_isSending ? 'Sending...' : 'Send Notification'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFAA6B94),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        elevation: 2,
+
+                  SizedBox(height: 16),
+
+                  // Main action buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _titleController.text.isNotEmpty &&
+                                  _messageController.text.isNotEmpty
+                              ? _showPreviewDialog
+                              : null,
+                          icon: Icon(Icons.preview),
+                          label: Text('Preview'),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            side: BorderSide(color: Color(0xFFAA6B94)),
+                            foregroundColor: Color(0xFFAA6B94),
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton.icon(
+                          onPressed: _isSending ? null : _sendNotification,
+                          icon: _isSending
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : Icon(Icons.send),
+                          label: Text(
+                              _isSending ? 'Sending...' : 'Send Notification'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFAA6B94),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            elevation: 2,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

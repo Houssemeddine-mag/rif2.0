@@ -1007,97 +1007,427 @@ class _ProgramPageState extends State<ProgramPage>
   Widget _buildConferenceCard(Conference conference) {
     return Card(
       margin: EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    conference.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (conference.isKeynote)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.amber[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+      child: InkWell(
+        onTap: () => _showRatingDialog(conference),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
                     child: Text(
-                      'Keynote',
+                      conference.title,
                       style: TextStyle(
-                        color: Colors.amber[700],
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
-                SizedBox(width: 4),
-                Expanded(
+                  Row(
+                    children: [
+                      if (conference.isKeynote)
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.amber[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Keynote',
+                            style: TextStyle(
+                              color: Colors.amber[700],
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.star_rate,
+                        size: 16,
+                        color: Color(0xFFAA6B94),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      conference.presenter,
+                      style: TextStyle(
+                        color: Color(0xFFAA6B94),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (conference.affiliation.isNotEmpty) ...[
+                SizedBox(height: 4),
+                Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: Text(
-                    conference.presenter,
+                    conference.affiliation,
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
-                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                      fontSize: 13,
                     ),
                   ),
                 ),
               ],
-            ),
-            if (conference.affiliation.isNotEmpty) ...[
-              SizedBox(height: 4),
-              Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: Text(
-                  conference.affiliation,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 13,
+              Row(
+                children: [
+                  Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Text(
+                    '${conference.start} - ${conference.end}',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 13,
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-            Row(
-              children: [
-                Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
-                SizedBox(width: 4),
+              if (conference.resume != null &&
+                  conference.resume!.isNotEmpty) ...[
+                SizedBox(height: 8),
                 Text(
-                  '${conference.start} - ${conference.end}',
+                  conference.resume!,
                   style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 13,
+                    color: Colors.grey[700],
+                    fontSize: 14,
+                    height: 1.3,
                   ),
                 ),
               ],
-            ),
-            if (conference.resume != null && conference.resume!.isNotEmpty) ...[
+              // Show existing ratings if available
+              if (conference.presenterRating != null ||
+                  conference.presentationRating != null) ...[
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFAA6B94).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      if (conference.presenterRating != null) ...[
+                        Icon(Icons.person, size: 14, color: Color(0xFFAA6B94)),
+                        SizedBox(width: 4),
+                        Text(
+                          '${conference.presenterRating!.toStringAsFixed(1)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFAA6B94),
+                          ),
+                        ),
+                        _buildStarRating(conference.presenterRating!),
+                        SizedBox(width: 16),
+                      ],
+                      if (conference.presentationRating != null) ...[
+                        Icon(Icons.slideshow,
+                            size: 14, color: Color(0xFFAA6B94)),
+                        SizedBox(width: 4),
+                        Text(
+                          '${conference.presentationRating!.toStringAsFixed(1)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFAA6B94),
+                          ),
+                        ),
+                        _buildStarRating(conference.presentationRating!),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+              // Tap to rate hint
               SizedBox(height: 8),
               Text(
-                conference.resume!,
+                'Tap to rate this presentation',
                 style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 14,
-                  height: 1.3,
+                  color: Colors.grey[500],
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
             ],
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildStarRating(double rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          index < rating.floor()
+              ? Icons.star
+              : (index < rating.ceil() && rating % 1 >= 0.5)
+                  ? Icons.star_half
+                  : Icons.star_border,
+          size: 12,
+          color: Colors.amber,
+        );
+      }),
+    );
+  }
+
+  void _showRatingDialog(Conference conference) {
+    double presenterRating = conference.presenterRating ?? 0.0;
+    double presentationRating = conference.presentationRating ?? 0.0;
+    String comment = conference.comment ?? '';
+    final commentController = TextEditingController(text: comment);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Rate Presentation',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFAA6B94),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    conference.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  Text(
+                    'by ${conference.presenter}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Presenter Rating
+                    Text(
+                      'Rate the Presenter',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: List.generate(5, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              presenterRating = index + 1.0;
+                            });
+                          },
+                          child: Icon(
+                            index < presenterRating.floor()
+                                ? Icons.star
+                                : Icons.star_border,
+                            size: 32,
+                            color: index < presenterRating.floor()
+                                ? Colors.amber
+                                : Colors.grey[400],
+                          ),
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Presentation Rating
+                    Text(
+                      'Rate the Presentation',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: List.generate(5, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              presentationRating = index + 1.0;
+                            });
+                          },
+                          child: Icon(
+                            index < presentationRating.floor()
+                                ? Icons.star
+                                : Icons.star_border,
+                            size: 32,
+                            color: index < presentationRating.floor()
+                                ? Colors.amber
+                                : Colors.grey[400],
+                          ),
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Comment
+                    Text(
+                      'Add a Comment (Optional)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: commentController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText:
+                            'Share your thoughts about the presentation...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Color(0xFFAA6B94)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _submitRating(
+                      conference,
+                      presenterRating,
+                      presentationRating,
+                      commentController.text.trim(),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFAA6B94),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Submit Rating'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _submitRating(
+    Conference conference,
+    double presenterRating,
+    double presentationRating,
+    String comment,
+  ) async {
+    try {
+      // Show loading
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Text('Submitting your rating...'),
+              ],
+            ),
+            backgroundColor: Color(0xFFAA6B94),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Update the conference with the new ratings
+      await FirebaseService.updateConferenceRating(
+        conference,
+        presenterRating,
+        presentationRating,
+        comment,
+      );
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Rating submitted successfully!'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Failed to submit rating: ${e.toString()}'),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 }

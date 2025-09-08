@@ -3,6 +3,8 @@ import App from "./App";
 import AuthLayout from "./Components/AuthLayout";
 import Dashboard from "./Pages/dashboard";
 import Program from "./Pages/program";
+import Users from "./Pages/Users";
+import Presentations from "./Pages/Presentations";
 import Login from "./Auth/login";
 import ErrorPage from "./Pages/ErrorPage";
 
@@ -23,6 +25,8 @@ const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "program", element: <Program /> },
+      { path: "presentations", element: <Presentations /> },
+      { path: "users", element: <Users /> },
       { index: true, element: <Program /> }, // Default to program page
     ],
   },

@@ -191,6 +191,24 @@ class NotificationService {
     }
   }
 
+  // Delete all notifications (batch operation)
+  static Future<void> deleteAllNotifications() async {
+    try {
+      final batch = _firestore.batch();
+      final notifications = await _notificationsCollection.get();
+
+      for (final doc in notifications.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+      print('All notifications deleted successfully');
+    } catch (e) {
+      print('Error deleting all notifications: $e');
+      throw e;
+    }
+  }
+
   // Get unread notifications count
   static Stream<int> getUnreadCountStream() {
     return _notificationsCollection

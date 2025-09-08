@@ -23,6 +23,22 @@ const Sidebar = () => (
           Program
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/app/presentations"
+          className={({ isActive }) => (isActive ? "active" : undefined)}
+        >
+          Presentations
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/app/users"
+          className={({ isActive }) => (isActive ? "active" : undefined)}
+        >
+          Users
+        </NavLink>
+      </li>
     </ul>
     <div className="sidebar-logout-wrapper">
       <button

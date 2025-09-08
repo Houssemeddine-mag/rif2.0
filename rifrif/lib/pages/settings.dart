@@ -327,7 +327,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Divider(height: 1),
                         _buildInfoTile(
                           title: 'Version',
-                          subtitle: '1.0.0',
+                          subtitle: '2.0.0',
                           icon: Icons.info,
                           iconColor: Colors.grey,
                         ),

@@ -10,12 +10,21 @@ import 'firebase_options.dart';
 import 'services/firebase_service.dart';
 import 'services/push_notification_service.dart';
 
-// Background message handler (must be top-level function)
+// Background message handler for push notifications
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('[FCM] Background message received: ${message.notification?.title}');
+  print(
+      '[FCM Background] Background message received: ${message.notification?.title}');
+  print('[FCM Background] Message body: ${message.notification?.body}');
+  print('[FCM Background] Message data: ${message.data}');
+
+  // Initialize Firebase if not already initialized
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Handle background message here
+  print('[FCM Background] Firebase initialized for background handler');
+
+  // Use standard push notification service for background messages
+  await PushNotificationService.handleBackgroundMessage(message);
+  print('[FCM Background] Background message processed successfully');
 }
 
 void main() async {
@@ -34,7 +43,7 @@ void main() async {
     FirebaseService.initialize();
     print('[Firebase Init] Firebase Service initialized');
 
-    // Initialize Push Notification Service
+    // Initialize Push Notification Service for sending and receiving
     await PushNotificationService.initialize();
     print('[Firebase Init] Push Notification Service initialized');
 

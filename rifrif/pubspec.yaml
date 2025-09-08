@@ -20,6 +20,7 @@ dependencies:
   emailjs: ^4.0.0 # For sending emails
   image_picker: ^1.0.4 # For profile picture selection
   shared_preferences: ^2.2.2 # For storing user preferences
+  flutter_local_notifications: ^17.2.2 # For system notifications with sound and vibration
 
 dev_dependencies:
   flutter_test:
