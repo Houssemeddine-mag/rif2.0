@@ -28,7 +28,7 @@ const Login = () => {
     if (validAdmin) {
       setLoading(false);
       setError("");
-      
+
       // Store the logged-in admin info in localStorage
       localStorage.setItem(
         "rifAdminUser",
@@ -52,7 +52,7 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <img
-          src="/src/assets/rif non bg.png"
+          src="/assets/rif non bg.png"
           alt="RIF Logo"
           className="login-logo"
         />

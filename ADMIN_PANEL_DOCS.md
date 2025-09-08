@@ -197,6 +197,12 @@ The central hub displaying real-time conference statistics and analytics.
 ├── Registration data
 ├── Analytics dashboard
 └── Management tools
+
+🗄️ Database Manager
+├── Collection statistics
+├── Data cleanup tools
+├── Annual maintenance
+└── Safe database reset
 ```
 
 ### Key Components
@@ -347,6 +353,137 @@ The central hub displaying real-time conference statistics and analytics.
 - **Weekly**: System health checks
 - **Monthly**: Performance optimization
 - **Quarterly**: Major feature updates
+
+## 🗄️ Database Manager
+
+### Overview
+
+The Database Manager provides powerful tools for maintaining and preparing your database for new conference years. This feature allows administrators to safely clear conference-specific data while preserving essential user accounts and system settings.
+
+### Access
+
+- **Navigation**: Sidebar → 🗄️ Database
+- **Required Role**: Super Admin
+- **Safety Level**: High (with confirmation requirements)
+
+### Features
+
+#### 📊 Collection Statistics
+
+- **Real-time Counts**: View current document counts for all collections
+- **Live Updates**: Statistics refresh automatically after operations
+- **Collection Types**:
+  - **Notifications**: Push notification history
+  - **Programs**: Conference sessions and presentations
+  - **Users**: User accounts (preserved during cleanup)
+
+#### 🧹 Cleanup Operations
+
+##### Clear Notifications
+- **Purpose**: Remove all notification history
+- **Impact**: Safe - only removes old notifications
+- **Use Case**: Clean start for new conference notifications
+- **Confirmation**: Type `CLEAR_NOTIFICATIONS` to confirm
+
+##### Clear Programs
+- **Purpose**: Remove all conference sessions, presentations, and ratings
+- **Impact**: Removes all conference content and user ratings
+- **Use Case**: Prepare for new conference program
+- **Confirmation**: Type `CLEAR_PROGRAMS` to confirm
+
+##### Clear All Conference Data
+- **Purpose**: Complete reset of conference-specific data
+- **Impact**: Removes notifications + programs (users preserved)
+- **Use Case**: Annual database preparation
+- **Confirmation**: Type `CLEAR_ALL_DATA` to confirm
+
+### Safety Features
+
+#### 🛡️ Data Protection
+
+- **User Preservation**: User accounts and authentication data remain intact
+- **System Settings**: Application configuration preserved
+- **Confirmation Required**: All operations require explicit text confirmation
+- **No Accidental Deletion**: Multiple safety checks prevent mistakes
+
+#### 💾 What's Preserved
+
+- ✅ **User Accounts**: All user profiles and login credentials
+- ✅ **Authentication**: Firebase Auth data remains safe
+- ✅ **System Configuration**: App settings and admin accounts
+- ✅ **Asset Files**: Images and uploaded content
+
+#### ⚠️ What's Removed
+
+- ❌ **Notifications**: All push notification history
+- ❌ **Conference Programs**: Sessions, presentations, schedules
+- ❌ **Ratings & Comments**: All user feedback and ratings
+- ❌ **Analytics Data**: Conference-specific analytics
+
+### Best Practices
+
+#### Annual Maintenance
+
+1. **Before Cleanup**: Export important data if backup needed
+2. **During Conference**: Use Database Manager after conference ends
+3. **After Cleanup**: Verify statistics show 0 for cleared collections
+4. **New Conference**: Begin adding new conference content
+
+#### Recommended Schedule
+
+- **End of Conference**: Clear notifications to remove old alerts
+- **Annual Reset**: Clear all conference data before new year planning
+- **As Needed**: Individual collection cleanup for testing
+
+### Usage Instructions
+
+#### Step-by-Step Process
+
+1. **Navigate** to Database Manager from sidebar
+2. **Review Statistics** to see current data volumes
+3. **Choose Operation** based on cleanup needs
+4. **Type Confirmation** exactly as requested
+5. **Execute Operation** and monitor status
+6. **Verify Results** by refreshing statistics
+
+#### Confirmation Requirements
+
+- **Exact Text**: Must type confirmation text exactly as shown
+- **Case Sensitive**: Confirmation text is case-sensitive
+- **No Typos**: Any mistake requires re-typing
+- **Visual Feedback**: Button enables only when text matches
+
+### Troubleshooting
+
+#### Common Issues
+
+- **Button Disabled**: Check confirmation text is typed exactly
+- **Operation Fails**: Verify Firebase permissions and network connection
+- **Slow Operations**: Large datasets take time, wait for completion
+- **Partial Cleanup**: Re-run operation if some documents remain
+
+#### Error Recovery
+
+- **Network Issues**: Wait and retry operation
+- **Permission Errors**: Contact system administrator
+- **Unexpected Errors**: Check browser console for details
+- **Data Concerns**: Contact development team before proceeding
+
+### Security Considerations
+
+#### Access Control
+
+- **Admin Only**: Feature restricted to authenticated admin users
+- **Audit Trail**: All operations logged for security
+- **Session Management**: Secure login required
+- **No External Access**: Database operations require admin panel access
+
+#### Data Safety
+
+- **Irreversible**: Cleanup operations cannot be undone
+- **Backup Recommended**: Export data before major cleanups
+- **Staged Approach**: Test with small operations first
+- **User Communication**: Inform users of maintenance windows
 
 ---
 

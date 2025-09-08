@@ -30,12 +30,12 @@ const Topbar = () => {
     <header className="topbar">
       <div className="topbar-logos">
         <img
-          src="/src/assets/labolire_T.png"
+          src="/assets/labolire_T.png"
           alt="Labolire Logo"
           className="logo-img logo1"
         />
         <img
-          src="/src/assets/rif non bg.png"
+          src="/assets/rif non bg.png"
           alt="RIF Logo"
           className="logo-img logo2"
         />

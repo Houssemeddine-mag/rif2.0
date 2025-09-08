@@ -39,6 +39,14 @@ const Sidebar = () => (
           Users
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/app/database"
+          className={({ isActive }) => (isActive ? "active" : undefined)}
+        >
+          Database
+        </NavLink>
+      </li>
     </ul>
     <div className="sidebar-logout-wrapper">
       <button
