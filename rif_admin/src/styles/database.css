@@ -3,7 +3,7 @@
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .database-header {
@@ -369,7 +369,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .status-display.loading {
@@ -386,8 +386,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Safety Information */
@@ -439,11 +443,11 @@
   .database-manager {
     padding: 15px;
   }
-  
+
   .database-header h1 {
     font-size: 2rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -459,16 +463,16 @@
   .export-btn {
     min-width: auto;
   }
-  
+
   .action-controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .confirm-input {
     min-width: auto;
   }
-  
+
   .action-btn {
     min-width: auto;
   }

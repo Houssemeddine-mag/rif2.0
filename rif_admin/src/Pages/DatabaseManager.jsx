@@ -24,11 +24,11 @@ const DatabaseManager = () => {
       // Count notifications
       const notificationsRef = collection(db, "notifications");
       const notificationsSnapshot = await getDocs(notificationsRef);
-      
+
       // Count programs
       const programsRef = collection(db, "programs");
       const programsSnapshot = await getDocs(programsRef);
-      
+
       // Count users
       const usersRef = collection(db, "users");
       const usersSnapshot = await getDocs(usersRef);
@@ -61,13 +61,13 @@ const DatabaseManager = () => {
 
       const notificationsRef = collection(db, "notifications");
       const snapshot = await getDocs(notificationsRef);
-      
+
       const deletePromises = snapshot.docs.map((docSnapshot) =>
         deleteDoc(doc(db, "notifications", docSnapshot.id))
       );
 
       await Promise.all(deletePromises);
-      
+
       setStatus(`Successfully deleted ${snapshot.size} notification documents`);
       setConfirmNotifications("");
       await getCollectionStats(); // Refresh stats
@@ -92,13 +92,13 @@ const DatabaseManager = () => {
 
       const programsRef = collection(db, "programs");
       const snapshot = await getDocs(programsRef);
-      
+
       const deletePromises = snapshot.docs.map((docSnapshot) =>
         deleteDoc(doc(db, "programs", docSnapshot.id))
       );
 
       await Promise.all(deletePromises);
-      
+
       setStatus(`Successfully deleted ${snapshot.size} program documents`);
       setConfirmPrograms("");
       await getCollectionStats(); // Refresh stats
@@ -124,8 +124,8 @@ const DatabaseManager = () => {
       // Clear notifications
       const notificationsRef = collection(db, "notifications");
       const notificationsSnapshot = await getDocs(notificationsRef);
-      const notificationDeletes = notificationsSnapshot.docs.map((docSnapshot) =>
-        deleteDoc(doc(db, "notifications", docSnapshot.id))
+      const notificationDeletes = notificationsSnapshot.docs.map(
+        (docSnapshot) => deleteDoc(doc(db, "notifications", docSnapshot.id))
       );
 
       // Clear programs
@@ -137,9 +137,11 @@ const DatabaseManager = () => {
 
       // Execute all deletes
       await Promise.all([...notificationDeletes, ...programDeletes]);
-      
+
       const totalDeleted = notificationsSnapshot.size + programsSnapshot.size;
-      setStatus(`Successfully cleared all conference data: ${totalDeleted} documents deleted`);
+      setStatus(
+        `Successfully cleared all conference data: ${totalDeleted} documents deleted`
+      );
       setConfirmAllData("");
       await getCollectionStats(); // Refresh stats
       setLoading(false);
@@ -153,11 +155,11 @@ const DatabaseManager = () => {
   // Export functions
   const exportToJSON = (data, filename) => {
     const jsonData = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
+    const blob = new Blob([jsonData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${filename}_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `${filename}_${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -171,32 +173,37 @@ const DatabaseManager = () => {
     }
 
     // Get all unique keys from all objects
-    const allKeys = [...new Set(data.flatMap(obj => Object.keys(obj)))];
-    
+    const allKeys = [...new Set(data.flatMap((obj) => Object.keys(obj)))];
+
     // Create CSV header
-    const csvHeader = allKeys.join(',');
-    
+    const csvHeader = allKeys.join(",");
+
     // Create CSV rows
-    const csvRows = data.map(obj => {
-      return allKeys.map(key => {
-        const value = obj[key];
-        // Handle nested objects, arrays, and special characters
-        if (typeof value === 'object' && value !== null) {
-          return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
-        }
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value || '';
-      }).join(',');
+    const csvRows = data.map((obj) => {
+      return allKeys
+        .map((key) => {
+          const value = obj[key];
+          // Handle nested objects, arrays, and special characters
+          if (typeof value === "object" && value !== null) {
+            return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+          }
+          if (
+            typeof value === "string" &&
+            (value.includes(",") || value.includes('"') || value.includes("\n"))
+          ) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value || "";
+        })
+        .join(",");
     });
 
-    const csvContent = [csvHeader, ...csvRows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const csvContent = [csvHeader, ...csvRows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `${filename}_${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -204,27 +211,31 @@ const DatabaseManager = () => {
   };
 
   // Export notifications data
-  const exportNotifications = async (format = 'json') => {
+  const exportNotifications = async (format = "json") => {
     try {
       setLoading(true);
       setStatus("Exporting notifications data...");
 
       const notificationsRef = collection(db, "notifications");
       const snapshot = await getDocs(notificationsRef);
-      
-      const data = snapshot.docs.map(doc => ({
+
+      const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        exportedAt: new Date().toISOString()
+        exportedAt: new Date().toISOString(),
       }));
 
-      if (format === 'csv') {
-        exportToCSV(data, 'notifications');
+      if (format === "csv") {
+        exportToCSV(data, "notifications");
       } else {
-        exportToJSON(data, 'notifications');
+        exportToJSON(data, "notifications");
       }
 
-      setStatus(`Successfully exported ${data.length} notifications as ${format.toUpperCase()}`);
+      setStatus(
+        `Successfully exported ${
+          data.length
+        } notifications as ${format.toUpperCase()}`
+      );
       setLoading(false);
     } catch (error) {
       console.error("Error exporting notifications:", error);
@@ -234,27 +245,31 @@ const DatabaseManager = () => {
   };
 
   // Export programs data
-  const exportPrograms = async (format = 'json') => {
+  const exportPrograms = async (format = "json") => {
     try {
       setLoading(true);
       setStatus("Exporting programs data...");
 
       const programsRef = collection(db, "programs");
       const snapshot = await getDocs(programsRef);
-      
-      const data = snapshot.docs.map(doc => ({
+
+      const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        exportedAt: new Date().toISOString()
+        exportedAt: new Date().toISOString(),
       }));
 
-      if (format === 'csv') {
-        exportToCSV(data, 'programs');
+      if (format === "csv") {
+        exportToCSV(data, "programs");
       } else {
-        exportToJSON(data, 'programs');
+        exportToJSON(data, "programs");
       }
 
-      setStatus(`Successfully exported ${data.length} programs as ${format.toUpperCase()}`);
+      setStatus(
+        `Successfully exported ${
+          data.length
+        } programs as ${format.toUpperCase()}`
+      );
       setLoading(false);
     } catch (error) {
       console.error("Error exporting programs:", error);
@@ -264,27 +279,29 @@ const DatabaseManager = () => {
   };
 
   // Export users data
-  const exportUsers = async (format = 'json') => {
+  const exportUsers = async (format = "json") => {
     try {
       setLoading(true);
       setStatus("Exporting users data...");
 
       const usersRef = collection(db, "users");
       const snapshot = await getDocs(usersRef);
-      
-      const data = snapshot.docs.map(doc => ({
+
+      const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        exportedAt: new Date().toISOString()
+        exportedAt: new Date().toISOString(),
       }));
 
-      if (format === 'csv') {
-        exportToCSV(data, 'users');
+      if (format === "csv") {
+        exportToCSV(data, "users");
       } else {
-        exportToJSON(data, 'users');
+        exportToJSON(data, "users");
       }
 
-      setStatus(`Successfully exported ${data.length} users as ${format.toUpperCase()}`);
+      setStatus(
+        `Successfully exported ${data.length} users as ${format.toUpperCase()}`
+      );
       setLoading(false);
     } catch (error) {
       console.error("Error exporting users:", error);
@@ -294,39 +311,46 @@ const DatabaseManager = () => {
   };
 
   // Export all data
-  const exportAllData = async (format = 'json') => {
+  const exportAllData = async (format = "json") => {
     try {
       setLoading(true);
       setStatus("Exporting all data...");
 
       // Get all collections
-      const [notificationsSnapshot, programsSnapshot, usersSnapshot] = await Promise.all([
-        getDocs(collection(db, "notifications")),
-        getDocs(collection(db, "programs")),
-        getDocs(collection(db, "users"))
-      ]);
+      const [notificationsSnapshot, programsSnapshot, usersSnapshot] =
+        await Promise.all([
+          getDocs(collection(db, "notifications")),
+          getDocs(collection(db, "programs")),
+          getDocs(collection(db, "users")),
+        ]);
 
       const allData = {
-        notifications: notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
-        programs: programsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
-        users: usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+        notifications: notificationsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        programs: programsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
+        users: usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
         exportedAt: new Date().toISOString(),
         exportMetadata: {
           totalNotifications: notificationsSnapshot.size,
           totalPrograms: programsSnapshot.size,
           totalUsers: usersSnapshot.size,
-          exportDate: new Date().toISOString()
-        }
+          exportDate: new Date().toISOString(),
+        },
       };
 
-      if (format === 'csv') {
+      if (format === "csv") {
         // For CSV, export each collection separately
-        exportToCSV(allData.notifications, 'all_notifications');
-        exportToCSV(allData.programs, 'all_programs');
-        exportToCSV(allData.users, 'all_users');
+        exportToCSV(allData.notifications, "all_notifications");
+        exportToCSV(allData.programs, "all_programs");
+        exportToCSV(allData.users, "all_users");
         setStatus(`Successfully exported all data as separate CSV files`);
       } else {
-        exportToJSON(allData, 'complete_database_backup');
+        exportToJSON(allData, "complete_database_backup");
         setStatus(`Successfully exported complete database backup as JSON`);
       }
 
@@ -346,7 +370,9 @@ const DatabaseManager = () => {
     <div className="database-manager">
       <div className="database-header">
         <h1>🗄️ Database Management</h1>
-        <p>Safely manage and clear database collections for new conference years</p>
+        <p>
+          Safely manage and clear database collections for new conference years
+        </p>
       </div>
 
       {/* Database Statistics */}
@@ -367,7 +393,7 @@ const DatabaseManager = () => {
             <div className="stat-note">⚠️ Users are preserved</div>
           </div>
         </div>
-        <button 
+        <button
           className="refresh-btn"
           onClick={getCollectionStats}
           disabled={loading}
@@ -379,24 +405,30 @@ const DatabaseManager = () => {
       {/* Export Section */}
       <div className="export-section">
         <h2>💾 Data Export & Backup</h2>
-        <p>Export your data before cleaning to create backups. Choose your preferred format.</p>
-        
+        <p>
+          Export your data before cleaning to create backups. Choose your
+          preferred format.
+        </p>
+
         <div className="export-grid">
           {/* Export Notifications */}
           <div className="export-card">
             <h3>📢 Export Notifications</h3>
-            <p>Download all notification history ({stats.notifications} documents)</p>
+            <p>
+              Download all notification history ({stats.notifications}{" "}
+              documents)
+            </p>
             <div className="export-buttons">
               <button
                 className="export-btn json"
-                onClick={() => exportNotifications('json')}
+                onClick={() => exportNotifications("json")}
                 disabled={loading || stats.notifications === 0}
               >
                 📄 JSON
               </button>
               <button
                 className="export-btn csv"
-                onClick={() => exportNotifications('csv')}
+                onClick={() => exportNotifications("csv")}
                 disabled={loading || stats.notifications === 0}
               >
                 📊 CSV
@@ -407,18 +439,21 @@ const DatabaseManager = () => {
           {/* Export Programs */}
           <div className="export-card">
             <h3>📅 Export Programs</h3>
-            <p>Download all conference sessions and presentations ({stats.programs} documents)</p>
+            <p>
+              Download all conference sessions and presentations (
+              {stats.programs} documents)
+            </p>
             <div className="export-buttons">
               <button
                 className="export-btn json"
-                onClick={() => exportPrograms('json')}
+                onClick={() => exportPrograms("json")}
                 disabled={loading || stats.programs === 0}
               >
                 📄 JSON
               </button>
               <button
                 className="export-btn csv"
-                onClick={() => exportPrograms('csv')}
+                onClick={() => exportPrograms("csv")}
                 disabled={loading || stats.programs === 0}
               >
                 📊 CSV
@@ -429,18 +464,20 @@ const DatabaseManager = () => {
           {/* Export Users */}
           <div className="export-card">
             <h3>👥 Export Users</h3>
-            <p>Download all user accounts and profiles ({stats.users} documents)</p>
+            <p>
+              Download all user accounts and profiles ({stats.users} documents)
+            </p>
             <div className="export-buttons">
               <button
                 className="export-btn json"
-                onClick={() => exportUsers('json')}
+                onClick={() => exportUsers("json")}
                 disabled={loading || stats.users === 0}
               >
                 📄 JSON
               </button>
               <button
                 className="export-btn csv"
-                onClick={() => exportUsers('csv')}
+                onClick={() => exportUsers("csv")}
                 disabled={loading || stats.users === 0}
               >
                 📊 CSV
@@ -455,14 +492,14 @@ const DatabaseManager = () => {
             <div className="export-buttons">
               <button
                 className="export-btn json primary"
-                onClick={() => exportAllData('json')}
+                onClick={() => exportAllData("json")}
                 disabled={loading}
               >
                 📦 Complete JSON Backup
               </button>
               <button
                 className="export-btn csv primary"
-                onClick={() => exportAllData('csv')}
+                onClick={() => exportAllData("csv")}
                 disabled={loading}
               >
                 📦 Complete CSV Backup
@@ -474,10 +511,22 @@ const DatabaseManager = () => {
         <div className="export-info">
           <h4>📋 Export Information</h4>
           <ul>
-            <li><strong>JSON Format</strong>: Complete data with all fields, ideal for backups and data migration</li>
-            <li><strong>CSV Format</strong>: Spreadsheet-compatible, ideal for analysis and reporting</li>
-            <li><strong>Automatic Timestamps</strong>: All exports include export date and metadata</li>
-            <li><strong>File Naming</strong>: Files automatically named with date (e.g., notifications_2025-09-08.json)</li>
+            <li>
+              <strong>JSON Format</strong>: Complete data with all fields, ideal
+              for backups and data migration
+            </li>
+            <li>
+              <strong>CSV Format</strong>: Spreadsheet-compatible, ideal for
+              analysis and reporting
+            </li>
+            <li>
+              <strong>Automatic Timestamps</strong>: All exports include export
+              date and metadata
+            </li>
+            <li>
+              <strong>File Naming</strong>: Files automatically named with date
+              (e.g., notifications_2025-09-08.json)
+            </li>
           </ul>
         </div>
       </div>
@@ -485,11 +534,14 @@ const DatabaseManager = () => {
       {/* Clear Actions */}
       <div className="actions-section">
         <h2>🧹 Database Cleanup Actions</h2>
-        
+
         {/* Clear Notifications */}
         <div className="action-card">
           <h3>Clear Notifications</h3>
-          <p>Remove all notification documents. Safe to clear for new conferences.</p>
+          <p>
+            Remove all notification documents. Safe to clear for new
+            conferences.
+          </p>
           <div className="action-controls">
             <input
               type="text"
@@ -501,7 +553,9 @@ const DatabaseManager = () => {
             <button
               className="action-btn danger"
               onClick={clearNotifications}
-              disabled={loading || confirmNotifications !== "CLEAR_NOTIFICATIONS"}
+              disabled={
+                loading || confirmNotifications !== "CLEAR_NOTIFICATIONS"
+              }
             >
               Clear Notifications ({stats.notifications} docs)
             </button>
@@ -511,7 +565,10 @@ const DatabaseManager = () => {
         {/* Clear Programs */}
         <div className="action-card">
           <h3>Clear Programs</h3>
-          <p>Remove all program/session documents including presentations and ratings.</p>
+          <p>
+            Remove all program/session documents including presentations and
+            ratings.
+          </p>
           <div className="action-controls">
             <input
               type="text"
@@ -533,7 +590,10 @@ const DatabaseManager = () => {
         {/* Clear All Conference Data */}
         <div className="action-card critical">
           <h3>⚠️ Clear All Conference Data</h3>
-          <p>Remove ALL notifications and programs. This prepares the database for a new conference year.</p>
+          <p>
+            Remove ALL notifications and programs. This prepares the database
+            for a new conference year.
+          </p>
           <div className="action-controls">
             <input
               type="text"
@@ -547,7 +607,8 @@ const DatabaseManager = () => {
               onClick={clearAllData}
               disabled={loading || confirmAllData !== "CLEAR_ALL_DATA"}
             >
-              Clear All Conference Data ({stats.notifications + stats.programs} docs)
+              Clear All Conference Data ({stats.notifications + stats.programs}{" "}
+              docs)
             </button>
           </div>
         </div>
@@ -556,7 +617,7 @@ const DatabaseManager = () => {
       {/* Status Display */}
       <div className="status-section">
         <h3>Status</h3>
-        <div className={`status-display ${loading ? 'loading' : ''}`}>
+        <div className={`status-display ${loading ? "loading" : ""}`}>
           {loading && <div className="spinner"></div>}
           <span>{status || "Ready to manage database"}</span>
         </div>
@@ -566,12 +627,30 @@ const DatabaseManager = () => {
       <div className="safety-info">
         <h3>🛡️ Safety Information</h3>
         <ul>
-          <li><strong>User accounts are preserved</strong> - Users can still log in with existing accounts</li>
-          <li><strong>Authentication data is safe</strong> - Login credentials remain intact</li>
-          <li><strong>System configuration preserved</strong> - App settings and structure maintained</li>
-          <li><strong>Notifications are cleared</strong> - All push notification history removed</li>
-          <li><strong>Programs are cleared</strong> - All sessions, presentations, and ratings removed</li>
-          <li><strong>Best practice</strong> - Export data before clearing if backup is needed</li>
+          <li>
+            <strong>User accounts are preserved</strong> - Users can still log
+            in with existing accounts
+          </li>
+          <li>
+            <strong>Authentication data is safe</strong> - Login credentials
+            remain intact
+          </li>
+          <li>
+            <strong>System configuration preserved</strong> - App settings and
+            structure maintained
+          </li>
+          <li>
+            <strong>Notifications are cleared</strong> - All push notification
+            history removed
+          </li>
+          <li>
+            <strong>Programs are cleared</strong> - All sessions, presentations,
+            and ratings removed
+          </li>
+          <li>
+            <strong>Best practice</strong> - Export data before clearing if
+            backup is needed
+          </li>
         </ul>
       </div>
 
@@ -579,9 +658,9 @@ const DatabaseManager = () => {
       <div className="backup-info">
         <h3>💾 Backup Recommendation</h3>
         <p>
-          Before clearing data, consider exporting important information through the 
-          Analytics pages. User data and system settings will remain safe, but 
-          conference-specific data will be permanently removed.
+          Before clearing data, consider exporting important information through
+          the Analytics pages. User data and system settings will remain safe,
+          but conference-specific data will be permanently removed.
         </p>
       </div>
     </div>

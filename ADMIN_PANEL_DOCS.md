@@ -380,18 +380,21 @@ The Database Manager provides powerful tools for maintaining and preparing your 
 #### 🧹 Cleanup Operations
 
 ##### Clear Notifications
+
 - **Purpose**: Remove all notification history
 - **Impact**: Safe - only removes old notifications
 - **Use Case**: Clean start for new conference notifications
 - **Confirmation**: Type `CLEAR_NOTIFICATIONS` to confirm
 
 ##### Clear Programs
+
 - **Purpose**: Remove all conference sessions, presentations, and ratings
 - **Impact**: Removes all conference content and user ratings
 - **Use Case**: Prepare for new conference program
 - **Confirmation**: Type `CLEAR_PROGRAMS` to confirm
 
 ##### Clear All Conference Data
+
 - **Purpose**: Complete reset of conference-specific data
 - **Impact**: Removes notifications + programs (users preserved)
 - **Use Case**: Annual database preparation
