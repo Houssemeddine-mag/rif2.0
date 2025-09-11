@@ -884,8 +884,8 @@ class _ProgramPageState extends State<ProgramPage>
                       if (program.conferences.isNotEmpty) ...[
                         _buildSectionTitle(
                             'Presentations (${program.conferences.length})'),
-                        ...program.conferences.map(
-                            (conference) => _buildConferenceCard(conference)),
+                        ...program.conferences.map((conference) =>
+                            _buildConferenceCard(conference, program)),
                       ],
                     ],
                   ),
@@ -1004,11 +1004,11 @@ class _ProgramPageState extends State<ProgramPage>
     );
   }
 
-  Widget _buildConferenceCard(Conference conference) {
+  Widget _buildConferenceCard(Conference conference, ProgramSession program) {
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _showRatingDialog(conference),
+        onTap: () => _showRatingDialog(conference, program),
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -1110,48 +1110,88 @@ class _ProgramPageState extends State<ProgramPage>
                   ),
                 ),
               ],
-              // Show existing ratings if available
-              if (conference.presenterRating != null ||
-                  conference.presentationRating != null) ...[
-                SizedBox(height: 12),
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFAA6B94).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    children: [
-                      if (conference.presenterRating != null) ...[
-                        Icon(Icons.person, size: 14, color: Color(0xFFAA6B94)),
-                        SizedBox(width: 4),
-                        Text(
-                          '${conference.presenterRating!.toStringAsFixed(1)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFAA6B94),
+              // Show user's individual rating if available
+              FutureBuilder<Map<String, dynamic>?>(
+                future: FirebaseService.getUserRating(conference,
+                    sessionDate: program.date),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final userRating = snapshot.data!;
+                    final presenterRating =
+                        userRating['presenterRating']?.toDouble() ?? 0.0;
+                    final presentationRating =
+                        userRating['presentationRating']?.toDouble() ?? 0.0;
+
+                    return Column(
+                      children: [
+                        SizedBox(height: 12),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFAA6B94).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: Color(0xFFAA6B94).withOpacity(0.3)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.person_outline,
+                                      size: 12, color: Color(0xFFAA6B94)),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Your Rating',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFAA6B94),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  if (presenterRating > 0) ...[
+                                    Icon(Icons.person,
+                                        size: 14, color: Color(0xFFAA6B94)),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '${presenterRating.toStringAsFixed(1)}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFFAA6B94),
+                                      ),
+                                    ),
+                                    _buildStarRating(presenterRating),
+                                    SizedBox(width: 16),
+                                  ],
+                                  if (presentationRating > 0) ...[
+                                    Icon(Icons.slideshow,
+                                        size: 14, color: Color(0xFFAA6B94)),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '${presentationRating.toStringAsFixed(1)}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFFAA6B94),
+                                      ),
+                                    ),
+                                    _buildStarRating(presentationRating),
+                                  ],
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        _buildStarRating(conference.presenterRating!),
-                        SizedBox(width: 16),
                       ],
-                      if (conference.presentationRating != null) ...[
-                        Icon(Icons.slideshow,
-                            size: 14, color: Color(0xFFAA6B94)),
-                        SizedBox(width: 4),
-                        Text(
-                          '${conference.presentationRating!.toStringAsFixed(1)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFAA6B94),
-                          ),
-                        ),
-                        _buildStarRating(conference.presentationRating!),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
+                    );
+                  }
+                  return SizedBox.shrink(); // Show nothing if no user rating
+                },
+              ),
               // Tap to rate hint
               SizedBox(height: 8),
               Text(
@@ -1186,28 +1226,64 @@ class _ProgramPageState extends State<ProgramPage>
     );
   }
 
-  void _showRatingDialog(Conference conference) {
-    double presenterRating = conference.presenterRating ?? 0.0;
-    double presentationRating = conference.presentationRating ?? 0.0;
-    String comment = conference.comment ?? '';
+  void _showRatingDialog(Conference conference, ProgramSession program) {
+    double presenterRating = 0.0;
+    double presentationRating = 0.0;
+    String comment = '';
     final commentController = TextEditingController(text: comment);
+    bool isLoadingUserRating = true;
+    bool hasExistingRating = false;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
+            // Load user's existing rating on first build
+            if (isLoadingUserRating) {
+              isLoadingUserRating = false;
+              FirebaseService.getUserRating(conference,
+                      sessionDate: program.date)
+                  .then((userRating) {
+                if (userRating != null) {
+                  setState(() {
+                    presenterRating =
+                        userRating['presenterRating']?.toDouble() ?? 0.0;
+                    presentationRating =
+                        userRating['presentationRating']?.toDouble() ?? 0.0;
+                    comment = userRating['comment'] ?? '';
+                    commentController.text = comment;
+                    hasExistingRating = true;
+                  });
+                }
+              });
+            }
+
             return AlertDialog(
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Rate Presentation',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFAA6B94),
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        hasExistingRating
+                            ? 'Update Rating'
+                            : 'Rate Presentation',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFAA6B94),
+                        ),
+                      ),
+                      if (hasExistingRating) ...[
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Color(0xFFAA6B94),
+                        ),
+                      ],
+                    ],
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -1334,6 +1410,7 @@ class _ProgramPageState extends State<ProgramPage>
                   onPressed: () async {
                     await _submitRating(
                       conference,
+                      program,
                       presenterRating,
                       presentationRating,
                       commentController.text.trim(),
@@ -1344,7 +1421,8 @@ class _ProgramPageState extends State<ProgramPage>
                     backgroundColor: Color(0xFFAA6B94),
                     foregroundColor: Colors.white,
                   ),
-                  child: Text('Submit Rating'),
+                  child: Text(
+                      hasExistingRating ? 'Update Rating' : 'Submit Rating'),
                 ),
               ],
             );
@@ -1356,6 +1434,7 @@ class _ProgramPageState extends State<ProgramPage>
 
   Future<void> _submitRating(
     Conference conference,
+    ProgramSession program,
     double presenterRating,
     double presentationRating,
     String comment,
@@ -1385,12 +1464,13 @@ class _ProgramPageState extends State<ProgramPage>
         );
       }
 
-      // Update the conference with the new ratings
-      await FirebaseService.updateConferenceRating(
+      // Update the conference with the new ratings using individual user rating
+      await FirebaseService.submitUserRating(
         conference,
         presenterRating,
         presentationRating,
         comment,
+        sessionDate: program.date,
       );
 
       // Show success message

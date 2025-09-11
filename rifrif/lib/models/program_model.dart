@@ -6,9 +6,7 @@ class Conference {
   final String end;
   final String? resume;
   final bool isKeynote;
-  final double? presenterRating;
-  final double? presentationRating;
-  final String? comment;
+  // Legacy rating fields removed - now using individual user ratings
 
   Conference({
     required this.title,
@@ -18,9 +16,6 @@ class Conference {
     required this.end,
     this.resume,
     this.isKeynote = false,
-    this.presenterRating,
-    this.presentationRating,
-    this.comment,
   });
 
   factory Conference.fromMap(Map<String, dynamic> map) {
@@ -32,13 +27,7 @@ class Conference {
       end: map['end'] ?? '',
       resume: map['resume'],
       isKeynote: map['isKeynote'] ?? false,
-      presenterRating: map['presenterRating'] != null
-          ? (map['presenterRating'] as num).toDouble()
-          : null,
-      presentationRating: map['presentationRating'] != null
-          ? (map['presentationRating'] as num).toDouble()
-          : null,
-      comment: map['comment'],
+      // Legacy rating fields ignored - using individual user ratings now
     );
   }
 
@@ -51,9 +40,7 @@ class Conference {
       'end': end,
       'resume': resume,
       'isKeynote': isKeynote,
-      'presenterRating': presenterRating,
-      'presentationRating': presentationRating,
-      'comment': comment,
+      // Legacy rating fields removed - using individual user ratings now
     };
   }
 }

@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
-import StatisticsService from "../services/StatisticsService";
+import EnhancedStatisticsService from "../services/EnhancedStatisticsService";
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
   // State for all dashboard data
   const [stats, setStats] = useState({
     totalUsers: 0,
+    totalAuthUsers: 0,
+    totalProfileUsers: 0,
+    activeRatingUsers: 0,
     totalPresentations: 0,
-    uniquePresenters: 0,
     ratedPresentations: 0,
+    uniquePresenters: 0,
+    totalIndividualRatings: 0,
+    totalComments: 0,
     avgPresenterRating: 0,
     avgPresentationRating: 0,
     ratingParticipationRate: 0,
+    userParticipationRate: 0,
   });
 
   const [topPresenters, setTopPresenters] = useState([]);
@@ -28,10 +34,10 @@ const Dashboard = () => {
         // Fetch all statistics in parallel
         const [overallStats, presenters, presentations, comments] =
           await Promise.all([
-            StatisticsService.getOverallStatistics(),
-            StatisticsService.getTopRatedPresenters(10),
-            StatisticsService.getTopRatedPresentations(10),
-            StatisticsService.getAllComments(),
+            EnhancedStatisticsService.getOverallStatistics(),
+            EnhancedStatisticsService.getTopRatedPresenters(10),
+            EnhancedStatisticsService.getTopRatedPresentations(10),
+            EnhancedStatisticsService.getAllComments(),
           ]);
 
         setStats(overallStats);
@@ -60,7 +66,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <h1>RIF 2025 Admin Dashboard</h1>
-      <p className="subtitle">Conference statistics and analytics</p>
+      <p className="subtitle">Individual Rating System Analytics</p>
 
       {/* Summary Cards */}
       <div className="stats-grid">
@@ -202,15 +208,46 @@ const Dashboard = () => {
               </defs>
             </svg>
           </div>
+          <h3>Individual Ratings</h3>
+          <p className="stat-value">{stats.totalIndividualRatings}</p>
+          <p className="stat-subtitle">
+            {stats.totalComments} comments ({stats.activeRatingUsers} users)
+          </p>
+        </div>
+
+        <div className="stat-card glass-card gradient-border animate-card">
+          <div className="stat-icon questions">
+            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+              <path
+                d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                fill="url(#avgRatingsGradient)"
+              />
+              <defs>
+                <linearGradient
+                  id="avgRatingsGradient"
+                  x1="0"
+                  y1="0"
+                  x2="24"
+                  y2="24"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#ffd700" />
+                  <stop offset="1" stopColor="#ff8c00" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
           <h3>Average Ratings</h3>
           <p className="stat-value">
             {stats.avgPresentationRating > 0
-              ? stats.avgPresentationRating
+              ? stats.avgPresentationRating.toFixed(1)
               : "N/A"}
           </p>
           <p className="stat-subtitle">
             Presenter:{" "}
-            {stats.avgPresenterRating > 0 ? stats.avgPresenterRating : "N/A"}
+            {stats.avgPresenterRating > 0
+              ? stats.avgPresenterRating.toFixed(1)
+              : "N/A"}
           </p>
         </div>
       </div>
@@ -225,10 +262,10 @@ const Dashboard = () => {
                 <tr>
                   <th>Rank</th>
                   <th>Name</th>
-                  <th>Rating</th>
-                  <th>Rated Sessions</th>
-                  <th>Total Sessions</th>
-                  <th>Affiliation</th>
+                  <th>Avg Rating</th>
+                  <th>Total Ratings</th>
+                  <th>Presentations</th>
+                  <th>System</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,9 +285,9 @@ const Dashboard = () => {
                         {"☆".repeat(5 - Math.ceil(presenter.averageRating))}
                       </span>
                     </td>
-                    <td>{presenter.ratedSessions}</td>
-                    <td>{presenter.totalSessions}</td>
-                    <td className="affiliation">{presenter.affiliation}</td>
+                    <td>{presenter.totalRatings}</td>
+                    <td>{presenter.totalPresentations}</td>
+                    <td className="affiliation">Individual Ratings</td>
                   </tr>
                 ))}
               </tbody>
@@ -273,19 +310,35 @@ const Dashboard = () => {
                   <h4 className="presentation-title">{presentation.title}</h4>
                   <div className="presentation-rating">
                     <span className="rating-score">
-                      {presentation.presentationRating}
+                      {presentation.averagePresentationRating
+                        ? presentation.averagePresentationRating.toFixed(1)
+                        : "N/A"}
                     </span>
                     <span className="rating-stars">
-                      {"★".repeat(Math.floor(presentation.presentationRating))}
-                      {presentation.presentationRating % 1 >= 0.5 ? "☆" : ""}
+                      {"★".repeat(
+                        Math.floor(presentation.averagePresentationRating || 0)
+                      )}
+                      {(presentation.averagePresentationRating || 0) % 1 >= 0.5
+                        ? "☆"
+                        : ""}
                     </span>
+                    <div style={{ fontSize: "12px", color: "#666" }}>
+                      ({presentation.totalRatings} ratings)
+                    </div>
                   </div>
                 </div>
                 <div className="presentation-details">
                   <p className="presenter">By: {presentation.presenter}</p>
-                  <p className="affiliation">{presentation.affiliation}</p>
                   <p className="time">
-                    {presentation.start} - {presentation.end}
+                    {presentation.date
+                      ? new Date(presentation.date).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                  <p style={{ fontSize: "12px", color: "#666" }}>
+                    Presenter Rating:{" "}
+                    {presentation.averagePresenterRating
+                      ? presentation.averagePresenterRating.toFixed(1)
+                      : "N/A"}
                   </p>
                   {presentation.isKeynote && (
                     <span className="keynote-badge">Keynote</span>
@@ -327,7 +380,12 @@ const Dashboard = () => {
                 <p className="comment-text">"{comment.comment}"</p>
                 <div className="comment-footer">
                   <span className="program-info">
-                    {comment.programTitle} - {comment.programDate}
+                    {comment.userEmail} -{" "}
+                    {comment.ratedAt
+                      ? new Date(
+                          comment.ratedAt.seconds * 1000
+                        ).toLocaleDateString()
+                      : "N/A"}
                   </span>
                 </div>
               </div>
@@ -342,10 +400,12 @@ const Dashboard = () => {
         recentComments.length === 0 && (
           <div className="no-data-section">
             <div className="no-data-card glass-card">
-              <h3>No Rating Data Available</h3>
+              <h3>No Individual Rating Data Available</h3>
               <p>
-                Ratings and comments will appear here once users start rating
-                presentations and presenters through the mobile app.
+                Individual ratings and comments will appear here once users
+                start rating presentations and presenters through the mobile
+                app. Each user can now rate presentations individually, and all
+                ratings are tracked separately.
               </p>
             </div>
           </div>

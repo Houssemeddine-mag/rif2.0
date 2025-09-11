@@ -931,52 +931,283 @@ Cet email a été envoyé automatiquement à : $email
   }
 
   // Rating and feedback functionality
-  static Future<void> updateConferenceRating(
+
+  /// NEW: Submit or update individual user rating for a presentation
+  static Future<void> submitUserRating(
     Conference conference,
     double presenterRating,
     double presentationRating,
-    String comment,
-  ) async {
+    String comment, {
+    String? sessionDate,
+  }) async {
     try {
-      debugPrintAuth('Updating conference rating...');
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception('User not authenticated');
 
-      // Find the conference in all programs and update it
+      debugPrintAuth('Submitting user rating...');
+
+      final now = DateTime.now();
+      final presentationId = _generatePresentationId(conference, sessionDate);
+
+      // Check if user has already rated this presentation
+      final existingRatingQuery = await FirebaseFirestore.instance
+          .collection('ratings')
+          .where('userId', isEqualTo: user.uid)
+          .where('presentationId', isEqualTo: presentationId)
+          .limit(1)
+          .get();
+
+      final userRatingData = {
+        'userId': user.uid,
+        'userEmail': user.email ?? '',
+        'presentationId': presentationId,
+        'conferenceTitle': conference.title,
+        'presenter': conference.presenter,
+        'startTime': conference.start,
+        'date': sessionDate ?? 'unknown',
+        'presenterRating': presenterRating,
+        'presentationRating': presentationRating,
+        'comment': comment,
+        'updatedAt': Timestamp.fromDate(now),
+      };
+
+      if (existingRatingQuery.docs.isNotEmpty) {
+        // Update existing rating
+        await existingRatingQuery.docs.first.reference.update(userRatingData);
+        debugPrintAuth('User rating updated successfully');
+      } else {
+        // Create new rating
+        userRatingData['ratedAt'] = Timestamp.fromDate(now);
+        await FirebaseFirestore.instance
+            .collection('ratings')
+            .add(userRatingData);
+        debugPrintAuth('User rating submitted successfully');
+      }
+
+      // Update aggregated analytics
+      await _updatePresentationAnalytics(
+          presentationId, conference, sessionDate);
+    } catch (e) {
+      debugPrintAuth('Error submitting user rating: $e');
+      throw e;
+    }
+  }
+
+  /// Get user's rating for a specific presentation
+  static Future<Map<String, dynamic>?> getUserRating(Conference conference,
+      {String? sessionDate}) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return null;
+
+      final presentationId = _generatePresentationId(conference, sessionDate);
+
+      final query = await FirebaseFirestore.instance
+          .collection('ratings')
+          .where('userId', isEqualTo: user.uid)
+          .where('presentationId', isEqualTo: presentationId)
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        return query.docs.first.data();
+      }
+      return null;
+    } catch (e) {
+      debugPrintAuth('Error getting user rating: $e');
+      return null;
+    }
+  }
+
+  /// Get aggregated analytics for a presentation
+  static Future<Map<String, dynamic>?> getPresentationAnalytics(
+      Conference conference,
+      {String? sessionDate}) async {
+    try {
+      final presentationId = _generatePresentationId(conference, sessionDate);
+
+      final doc = await FirebaseFirestore.instance
+          .collection('presentation_analytics')
+          .doc(presentationId)
+          .get();
+
+      return doc.exists ? doc.data() : null;
+    } catch (e) {
+      debugPrintAuth('Error getting presentation analytics: $e');
+      return null;
+    }
+  }
+
+  /// Get all ratings for a presentation (admin use)
+  static Future<List<Map<String, dynamic>>> getAllRatingsForPresentation(
+      Conference conference,
+      {String? sessionDate}) async {
+    try {
+      final presentationId = _generatePresentationId(conference, sessionDate);
+
+      final query = await FirebaseFirestore.instance
+          .collection('ratings')
+          .where('presentationId', isEqualTo: presentationId)
+          .orderBy('ratedAt', descending: true)
+          .get();
+
+      return query.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+    } catch (e) {
+      debugPrintAuth('Error getting all ratings: $e');
+      return [];
+    }
+  }
+
+  /// Helper method to generate consistent presentation ID
+  static String _generatePresentationId(
+      Conference conference, String? sessionDate) {
+    return '${conference.title}_${conference.presenter}_${conference.start}_${sessionDate ?? 'unknown'}'
+        .replaceAll(' ', '_')
+        .replaceAll(':', '')
+        .replaceAll('-', '')
+        .toLowerCase();
+  }
+
+  /// Update aggregated analytics for a presentation
+  static Future<void> _updatePresentationAnalytics(
+      String presentationId, Conference conference, String? sessionDate) async {
+    try {
+      // Get all ratings for this presentation
+      final ratingsQuery = await FirebaseFirestore.instance
+          .collection('ratings')
+          .where('presentationId', isEqualTo: presentationId)
+          .get();
+
+      if (ratingsQuery.docs.isEmpty) return;
+
+      final ratings = ratingsQuery.docs.map((doc) => doc.data()).toList();
+
+      // Calculate aggregated data
+      double totalPresenterRating = 0;
+      double totalPresentationRating = 0;
+      int totalComments = 0;
+      Map<String, int> presenterDistribution = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5': 0
+      };
+      Map<String, int> presentationDistribution = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5': 0
+      };
+
+      for (var rating in ratings) {
+        totalPresenterRating += rating['presenterRating'] ?? 0;
+        totalPresentationRating += rating['presentationRating'] ?? 0;
+
+        if (rating['comment'] != null &&
+            rating['comment'].toString().isNotEmpty) {
+          totalComments++;
+        }
+
+        // Update distributions
+        String presenterKey =
+            (rating['presenterRating'] ?? 0).round().toString();
+        String presentationKey =
+            (rating['presentationRating'] ?? 0).round().toString();
+
+        if (presenterDistribution.containsKey(presenterKey)) {
+          presenterDistribution[presenterKey] =
+              presenterDistribution[presenterKey]! + 1;
+        }
+        if (presentationDistribution.containsKey(presentationKey)) {
+          presentationDistribution[presentationKey] =
+              presentationDistribution[presentationKey]! + 1;
+        }
+      }
+
+      final analyticsData = {
+        'presentationId': presentationId,
+        'conferenceTitle': conference.title,
+        'presenter': conference.presenter,
+        'startTime': conference.start,
+        'date': sessionDate ?? 'unknown',
+        'averagePresenterRating': totalPresenterRating / ratings.length,
+        'averagePresentationRating': totalPresentationRating / ratings.length,
+        'totalRatings': ratings.length,
+        'totalComments': totalComments,
+        'presenterRatingDistribution': presenterDistribution,
+        'presentationRatingDistribution': presentationDistribution,
+        'lastUpdated': Timestamp.fromDate(DateTime.now()),
+      };
+
+      await FirebaseFirestore.instance
+          .collection('presentation_analytics')
+          .doc(presentationId)
+          .set(analyticsData, SetOptions(merge: true));
+    } catch (e) {
+      debugPrintAuth('Error updating presentation analytics: $e');
+    }
+  }
+
+  // Legacy rating method removed - using individual user ratings only
+
+  /// ADMIN UTILITY: Clean up legacy rating data from conference objects
+  /// This removes old presenterRating, presentationRating, and comment fields
+  /// from conference objects in the programs collection
+  static Future<void> cleanupLegacyRatingData() async {
+    try {
+      debugPrintAuth('Starting cleanup of legacy rating data...');
+
       final snapshot =
           await FirebaseFirestore.instance.collection('programs').get();
+      int updatedPrograms = 0;
+      int updatedConferences = 0;
 
       for (var doc in snapshot.docs) {
         var programData = doc.data();
         List conferences = programData['conferences'] ?? [];
+        bool programNeedsUpdate = false;
 
-        // Find the conference to update
+        // Clean up each conference object
         for (int i = 0; i < conferences.length; i++) {
           var conf = conferences[i];
-          if (conf['title'] == conference.title &&
-              conf['presenter'] == conference.presenter &&
-              conf['start'] == conference.start) {
-            // Update the conference with new ratings
-            conferences[i] = {
-              ...conf,
-              'presenterRating': presenterRating > 0 ? presenterRating : null,
-              'presentationRating':
-                  presentationRating > 0 ? presentationRating : null,
-              'comment': comment.isNotEmpty ? comment : null,
-            };
+          bool conferenceNeedsUpdate = false;
 
-            // Update the document
-            await doc.reference.update({
-              'conferences': conferences,
-            });
-
-            debugPrintAuth('Conference rating updated successfully');
-            return;
+          // Remove legacy rating fields if they exist
+          if (conf.containsKey('presenterRating')) {
+            conf.remove('presenterRating');
+            conferenceNeedsUpdate = true;
           }
+          if (conf.containsKey('presentationRating')) {
+            conf.remove('presentationRating');
+            conferenceNeedsUpdate = true;
+          }
+          if (conf.containsKey('comment')) {
+            conf.remove('comment');
+            conferenceNeedsUpdate = true;
+          }
+
+          if (conferenceNeedsUpdate) {
+            conferences[i] = conf;
+            programNeedsUpdate = true;
+            updatedConferences++;
+          }
+        }
+
+        // Update the document if needed
+        if (programNeedsUpdate) {
+          await doc.reference.update({
+            'conferences': conferences,
+          });
+          updatedPrograms++;
         }
       }
 
-      throw Exception('Conference not found for rating update');
+      debugPrintAuth(
+          'Legacy rating cleanup completed: $updatedPrograms programs, $updatedConferences conferences updated');
     } catch (e) {
-      debugPrintAuth('Error updating conference rating: $e');
+      debugPrintAuth('Error cleaning up legacy rating data: $e');
       throw e;
     }
   }
