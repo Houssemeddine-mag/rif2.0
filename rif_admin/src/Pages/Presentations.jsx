@@ -18,10 +18,19 @@ const Presentations = () => {
   const loadPresentations = async () => {
     try {
       setLoading(true);
+
+      // Test connection first
+      console.log("Testing Firebase connection...");
+      await StatisticsService.testConnection();
+
+      console.log("Loading presentations...");
       const data = await StatisticsService.getAllPresentations();
+      console.log("Presentations loaded:", data.length);
       setPresentations(data);
     } catch (error) {
       console.error("Error loading presentations:", error);
+      // Show error to user
+      alert("Error loading presentations: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -414,13 +423,14 @@ const Presentations = () => {
 
                       <div className="comment-text">"{comment.comment}"</div>
 
-                      {comment.userId && (
-                        <div className="comment-footer">
-                          <span className="comment-author">
-                            User ID: {comment.userId}
-                          </span>
-                        </div>
-                      )}
+                      <div className="comment-footer">
+                        <span className="comment-author">
+                          By:{" "}
+                          {comment.userName ||
+                            comment.userEmail ||
+                            "Anonymous User"}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

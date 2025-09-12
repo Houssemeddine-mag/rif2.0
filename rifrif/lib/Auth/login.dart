@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firebase_service.dart';
 import '../models/user_model.dart';
+import '../pages_presenter/presentation.dart';
 import 'signup.dart';
 import 'recover.dart';
 
@@ -47,6 +48,35 @@ class _LoginPageState extends State<LoginPage> {
         return;
       } catch (e) {
         print('[Login] Error in admin login: $e');
+      } finally {
+        setState(() => isLoading = false);
+      }
+      return;
+    }
+
+    // Check for static presenter credentials
+    if (emailController.text.trim() == 'Present@RIF.com' &&
+        passwordController.text == 'Pr9sentXp') {
+      try {
+        print('[Login] Static presenter login detected');
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Presenter login successful!"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate to presenter interface directly (bypassing route protection)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PresentationPage()),
+        );
+        return;
+      } catch (e) {
+        print('[Login] Error in presenter login: $e');
       } finally {
         setState(() => isLoading = false);
       }
@@ -439,6 +469,50 @@ class _LoginPageState extends State<LoginPage> {
                     loginWithGithub,
                     Icons.code,
                     Color(0xFF333333), // GitHub dark
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 40),
+
+              // Cooperation logos section
+              Column(
+                children: [
+                  Text(
+                    "In Cooperation With",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFAA6B94),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Column(
+                    children: [
+                      // Univ2 Logo
+                      Image.asset(
+                        'lib/resource/LOGO_Univ2-removebg-preview.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 15),
+                      // IEEE Logo
+                      Image.asset(
+                        'lib/resource/IEEE.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 15),
+                      // IEEE DZ Logo
+                      Image.asset(
+                        'lib/resource/IEEE dz.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
                   ),
                 ],
               ),

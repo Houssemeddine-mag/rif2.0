@@ -21,6 +21,8 @@ dependencies:
   image_picker: ^1.0.4 # For profile picture selection
   shared_preferences: ^2.2.2 # For storing user preferences
   flutter_local_notifications: ^17.2.2 # For system notifications with sound and vibration
+  video_player: ^2.8.2 # For video streaming
+  chewie: ^1.7.5 # For video player controls
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +38,8 @@ flutter:
     - lib/resource/Logo NTIC.png
     - lib/resource/labolire_T.png
     - lib/resource/LOGO_Univ2-removebg-preview.png
+    - lib/resource/IEEE.png
+    - lib/resource/IEEE dz.png
 
 flutter_launcher_icons:
   android: "launcher_icon"

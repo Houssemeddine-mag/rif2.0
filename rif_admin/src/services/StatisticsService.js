@@ -1,10 +1,10 @@
 import {
   collection,
   getDocs,
-  getDoc,
-  doc,
   addDoc,
   serverTimestamp,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -12,6 +12,22 @@ class StatisticsService {
   static programsCollection = collection(db, "programs");
   static usersCollection = collection(db, "users");
   static userProfilesCollection = collection(db, "user_profiles");
+  static ratingsCollection = collection(db, "ratings");
+  static presentationAnalyticsCollection = collection(
+    db,
+    "presentation_analytics"
+  );
+
+  // Test Firebase connection
+  static async testConnection() {
+    try {
+      await getDocs(this.programsCollection);
+      return true;
+    } catch (error) {
+      console.error("Firebase connection failed:", error);
+      throw error;
+    }
+  }
 
   // Get total number of registered users
   static async getTotalUsers() {
@@ -186,40 +202,28 @@ class StatisticsService {
     }
   }
 
-  // Get all presentations with their ratings and comments
+  // Get all presentations with their ratings and comments from new rating system
   static async getPresentationStatistics() {
     try {
-      const programsSnapshot = await getDocs(this.programsCollection);
-      const presentations = [];
+      const presentations = await this.getAllPresentations();
 
-      programsSnapshot.docs.forEach((doc) => {
-        const program = doc.data();
-        if (program.conferences && Array.isArray(program.conferences)) {
-          program.conferences.forEach((conference, index) => {
-            presentations.push({
-              id: `${doc.id}_${index}`,
-              programId: doc.id,
-              programTitle: program.title,
-              programDate: program.date,
-              title: conference.title,
-              presenter: conference.presenter,
-              affiliation: conference.affiliation,
-              start: conference.start,
-              end: conference.end,
-              isKeynote: conference.isKeynote || false,
-              presenterRating: conference.presenterRating || null,
-              presentationRating: conference.presentationRating || null,
-              comment: conference.comment || null,
-              hasRating: !!(
-                conference.presenterRating || conference.presentationRating
-              ),
-              hasComment: !!conference.comment,
-            });
-          });
-        }
-      });
-
-      return presentations;
+      return presentations.map((presentation) => ({
+        id: presentation.id,
+        programId: presentation.programId,
+        programTitle: presentation.programTitle,
+        programDate: presentation.programDate,
+        title: presentation.title,
+        presenter: presentation.presenter,
+        affiliation: presentation.affiliation,
+        start: presentation.start,
+        end: presentation.end,
+        isKeynote: presentation.isKeynote,
+        presenterRating: presentation.presenterRating,
+        presentationRating: presentation.presentationRating,
+        comment: presentation.commentCount > 0 ? "Has comments" : null,
+        hasRating: presentation.hasRating,
+        hasComment: presentation.hasComment,
+      }));
     } catch (error) {
       console.error("Error fetching presentation statistics:", error);
       return [];
@@ -306,29 +310,75 @@ class StatisticsService {
     }
   }
 
-  // Get all comments and feedback
+  // Get all comments and feedback from new rating system
   static async getAllComments() {
     try {
-      const presentations = await this.getPresentationStatistics();
+      // Query without orderBy to avoid requiring composite index
+      const ratingsSnapshot = await getDocs(this.ratingsCollection);
 
-      const comments = presentations
-        .filter(
-          (presentation) =>
-            presentation.comment && presentation.comment.trim() !== ""
-        )
-        .map((presentation) => ({
-          id: presentation.id,
-          presentationTitle: presentation.title,
-          presenter: presentation.presenter,
-          programTitle: presentation.programTitle,
-          programDate: presentation.programDate,
-          comment: presentation.comment,
-          presenterRating: presentation.presenterRating,
-          presentationRating: presentation.presentationRating,
-        }))
-        .sort((a, b) => new Date(b.programDate) - new Date(a.programDate)); // Sort by most recent
+      // Get user profiles to map userId to displayName
+      const userProfilesSnapshot = await getDocs(this.userProfilesCollection);
+      const userProfilesMap = {};
+      userProfilesSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        const userId = data.uid || doc.id;
+        userProfilesMap[userId] = {
+          displayName: data.displayName || data.email || "Anonymous User",
+          email: data.email || "",
+        };
+        // Also map by document ID in case uid field is missing
+        userProfilesMap[doc.id] = {
+          displayName: data.displayName || data.email || "Anonymous User",
+          email: data.email || "",
+        };
+      });
 
-      return comments;
+      const comments = [];
+      ratingsSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+
+        // Only include ratings that have comments
+        if (data.comment && data.comment.trim() !== "") {
+          // Get user information with multiple fallback strategies
+          const userId = data.userId || "anonymous";
+          let userName = "Anonymous User";
+
+          // Try to find user profile by userId
+          if (userProfilesMap[userId]) {
+            userName = userProfilesMap[userId].displayName;
+          }
+          // If not found and we have userEmail, try to find by email
+          else if (data.userEmail) {
+            const profileByEmail = Object.values(userProfilesMap).find(
+              (profile) => profile.email === data.userEmail
+            );
+            if (profileByEmail) {
+              userName = profileByEmail.displayName;
+            } else {
+              // Use email as display name if no profile found
+              userName = data.userEmail.split("@")[0]; // Use part before @ as name
+            }
+          }
+
+          comments.push({
+            id: doc.id,
+            presentationTitle: data.conferenceTitle,
+            presenter: data.presenter,
+            programTitle: "RIF 2025", // Could be derived from date/session
+            programDate: data.date,
+            comment: data.comment,
+            presenterRating: data.presenterRating,
+            presentationRating: data.presentationRating,
+            userId: userId,
+            userEmail: data.userEmail,
+            userName: userName,
+            ratedAt: data.ratedAt ? data.ratedAt.toDate() : new Date(),
+          });
+        }
+      });
+
+      // Sort comments by date client-side (most recent first)
+      return comments.sort((a, b) => b.ratedAt - a.ratedAt);
     } catch (error) {
       console.error("Error fetching comments:", error);
       return [];
@@ -476,22 +526,122 @@ class StatisticsService {
     }
   }
 
-  // Get all presentations with detailed information
+  // Get all presentations with detailed information from new rating system
   static async getAllPresentations() {
     try {
+      // First, get all programs
       const programsSnapshot = await getDocs(this.programsCollection);
+
+      if (programsSnapshot.docs.length === 0) {
+        console.warn("No programs found in the database");
+        return [];
+      }
+
+      // Get analytics data (this might be empty initially)
+      let analyticsMap = {};
+      try {
+        const presentationAnalyticsSnapshot = await getDocs(
+          this.presentationAnalyticsCollection
+        );
+
+        presentationAnalyticsSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          analyticsMap[data.presentationId] = data;
+        });
+      } catch (analyticsError) {
+        console.warn("Could not fetch analytics:", analyticsError);
+        // Continue without analytics
+      }
+
+      // Get all ratings to calculate stats manually
+      let ratingsMap = {};
+      try {
+        const ratingsSnapshot = await getDocs(this.ratingsCollection);
+
+        ratingsSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          const presentationId = data.presentationId;
+
+          if (!ratingsMap[presentationId]) {
+            ratingsMap[presentationId] = {
+              ratings: [],
+              comments: [],
+            };
+          }
+
+          ratingsMap[presentationId].ratings.push({
+            presenterRating: data.presenterRating,
+            presentationRating: data.presentationRating,
+          });
+
+          if (data.comment && data.comment.trim()) {
+            ratingsMap[presentationId].comments.push(data.comment);
+          }
+        });
+      } catch (ratingsError) {
+        console.warn("Could not fetch ratings:", ratingsError);
+        // Continue without ratings
+      }
+
       const presentations = [];
 
       programsSnapshot.docs.forEach((doc) => {
         const program = doc.data();
 
         if (program.conferences && Array.isArray(program.conferences)) {
-          program.conferences.forEach((conference, index) => {
-            const presentationId = `${doc.id}_${index}`;
+          program.conferences.forEach((conference) => {
+            // Generate the same presentation ID format used in Flutter app
+            const presentationId = this._generatePresentationId(
+              conference,
+              program.date
+            );
 
-            // Calculate average ratings
-            const presenterRating = conference.presenterRating || null;
-            const presentationRating = conference.presentationRating || null;
+            // Get analytics data (priority 1: from analytics collection)
+            const analytics = analyticsMap[presentationId] || {};
+
+            // Get rating data (priority 2: calculate from individual ratings)
+            const ratingData = ratingsMap[presentationId] || {
+              ratings: [],
+              comments: [],
+            };
+
+            // Calculate ratings manually if analytics don't exist
+            let presenterRating = analytics.averagePresenterRating || null;
+            let presentationRating =
+              analytics.averagePresentationRating || null;
+            let commentCount = analytics.totalComments || 0;
+            let ratingCount = analytics.totalRatings || 0;
+
+            if (!presenterRating && ratingData.ratings.length > 0) {
+              const presenterRatings = ratingData.ratings
+                .map((r) => r.presenterRating)
+                .filter((r) => r > 0);
+              if (presenterRatings.length > 0) {
+                presenterRating =
+                  presenterRatings.reduce((a, b) => a + b, 0) /
+                  presenterRatings.length;
+              }
+            }
+
+            if (!presentationRating && ratingData.ratings.length > 0) {
+              const presentationRatings = ratingData.ratings
+                .map((r) => r.presentationRating)
+                .filter((r) => r > 0);
+              if (presentationRatings.length > 0) {
+                presentationRating =
+                  presentationRatings.reduce((a, b) => a + b, 0) /
+                  presentationRatings.length;
+              }
+            }
+
+            if (!commentCount) {
+              commentCount = ratingData.comments.length;
+            }
+
+            if (!ratingCount) {
+              ratingCount = ratingData.ratings.length;
+            }
+
             const averageRating =
               presenterRating && presentationRating
                 ? (presenterRating + presentationRating) / 2
@@ -514,11 +664,16 @@ class StatisticsService {
               presenterRating: presenterRating,
               presentationRating: presentationRating,
               averageRating: averageRating,
-              comment: conference.comment,
-              commentCount: conference.comment ? 1 : 0, // For now, single comment per presentation
-              ratingCount: presenterRating || presentationRating ? 1 : 0, // For now, single rating per presentation
+              commentCount: commentCount,
+              ratingCount: ratingCount,
               hasRating: !!(presenterRating || presentationRating),
-              hasComment: !!conference.comment,
+              hasComment: commentCount > 0,
+              // Additional analytics data
+              presenterRatingDistribution:
+                analytics.presenterRatingDistribution || {},
+              presentationRatingDistribution:
+                analytics.presentationRatingDistribution || {},
+              lastUpdated: analytics.lastUpdated,
             });
           });
         }
@@ -537,36 +692,99 @@ class StatisticsService {
     }
   }
 
-  // Get comments for a specific presentation
+  // Get comments for a specific presentation from new rating system
   static async getPresentationComments(presentationId) {
     try {
-      // Parse presentation ID to get program ID and conference index
-      const [programId, conferenceIndex] = presentationId.split("_");
-
-      const programDoc = await getDoc(doc(this.programsCollection, programId));
-      if (!programDoc.exists()) {
-        return [];
+      // First try to get from ratings collection
+      let ratingsSnapshot;
+      try {
+        ratingsSnapshot = await getDocs(
+          query(
+            this.ratingsCollection,
+            where("presentationId", "==", presentationId)
+          )
+        );
+      } catch (queryError) {
+        console.warn("Query failed, trying to get all ratings:", queryError);
+        // Fallback: get all ratings and filter client-side
+        ratingsSnapshot = await getDocs(this.ratingsCollection);
       }
 
-      const program = programDoc.data();
-      const conference = program.conferences?.[parseInt(conferenceIndex)];
+      // Get user profiles to map userId to displayName
+      const userProfilesSnapshot = await getDocs(this.userProfilesCollection);
+      const userProfilesMap = {};
+      userProfilesSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        const userId = data.uid || doc.id;
+        userProfilesMap[userId] = {
+          displayName: data.displayName || data.email || "Anonymous User",
+          email: data.email || "",
+        };
+        // Also map by document ID in case uid field is missing
+        userProfilesMap[doc.id] = {
+          displayName: data.displayName || data.email || "Anonymous User",
+          email: data.email || "",
+        };
+      });
 
-      if (!conference || !conference.comment) {
-        return [];
-      }
+      const comments = [];
+      ratingsSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
 
-      // For now, return single comment as array
-      // In future, you might want to store multiple comments in a separate collection
-      return [
-        {
-          id: `${presentationId}_comment_1`,
-          comment: conference.comment,
-          presentationRating: conference.presentationRating,
-          presenterRating: conference.presenterRating,
-          date: new Date().toISOString(), // You might want to store actual comment dates
-          userId: "anonymous", // You might want to store actual user IDs
-        },
-      ];
+        // If we got all ratings, filter by presentationId
+        if (
+          ratingsSnapshot.docs.length > 50 &&
+          data.presentationId !== presentationId
+        ) {
+          return; // Skip if not matching (when we got all docs)
+        }
+
+        // Only include ratings that have comments
+        if (data.comment && data.comment.trim() !== "") {
+          const commentDate = data.ratedAt
+            ? data.ratedAt.toDate
+              ? data.ratedAt.toDate().toISOString()
+              : new Date(data.ratedAt).toISOString()
+            : new Date().toISOString();
+
+          // Get user information with multiple fallback strategies
+          const userId = data.userId || "anonymous";
+          let userName = "Anonymous User";
+
+          // Try to find user profile by userId
+          if (userProfilesMap[userId]) {
+            userName = userProfilesMap[userId].displayName;
+          }
+          // If not found and we have userEmail, try to find by email
+          else if (data.userEmail) {
+            const profileByEmail = Object.values(userProfilesMap).find(
+              (profile) => profile.email === data.userEmail
+            );
+            if (profileByEmail) {
+              userName = profileByEmail.displayName;
+            } else {
+              // Use email as display name if no profile found
+              userName = data.userEmail.split("@")[0]; // Use part before @ as name
+            }
+          }
+
+          comments.push({
+            id: doc.id,
+            comment: data.comment,
+            presentationRating: data.presentationRating || 0,
+            presenterRating: data.presenterRating || 0,
+            date: commentDate,
+            userId: userId,
+            userEmail: data.userEmail || "anonymous",
+            userName: userName,
+          });
+        }
+      });
+
+      // Sort comments by date client-side (most recent first)
+      comments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      return comments;
     } catch (error) {
       console.error("Error fetching presentation comments:", error);
       return [];
@@ -625,6 +843,22 @@ class StatisticsService {
         ratingParticipationRate: 0,
       };
     }
+  }
+
+  // Helper method to generate consistent presentation ID (same as Flutter app)
+  static _generatePresentationId(conference, sessionDate) {
+    const title = conference.title || "";
+    const presenter = conference.presenter || "";
+    const start = conference.start || "";
+    const date = sessionDate || "unknown";
+
+    const id = `${title}_${presenter}_${start}_${date}`
+      .replace(/\s/g, "_") // Replace spaces with underscores
+      .replace(/:/g, "") // Remove colons
+      .replace(/-/g, "") // Remove dashes
+      .toLowerCase(); // Convert to lowercase
+
+    return id;
   }
 }
 

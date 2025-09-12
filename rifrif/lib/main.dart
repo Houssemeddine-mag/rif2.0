@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'Auth/login.dart';
 import 'pages/main_layout.dart';
 import 'pages_admin/main_layout.dart' as admin;
+import 'pages_presenter/presentation.dart';
 import 'theme.dart';
 import 'firebase_options.dart';
 import 'services/firebase_service.dart';
@@ -71,6 +72,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const MainLayout(userRole: 'user'),
         '/admin': (context) => const admin.MainLayout(userRole: 'admin'),
+        '/presenter': (context) => const ProtectedPresenterRoute(),
       },
     );
   }
@@ -122,5 +124,69 @@ class AuthWrapper extends StatelessWidget {
         }
       },
     );
+  }
+}
+
+// Protected route for presenter page - only accessible via proper authentication
+class ProtectedPresenterRoute extends StatelessWidget {
+  const ProtectedPresenterRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Check if this was navigated from proper authentication
+    // If user tries to access directly via URL or other means, redirect to login
+    return FutureBuilder<bool>(
+      future: _checkPresenterAccess(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFFDFDFD),
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFFAA6B94),
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.data == true) {
+          // Access granted - show presenter page
+          return const PresentationPage();
+        } else {
+          // Access denied - redirect to login
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, '/login');
+          });
+          return const Scaffold(
+            backgroundColor: Color(0xFFFDFDFD),
+            body: Center(
+              child: Text(
+                'Access Denied\nRedirecting to login...',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFAA6B94),
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<bool> _checkPresenterAccess() async {
+    // For now, we'll implement a simple check
+    // In a real app, you might want to check a secure token or session
+    // Since presenter authentication is static, we'll verify if user came through proper login
+
+    // This is a basic implementation - you could enhance it with:
+    // - Secure tokens
+    // - Session management
+    // - Time-based access tokens
+
+    // For this implementation, we'll deny direct access to the route
+    // The only proper way to access is through the login page
+    return false; // This will force users to go through login
   }
 }

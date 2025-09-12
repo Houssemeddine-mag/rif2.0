@@ -393,6 +393,50 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ],
               ),
+
+              SizedBox(height: 40),
+
+              // Cooperation logos section
+              Column(
+                children: [
+                  Text(
+                    "In Cooperation With",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFAA6B94),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Column(
+                    children: [
+                      // Univ2 Logo
+                      Image.asset(
+                        'lib/resource/LOGO_Univ2-removebg-preview.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 15),
+                      // IEEE Logo
+                      Image.asset(
+                        'lib/resource/IEEE.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 15),
+                      // IEEE DZ Logo
+                      Image.asset(
+                        'lib/resource/IEEE dz.png',
+                        height: 80,
+                        width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ),

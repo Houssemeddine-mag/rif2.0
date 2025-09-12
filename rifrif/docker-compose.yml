@@ -1,0 +1,13 @@
+services:
+  # Media server for RTMP to HLS conversion
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    ports:
+      - "1935:1935" # RTMP port for OBS
+      - "8888:8888" # HLS port for Flutter app
+      - "8889:8889" # WebRTC (optional)
+      - "9997:9997" # API port for monitoring
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml
+    restart: unless-stopped

@@ -4,15 +4,12 @@ import "../styles/users.css";
 
 const Users = () => {
   const [userProfiles, setUserProfiles] = useState([]);
-  const [authUsers, setAuthUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("profiles");
   const [searchTerm, setSearchTerm] = useState("");
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [stats, setStats] = useState({
     totalUsers: 0,
-    totalAuthUsers: 0,
     totalProfileUsers: 0,
   });
 
@@ -24,16 +21,14 @@ const Users = () => {
     try {
       setLoading(true);
 
-      // Fetch all user data
-      const [userStats, profiles, authUsersData] = await Promise.all([
+      // Fetch user profile data
+      const [userStats, profiles] = await Promise.all([
         StatisticsService.getTotalUsers(),
         StatisticsService.getUserProfiles(),
-        StatisticsService.getAuthUsers(),
       ]);
 
       setStats(userStats);
       setUserProfiles(profiles);
-      setAuthUsers(authUsersData);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -111,12 +106,6 @@ const Users = () => {
       profile.schoolLevel?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredAuthUsers = authUsers.filter(
-    (user) =>
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.displayName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   if (loading) {
     return (
       <div className="users-container">
@@ -144,10 +133,6 @@ const Users = () => {
         <div className="stat-item">
           <span className="stat-number">{stats.totalProfileUsers}</span>
           <span className="stat-label">User Profiles</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{stats.totalAuthUsers}</span>
-          <span className="stat-label">Auth Accounts</span>
         </div>
         <div className="stat-item incomplete-profiles">
           <span className="stat-number">{incompleteProfilesCount}</span>
@@ -202,22 +187,6 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="tab-navigation">
-        <button
-          className={`tab-button ${activeTab === "profiles" ? "active" : ""}`}
-          onClick={() => setActiveTab("profiles")}
-        >
-          User Profiles ({userProfiles.length})
-        </button>
-        <button
-          className={`tab-button ${activeTab === "auth" ? "active" : ""}`}
-          onClick={() => setActiveTab("auth")}
-        >
-          Auth Accounts ({authUsers.length})
-        </button>
-      </div>
-
       {/* Search Bar */}
       <div className="search-section">
         <div className="search-input-container">
@@ -262,151 +231,74 @@ const Users = () => {
         </button>
       </div>
 
-      {/* Content based on active tab */}
-      <div className="tab-content">
-        {activeTab === "profiles" && (
-          <div className="profiles-section">
-            <h3>User Profiles ({filteredProfiles.length})</h3>
+      {/* User Profiles Content */}
+      <div className="profiles-section">
+        <h3>User Profiles ({filteredProfiles.length})</h3>
 
-            {filteredProfiles.length === 0 ? (
-              <div className="no-data-message">
-                {searchTerm
-                  ? "No profiles match your search."
-                  : "No user profiles found."}
-              </div>
-            ) : (
-              <div className="table-container">
-                <table className="users-table">
-                  <thead>
-                    <tr>
-                      <th>Display Name</th>
-                      <th>Email</th>
-                      <th>School</th>
-                      <th>School Level</th>
-                      <th>Gender</th>
-                      <th>Location</th>
-                      <th>Profile Status</th>
-                      <th>Created</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProfiles.map((profile) => (
-                      <tr key={profile.id}>
-                        <td className="name-cell">
-                          <div className="user-info">
-                            {profile.photoURL && (
-                              <img
-                                src={profile.photoURL}
-                                alt="Profile"
-                                className="profile-avatar"
-                                onError={(e) =>
-                                  (e.target.style.display = "none")
-                                }
-                              />
-                            )}
-                            <div className="user-name">
-                              {profile.displayName || "No Name"}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="email-cell">{profile.email}</td>
-                        <td className="school-cell">
-                          {profile.school || "N/A"}
-                        </td>
-                        <td className="level-cell">
-                          {profile.schoolLevel || "N/A"}
-                        </td>
-                        <td className="gender-cell">
-                          {profile.gender || "N/A"}
-                        </td>
-                        <td className="location-cell">
-                          {profile.location || "N/A"}
-                        </td>
-                        <td className="status-cell">
-                          <span
-                            className={`status-badge ${
-                              profile.isProfileComplete
-                                ? "complete"
-                                : "incomplete"
-                            }`}
-                          >
-                            {profile.isProfileComplete
-                              ? "Complete"
-                              : "Incomplete"}
-                          </span>
-                        </td>
-                        <td className="date-cell">
-                          {formatDate(profile.createdAt)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        {filteredProfiles.length === 0 ? (
+          <div className="no-data-message">
+            {searchTerm
+              ? "No profiles match your search."
+              : "No user profiles found."}
           </div>
-        )}
-
-        {activeTab === "auth" && (
-          <div className="auth-section">
-            <h3>Authentication Accounts ({filteredAuthUsers.length})</h3>
-
-            {filteredAuthUsers.length === 0 ? (
-              <div className="no-data-message">
-                {searchTerm
-                  ? "No auth accounts match your search."
-                  : "No authentication accounts found."}
-              </div>
-            ) : (
-              <div className="table-container">
-                <table className="users-table">
-                  <thead>
-                    <tr>
-                      <th>Email</th>
-                      <th>Display Name</th>
-                      <th>Verified</th>
-                      <th>Status</th>
-                      <th>Created</th>
-                      <th>Last Login</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAuthUsers.map((user) => (
-                      <tr key={user.id}>
-                        <td className="email-cell">{user.email}</td>
-                        <td className="name-cell">
-                          {user.displayName || "N/A"}
-                        </td>
-                        <td className="status-cell">
-                          <span
-                            className={`status-badge ${
-                              user.emailVerified ? "verified" : "unverified"
-                            }`}
-                          >
-                            {user.emailVerified ? "Verified" : "Unverified"}
-                          </span>
-                        </td>
-                        <td className="status-cell">
-                          <span
-                            className={`status-badge ${
-                              user.disabled ? "disabled" : "active"
-                            }`}
-                          >
-                            {user.disabled ? "Disabled" : "Active"}
-                          </span>
-                        </td>
-                        <td className="date-cell">
-                          {formatDate(user.createdAt)}
-                        </td>
-                        <td className="date-cell">
-                          {formatDate(user.lastLoginAt)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        ) : (
+          <div className="table-container">
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <th>Display Name</th>
+                  <th>Email</th>
+                  <th>School</th>
+                  <th>School Level</th>
+                  <th>Gender</th>
+                  <th>Location</th>
+                  <th>Profile Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProfiles.map((profile) => (
+                  <tr key={profile.id}>
+                    <td className="name-cell">
+                      <div className="user-info">
+                        {profile.photoURL && (
+                          <img
+                            src={profile.photoURL}
+                            alt="Profile"
+                            className="profile-avatar"
+                            onError={(e) => (e.target.style.display = "none")}
+                          />
+                        )}
+                        <div className="user-name">
+                          {profile.displayName || "No Name"}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="email-cell">{profile.email}</td>
+                    <td className="school-cell">{profile.school || "N/A"}</td>
+                    <td className="level-cell">
+                      {profile.schoolLevel || "N/A"}
+                    </td>
+                    <td className="gender-cell">{profile.gender || "N/A"}</td>
+                    <td className="location-cell">
+                      {profile.location || "N/A"}
+                    </td>
+                    <td className="status-cell">
+                      <span
+                        className={`status-badge ${
+                          profile.isProfileComplete ? "complete" : "incomplete"
+                        }`}
+                      >
+                        {profile.isProfileComplete ? "Complete" : "Incomplete"}
+                      </span>
+                    </td>
+                    <td className="date-cell">
+                      {formatDate(profile.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
