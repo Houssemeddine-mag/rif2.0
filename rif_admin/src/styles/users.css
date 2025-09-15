@@ -900,6 +900,15 @@
   color: #f39c12;
 }
 
+/* Online users stat item */
+.stat-item.online-users {
+  border-top: 4px solid #27ae60;
+}
+
+.stat-item.online-users .stat-number {
+  color: #27ae60;
+}
+
 /* Notification section */
 .notification-section {
   margin: 24px 0;

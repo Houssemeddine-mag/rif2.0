@@ -54,6 +54,46 @@ class StatisticsService {
     }
   }
 
+  // Get online users count (users active in last 10 minutes)
+  static async getOnlineUsers() {
+    try {
+      const usersSnapshot = await getDocs(this.usersCollection);
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes ago
+      let onlineCount = 0;
+
+      usersSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+
+        // Check if user has recent activity (lastActiveAt or lastLoginAt)
+        let lastActive = null;
+
+        if (data.lastActiveAt) {
+          if (data.lastActiveAt.seconds) {
+            lastActive = new Date(data.lastActiveAt.seconds * 1000);
+          } else if (typeof data.lastActiveAt === "string") {
+            lastActive = new Date(data.lastActiveAt);
+          }
+        } else if (data.lastLoginAt) {
+          if (data.lastLoginAt.seconds) {
+            lastActive = new Date(data.lastLoginAt.seconds * 1000);
+          } else if (typeof data.lastLoginAt === "string") {
+            lastActive = new Date(data.lastLoginAt);
+          }
+        }
+
+        // Count as online if active within last 10 minutes
+        if (lastActive && lastActive > tenMinutesAgo) {
+          onlineCount++;
+        }
+      });
+
+      return onlineCount;
+    } catch (error) {
+      console.error("Error fetching online users count:", error);
+      return 0;
+    }
+  }
+
   // Get user profile data with complete information
   static async getUserProfiles() {
     try {

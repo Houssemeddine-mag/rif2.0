@@ -106,45 +106,6 @@ const Dashboard = () => {
         </div>
 
         <div className="stat-card glass-card gradient-border animate-card">
-          <div className="stat-icon presenters">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <rect
-                x="6"
-                y="4"
-                width="12"
-                height="12"
-                rx="6"
-                fill="url(#presentersGradient)"
-              />
-              <rect
-                x="2"
-                y="18"
-                width="20"
-                height="4"
-                rx="2"
-                fill="url(#presentersGradient)"
-              />
-              <defs>
-                <linearGradient
-                  id="presentersGradient"
-                  x1="0"
-                  y1="0"
-                  x2="24"
-                  y2="24"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#4f8cff" />
-                  <stop offset="1" stopColor="#a259ff" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <h3>Presenters</h3>
-          <p className="stat-value">{stats.uniquePresenters}</p>
-          <p className="stat-subtitle">Unique speakers</p>
-        </div>
-
-        <div className="stat-card glass-card gradient-border animate-card">
           <div className="stat-icon sessions">
             <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
               <rect

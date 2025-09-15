@@ -187,6 +187,12 @@
   margin-bottom: 20px;
 }
 
+.stats-grid.compact {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
 .stat-card {
   background: #f8f9fa;
   border-radius: 8px;
@@ -194,6 +200,15 @@
   text-align: center;
   border: 2px solid #e9ecef;
   transition: all 0.3s ease;
+}
+
+.stat-card.preserved {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.stats-grid.compact .stat-card {
+  padding: 15px;
 }
 
 .stat-card:hover {
@@ -208,10 +223,19 @@
   margin-bottom: 8px;
 }
 
+.stats-grid.compact .stat-number {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
 .stat-label {
   font-size: 1.1rem;
   color: #666;
   font-weight: 500;
+}
+
+.stats-grid.compact .stat-label {
+  font-size: 0.9rem;
 }
 
 .stat-breakdown {
@@ -243,6 +267,11 @@
   transition: background 0.3s ease;
 }
 
+.refresh-btn.compact {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
 .refresh-btn:hover {
   background: #5a6fd8;
 }
@@ -250,6 +279,147 @@
 .refresh-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* Collections Table Styles */
+.cleanup-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #dc3545;
+}
+
+.cleanup-section h2 {
+  margin: 0 0 15px 0;
+  color: #721c24;
+  font-size: 1.8rem;
+}
+
+.cleanup-section > p {
+  margin: 0 0 25px 0;
+  color: #721c24;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.collections-table-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.collections-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.collections-table th {
+  background: #f8f9fa;
+  color: #333;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.collections-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.collections-table tr:hover {
+  background: #f8f9fa;
+}
+
+.collections-table tr.preserved-row {
+  background: #fff3cd;
+}
+
+.collections-table tr.preserved-row:hover {
+  background: #ffeaa7;
+}
+
+.collections-table tr.clear-all-row {
+  background: #f8d7da;
+  border-top: 2px solid #dc3545;
+}
+
+.collections-table tr.clear-all-row:hover {
+  background: #f5c6cb;
+}
+
+.collections-table tr.clear-all-row td {
+  color: #721c24;
+  font-weight: 600;
+}
+
+.table-confirm-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: border-color 0.3s ease;
+}
+
+.table-confirm-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.table-confirm-input.critical {
+  border-color: #dc3545;
+}
+
+.table-confirm-input.critical:focus {
+  border-color: #c82333;
+}
+
+.table-action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 60px;
+}
+
+.table-action-btn.danger {
+  background: #ffc107;
+  color: #333;
+}
+
+.table-action-btn.danger:hover {
+  background: #e0a800;
+}
+
+.table-action-btn.critical {
+  background: #dc3545;
+  color: white;
+}
+
+.table-action-btn.critical:hover {
+  background: #c82333;
+}
+
+.table-action-btn:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.preserved-text {
+  color: #856404;
+  font-style: italic;
+  font-size: 0.8rem;
 }
 
 /* Actions Section */
@@ -449,7 +619,12 @@
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid.compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .export-grid {
@@ -475,5 +650,38 @@
 
   .action-btn {
     min-width: auto;
+  }
+
+  /* Table responsiveness */
+  .collections-table-container {
+    overflow-x: auto;
+  }
+
+  .collections-table {
+    min-width: 600px;
+  }
+
+  .collections-table th,
+  .collections-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .table-confirm-input {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
+
+  .table-action-btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    min-width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .stats-grid.compact {
+    grid-template-columns: 1fr;
   }
 }

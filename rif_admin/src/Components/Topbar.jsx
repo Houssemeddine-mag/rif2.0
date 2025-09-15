@@ -39,6 +39,21 @@ const Topbar = () => {
           alt="RIF Logo"
           className="logo-img logo2"
         />
+        <img
+          src="/assets/LOGO_Univ2-removebg-preview.png"
+          alt="University Logo"
+          className="logo-img logo3"
+        />
+        <img
+          src="/assets/IEEE.png"
+          alt="IEEE Logo"
+          className="logo-img logo4"
+        />
+        <img
+          src="/assets/IEEE dz.png"
+          alt="IEEE Algeria Logo"
+          className="logo-img logo5"
+        />
       </div>
       <div className="topbar-title">RIF Admin Panel</div>
       <div className="topbar-user-section">
