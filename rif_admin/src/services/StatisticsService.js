@@ -219,6 +219,62 @@ class StatisticsService {
     }
   }
 
+  // Get authenticated users with their profile information combined
+  static async getAuthUsersWithProfiles() {
+    try {
+      // Get all authenticated users from users collection
+      const authUsers = await this.getAuthUsers();
+
+      // Get all user profiles
+      const userProfilesSnapshot = await getDocs(this.userProfilesCollection);
+      const profilesMap = new Map();
+
+      userProfilesSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        profilesMap.set(data.uid || doc.id, {
+          id: doc.id,
+          ...data,
+        });
+      });
+
+      // Combine auth users with their profile information
+      const combinedUsers = authUsers.map((authUser) => {
+        const profile = profilesMap.get(authUser.uid) || {};
+
+        return {
+          id: authUser.id,
+          uid: authUser.uid,
+          email: authUser.email || profile.email || "",
+          displayName:
+            authUser.displayName ||
+            profile.displayName ||
+            (profile.firstName && profile.lastName)
+              ? `${profile.firstName} ${profile.lastName}`
+              : "",
+          photoURL: authUser.photoURL || profile.photoURL || "",
+          emailVerified: authUser.emailVerified,
+          disabled: authUser.disabled,
+          createdAt: authUser.createdAt || profile.createdAt,
+          lastLoginAt: authUser.lastLoginAt,
+          // Profile information
+          firstName: profile.firstName || "",
+          lastName: profile.lastName || "",
+          school: profile.school || "",
+          schoolLevel: profile.schoolLevel || "",
+          location: profile.location || "",
+          gender: profile.gender || "",
+          isProfileComplete: profile.isProfileComplete || false,
+          hasProfile: profilesMap.has(authUser.uid),
+        };
+      });
+
+      return combinedUsers;
+    } catch (error) {
+      console.error("Error fetching auth users with profiles:", error);
+      return [];
+    }
+  }
+
   // Get user registration statistics over time
   static async getUserRegistrationStats() {
     try {

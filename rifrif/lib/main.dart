@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'Auth/login.dart';
 import 'pages/main_layout.dart';
+import 'pages/profile.dart';
 import 'pages_admin/main_layout.dart' as admin;
 import 'pages_presenter/presentation.dart';
 import 'theme.dart';
@@ -71,6 +72,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const MainLayout(userRole: 'user'),
+        '/profile': (context) => const ProfileSetupWrapper(),
         '/admin': (context) => const admin.MainLayout(userRole: 'admin'),
         '/presenter': (context) => const ProtectedPresenterRoute(),
       },
@@ -78,7 +80,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Authentication Wrapper to handle persistent login
+// Authentication Wrapper to handle persistent login and first-time profile setup
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -115,14 +117,127 @@ class AuthWrapper extends StatelessWidget {
         // Check if user is logged in
         if (snapshot.hasData && snapshot.data != null) {
           print('[Auth] User is already logged in: ${snapshot.data!.email}');
-          // User is logged in, go to home
-          return const MainLayout(userRole: 'user');
+          // User is logged in, check if profile setup is needed
+          return UserRouteDecider(user: snapshot.data!);
         } else {
           print('[Auth] No user logged in, showing login page');
           // User is not logged in, show login page
           return const LoginPage();
         }
       },
+    );
+  }
+}
+
+// Decides whether to show home or profile page based on user's profile completion status
+class UserRouteDecider extends StatelessWidget {
+  final User user;
+
+  const UserRouteDecider({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: FirebaseService.shouldRedirectToProfile(user.uid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFFDFDFD),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Color(0xFFAA6B94),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Chargement de votre profil...',
+                    style: TextStyle(
+                      color: Color(0xFFAA6B94),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          print('[Auth] Error checking profile status: ${snapshot.error}');
+          // On error, default to home page
+          return const MainLayout(userRole: 'user');
+        }
+
+        final shouldShowProfile = snapshot.data ?? false;
+
+        if (shouldShowProfile) {
+          print(
+              '[Auth] Redirecting to profile page for first-time/incomplete user');
+          return const ProfileSetupWrapper();
+        } else {
+          print('[Auth] Redirecting to home page for existing user');
+          return const MainLayout(userRole: 'user');
+        }
+      },
+    );
+  }
+}
+
+// Wrapper for profile setup that ensures user goes to home after completion
+class ProfileSetupWrapper extends StatelessWidget {
+  const ProfileSetupWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFFDFDFD),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false, // Remove back button
+        title: Text(
+          'Complétez votre profil',
+          style: TextStyle(
+            color: Color(0xFFAA6B94),
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          // Skip button for users who want to complete profile later
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainLayout(userRole: 'user'),
+                ),
+              );
+            },
+            child: Text(
+              'Passer',
+              style: TextStyle(
+                color: Color(0xFFAA6B94),
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: ProfilePage(
+        onProfileCompleted: () {
+          // Navigate to home page after profile completion
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainLayout(userRole: 'user'),
+            ),
+          );
+        },
+      ), // Use the existing ProfilePage with completion callback
     );
   }
 }

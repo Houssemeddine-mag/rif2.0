@@ -7,7 +7,9 @@ import '../services/firebase_service.dart';
 import '../models/user_profile_model.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final VoidCallback? onProfileCompleted;
+
+  const ProfilePage({Key? key, this.onProfileCompleted}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -300,6 +302,14 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: Colors.green,
             ),
           );
+
+          // Call the completion callback if provided (for first-time user flow)
+          if (widget.onProfileCompleted != null) {
+            // Wait a moment for the success message to show
+            await Future.delayed(const Duration(seconds: 1));
+            widget.onProfileCompleted!();
+            return; // Exit early to avoid reloading profile
+          }
         }
 
         // Clear form and reload profile

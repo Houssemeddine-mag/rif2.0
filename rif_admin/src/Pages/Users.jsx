@@ -10,8 +10,6 @@ const Users = () => {
   const [notificationMessage, setNotificationMessage] = useState("");
   const [stats, setStats] = useState({
     totalUsers: 0,
-    totalProfileUsers: 0,
-    onlineUsers: 0,
   });
 
   useEffect(() => {
@@ -22,18 +20,16 @@ const Users = () => {
     try {
       setLoading(true);
 
-      // Fetch user profile data
-      const [userStats, profiles, onlineUsersCount] = await Promise.all([
+      // Fetch combined user data (auth + profiles)
+      const [userStats, combinedUsers] = await Promise.all([
         StatisticsService.getTotalUsers(),
-        StatisticsService.getUserProfiles(),
-        StatisticsService.getOnlineUsers(),
+        StatisticsService.getAuthUsersWithProfiles(),
       ]);
 
       setStats({
         ...userStats,
-        onlineUsers: onlineUsersCount,
       });
-      setUserProfiles(profiles);
+      setUserProfiles(combinedUsers);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -134,14 +130,6 @@ const Users = () => {
         <div className="stat-item">
           <span className="stat-number">{stats.totalUsers}</span>
           <span className="stat-label">Total Users</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-number">{stats.totalProfileUsers}</span>
-          <span className="stat-label">User Profiles</span>
-        </div>
-        <div className="stat-item online-users">
-          <span className="stat-number">{stats.onlineUsers}</span>
-          <span className="stat-label">Online Users</span>
         </div>
         <div className="stat-item incomplete-profiles">
           <span className="stat-number">{incompleteProfilesCount}</span>

@@ -100,8 +100,18 @@ class _LoginPageState extends State<LoginPage> {
           final userModel = UserModel.fromFirebaseUser(credential.user!);
           print('[Login] User model created: ${userModel.email}');
 
-          // Navigate to home
-          Navigator.pushReplacementNamed(context, '/home');
+          // Check if user needs to complete profile
+          final shouldRedirectToProfile =
+              await FirebaseService.shouldRedirectToProfile(
+                  credential.user!.uid);
+
+          if (shouldRedirectToProfile) {
+            print('[Login] Redirecting to profile completion');
+            Navigator.pushReplacementNamed(context, '/profile');
+          } else {
+            print('[Login] Redirecting to home');
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         } catch (e) {
           print('[Login] Error creating user model: $e');
           throw FirebaseAuthException(
@@ -202,8 +212,17 @@ class _LoginPageState extends State<LoginPage> {
         final userModel = UserModel.fromFirebaseUser(user);
         print('[Login] Successfully created user model: ${userModel.email}');
 
-        // Navigate only if everything is OK
-        Navigator.pushReplacementNamed(context, '/home');
+        // Check if user needs to complete profile
+        final shouldRedirectToProfile =
+            await FirebaseService.shouldRedirectToProfile(user.uid);
+
+        if (shouldRedirectToProfile) {
+          print('[Login] Google user redirecting to profile completion');
+          Navigator.pushReplacementNamed(context, '/profile');
+        } else {
+          print('[Login] Google user redirecting to home');
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } catch (modelError) {
         print('[Login] Error creating user model: $modelError');
         print('[Login] Stack trace: ${StackTrace.current}');
@@ -282,8 +301,18 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
 
-        // Navigate to home
-        Navigator.pushReplacementNamed(context, '/home');
+        // Check if user needs to complete profile
+        final shouldRedirectToProfile =
+            await FirebaseService.shouldRedirectToProfile(
+                userCredential.user!.uid);
+
+        if (shouldRedirectToProfile) {
+          print('[Login] GitHub user redirecting to profile completion');
+          Navigator.pushReplacementNamed(context, '/profile');
+        } else {
+          print('[Login] GitHub user redirecting to home');
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       }
     } catch (e) {
       print('[Login] GitHub login error: $e');

@@ -930,6 +930,39 @@ Cet email a été envoyé automatiquement à : $email
     }
   }
 
+  // Check if user should be redirected to profile page on first login
+  static Future<bool> shouldRedirectToProfile(String uid) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('user_profiles')
+          .doc(uid)
+          .get();
+
+      if (!doc.exists) {
+        // No profile exists - this is a first-time user
+        debugPrintAuth('No profile found for user $uid - first time user');
+        return true;
+      }
+
+      final data = doc.data()!;
+      final isProfileComplete = data['isProfileComplete'] ?? false;
+
+      if (!isProfileComplete) {
+        // Profile exists but is not complete
+        debugPrintAuth('Profile incomplete for user $uid - should complete');
+        return true;
+      }
+
+      // Profile is complete
+      debugPrintAuth('Profile complete for user $uid - redirect to home');
+      return false;
+    } catch (e) {
+      debugPrintAuth('Error checking profile status: $e');
+      // On error, assume profile is complete to avoid redirect loop
+      return false;
+    }
+  }
+
   // Rating and feedback functionality
 
   /// NEW: Submit or update individual user rating for a presentation
