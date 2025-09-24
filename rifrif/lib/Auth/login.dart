@@ -380,7 +380,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 40),
@@ -390,7 +390,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -404,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Mot de passe",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -419,7 +419,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : loginWithEmail,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFC87AAA),
+                    backgroundColor: Color(0xFF614f96),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -450,7 +450,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -467,7 +467,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Create Account",
                       style: TextStyle(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -479,7 +479,7 @@ class _LoginPageState extends State<LoginPage> {
 
               Text(
                 "Or sign in with",
-                style: TextStyle(color: Color(0xFFAA6B94)),
+                style: TextStyle(color: Color(0xFF614f96)),
               ),
               SizedBox(height: 15),
 
@@ -512,7 +512,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -559,15 +559,15 @@ class _LoginPageState extends State<LoginPage> {
       height: 50,
       child: ElevatedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: iconColor ?? Color(0xFFAA6B94), size: 24),
+        icon: Icon(icon, color: iconColor ?? Color(0xFF614f96), size: 24),
         label: Text(text,
             style: TextStyle(
-              color: iconColor ?? Color(0xFFAA6B94),
+              color: iconColor ?? Color(0xFF614f96),
               fontWeight: FontWeight.w500,
             )),
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(0xFFFDFDFD),
-          side: BorderSide(color: iconColor ?? Color(0xFFAA6B94)),
+          side: BorderSide(color: iconColor ?? Color(0xFF614f96)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 1,
         ),

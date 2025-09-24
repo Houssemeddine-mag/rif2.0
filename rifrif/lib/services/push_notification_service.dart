@@ -387,7 +387,7 @@ class PushNotificationService {
         enableLights: true,
         playSound: soundEnabled,
         icon: iconName,
-        color: const Color(0xFFAA6B94), // RIF 2025 theme color
+        color: const Color(0xFF614f96), // RIF 2025 theme color
         showWhen: true,
         when: DateTime.now().millisecondsSinceEpoch,
         autoCancel: true,
@@ -649,7 +649,7 @@ class PushNotificationService {
             enableLights: true,
             playSound: true,
             icon: '@mipmap/launcher_icon', // Use custom app logo
-            color: const Color(0xFFAA6B94),
+            color: const Color(0xFF614f96),
           ),
           iOS: const DarwinNotificationDetails(
             presentAlert: true,

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import '../services/firebase_service.dart';
 import '../models/user_profile_model.dart';
+import '../data/profile_data.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback? onProfileCompleted;
@@ -17,9 +18,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseService _firebaseService = FirebaseService();
-  final TextEditingController _schoolController = TextEditingController();
+  final TextEditingController _schoolController =
+      TextEditingController(); // Deprecated
   final TextEditingController _schoolLevelController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _locationController =
+      TextEditingController(); // Deprecated
 
   UserProfile? _userProfile;
   bool _isLoading = true;
@@ -27,6 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isEditing = false;
   DateTime? _selectedBirthday;
   String? _selectedGender;
+  String? _selectedCountry;
+  String? _selectedProvince;
+  String? _selectedUniversity;
+  String? _selectedEducationLevel;
   final ImagePicker _imagePicker = ImagePicker();
   bool _isUpdatingProfilePicture = false;
 
@@ -91,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFFAA6B94),
+              primary: Color(0xFF614f96),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -141,13 +148,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.1),
+                          color: Color(0xFF614f96).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.camera_alt,
                           size: 30,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -169,13 +176,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.1),
+                          color: Color(0xFF614f96).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.photo_library,
                           size: 30,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -246,14 +253,18 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _completeProfile() async {
-    if (_schoolController.text.trim().isEmpty ||
-        _schoolLevelController.text.trim().isEmpty ||
-        _locationController.text.trim().isEmpty ||
+    if ((_selectedUniversity == null || _selectedUniversity!.isEmpty) ||
+        (_selectedEducationLevel == null || _selectedEducationLevel!.isEmpty) ||
+        (_selectedCountry == null || _selectedCountry!.isEmpty) ||
+        (_selectedCountry == 'Algeria' &&
+            (_selectedProvince == null || _selectedProvince!.isEmpty)) ||
         _selectedBirthday == null ||
         _selectedGender == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields'),
+        SnackBar(
+          content: Text(_selectedCountry == 'Algeria'
+              ? 'Please fill in all fields including wilaya for Algeria'
+              : 'Please fill in all required fields'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -268,11 +279,13 @@ class _ProfilePageState extends State<ProfilePage> {
         if (_isEditing) {
           // Update existing profile
           await _firebaseService.updateUserProfile(user.uid, {
-            'school': _schoolController.text.trim(),
-            'schoolLevel': _schoolLevelController.text.trim(),
+            'university': _selectedUniversity!,
+            'schoolLevel': _selectedEducationLevel!,
             'gender': _selectedGender!,
             'birthday': Timestamp.fromDate(_selectedBirthday!),
-            'location': _locationController.text.trim(),
+            'country': _selectedCountry!,
+            'province':
+                _selectedProvince, // Can be null for non-Algeria countries
           });
 
           setState(() {
@@ -289,11 +302,12 @@ class _ProfilePageState extends State<ProfilePage> {
           // Complete profile for the first time
           await _firebaseService.completeUserProfile(
             uid: user.uid,
-            school: _schoolController.text.trim(),
-            schoolLevel: _schoolLevelController.text.trim(),
+            university: _selectedUniversity!,
+            schoolLevel: _selectedEducationLevel!,
             gender: _selectedGender!,
             birthday: _selectedBirthday!,
-            location: _locationController.text.trim(),
+            country: _selectedCountry!,
+            province: _selectedProvince,
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -318,6 +332,10 @@ class _ProfilePageState extends State<ProfilePage> {
         _locationController.clear();
         _selectedBirthday = null;
         _selectedGender = null;
+        _selectedCountry = null;
+        _selectedProvince = null;
+        _selectedUniversity = null;
+        _selectedEducationLevel = null;
 
         await _loadUserProfile();
       }
@@ -362,7 +380,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? const Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color(0xFFAA6B94)),
+                                  Color(0xFF614f96)),
                               strokeWidth: 2,
                             ),
                           )
@@ -395,7 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -483,11 +501,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
     bool hasAdditionalInfo = (_userProfile!.school != null &&
             _userProfile!.school!.isNotEmpty) ||
+        (_userProfile!.university != null &&
+            _userProfile!.university!.isNotEmpty) ||
         (_userProfile!.schoolLevel != null &&
             _userProfile!.schoolLevel!.isNotEmpty) ||
         (_userProfile!.gender != null && _userProfile!.gender!.isNotEmpty) ||
         (_userProfile!.birthday != null) ||
-        (_userProfile!.location != null && _userProfile!.location!.isNotEmpty);
+        (_userProfile!.location != null &&
+            _userProfile!.location!.isNotEmpty) ||
+        (_userProfile!.country != null && _userProfile!.country!.isNotEmpty) ||
+        (_userProfile!.province != null && _userProfile!.province!.isNotEmpty);
 
     return Card(
       elevation: 4,
@@ -516,28 +539,36 @@ class _ProfilePageState extends State<ProfilePage> {
                       _schoolController.text = _userProfile!.school ?? '';
                       _schoolLevelController.text =
                           _userProfile!.schoolLevel ?? '';
+                      _selectedEducationLevel = _userProfile!.schoolLevel;
                       _locationController.text = _userProfile!.location ?? '';
                       _selectedBirthday = _userProfile!.birthday;
                       _selectedGender = _userProfile!.gender;
+                      _selectedCountry = _userProfile!.country;
+                      _selectedProvince = _userProfile!.province;
+                      _selectedUniversity =
+                          _userProfile!.university ?? _userProfile!.school;
 
                       setState(() {
                         _isEditing = true;
                       });
                     },
                     icon: const Icon(Icons.edit,
-                        size: 16, color: Color(0xFFAA6B94)),
+                        size: 16, color: Color(0xFF614f96)),
                     label: const Text(
                       'Update',
-                      style: TextStyle(color: Color(0xFFAA6B94)),
+                      style: TextStyle(color: Color(0xFF614f96)),
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 16),
             if (hasAdditionalInfo) ...[
-              if (_userProfile!.school != null &&
-                  _userProfile!.school!.isNotEmpty) ...[
-                _buildInfoRow('School/University', _userProfile!.school!),
+              if ((_userProfile!.university != null &&
+                      _userProfile!.university!.isNotEmpty) ||
+                  (_userProfile!.school != null &&
+                      _userProfile!.school!.isNotEmpty)) ...[
+                _buildInfoRow('University',
+                    _userProfile!.university ?? _userProfile!.school ?? ''),
                 const SizedBox(height: 12),
               ],
               if (_userProfile!.schoolLevel != null &&
@@ -557,9 +588,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildInfoRow('Birthday', _formatDate(_userProfile!.birthday!)),
                 const SizedBox(height: 12),
               ],
-              if (_userProfile!.location != null &&
-                  _userProfile!.location!.isNotEmpty) ...[
-                _buildInfoRow('Location', _userProfile!.location!),
+              if ((_userProfile!.country != null &&
+                      _userProfile!.country!.isNotEmpty) ||
+                  (_userProfile!.location != null &&
+                      _userProfile!.location!.isNotEmpty)) ...[
+                _buildInfoRow('Country',
+                    _userProfile!.country ?? _userProfile!.location ?? ''),
+                const SizedBox(height: 12),
+              ],
+              if (_userProfile!.province != null &&
+                  _userProfile!.province!.isNotEmpty) ...[
+                _buildInfoRow('Province/Wilaya', _userProfile!.province!),
               ],
             ] else ...[
               Center(
@@ -626,38 +665,149 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 20),
 
-            // School/University Field
-            TextField(
-              controller: _schoolController,
-              decoration: InputDecoration(
-                labelText: 'School or University',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
+            // University Dropdown Field
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[400]!),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedUniversity,
+                  hint: Text(
+                    'Select University',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  isExpanded: true,
+                  items: ProfileData.allUniversities.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedUniversity = newValue;
+                    });
+                  },
                 ),
               ),
             ),
             const SizedBox(height: 16),
 
             // School Level Field
-            TextField(
-              controller: _schoolLevelController,
-              decoration: InputDecoration(
-                labelText: 'School or University Level',
-                hintText: 'e.g., Bachelor, Master, PhD, High School',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedEducationLevel,
+                  hint: Text(
+                    'Select Education Level',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                  isExpanded: true,
+                  items: ProfileData.educationLevels.map((String level) {
+                    return DropdownMenuItem<String>(
+                      value: level,
+                      child: Text(level),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedEducationLevel = newValue;
+                      });
+                    }
+                  },
                 ),
               ),
             ),
             const SizedBox(height: 16),
+
+            // Country Dropdown Field
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[400]!),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedCountry,
+                  hint: Text(
+                    'Select Country',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  isExpanded: true,
+                  items: ProfileData.countries.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedCountry = newValue;
+                      // Reset province/wilaya when country changes
+                      if (newValue != 'Algeria') {
+                        _selectedProvince = null;
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Province/Wilaya Dropdown Field (Show only for Algeria)
+            if (_selectedCountry == 'Algeria') ...[
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedProvince,
+                    hint: Text(
+                      'Select Wilaya',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    isExpanded: true,
+                    items: ProfileData.algerianWilayas.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedProvince = newValue;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Gender Field
             Container(
@@ -724,23 +874,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Location Field
-            TextField(
-              controller: _locationController,
-              decoration: InputDecoration(
-                labelText: 'Location',
-                hintText: 'e.g., City, Country',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
-                ),
-              ),
-            ),
             const SizedBox(height: 24),
 
             // Buttons Row
@@ -760,11 +893,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                 _locationController.clear();
                                 _selectedBirthday = null;
                                 _selectedGender = null;
+                                _selectedCountry = null;
+                                _selectedProvince = null;
+                                _selectedUniversity = null;
+                                _selectedEducationLevel = null;
                               });
                             },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFFAA6B94),
-                        side: const BorderSide(color: Color(0xFFAA6B94)),
+                        foregroundColor: Color(0xFF614f96),
+                        side: const BorderSide(color: Color(0xFF614f96)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -784,7 +921,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ElevatedButton(
                       onPressed: _isCompleting ? null : _completeProfile,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFAA6B94),
+                        backgroundColor: Color(0xFF614f96),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -819,7 +956,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ElevatedButton(
                   onPressed: _isCompleting ? null : _completeProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
+                    backgroundColor: Color(0xFF614f96),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -890,14 +1027,14 @@ class _ProfilePageState extends State<ProfilePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
               ),
             )
           : SingleChildScrollView(

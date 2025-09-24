@@ -164,7 +164,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -187,7 +187,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -206,7 +206,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 ),
                 decoration: InputDecoration(
                   labelText: "Code de vérification",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   hintText: "0000",
                   hintStyle: TextStyle(letterSpacing: 8),
                   border: OutlineInputBorder(
@@ -214,7 +214,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Color(0xFFAA6B94), width: 2),
+                    borderSide: BorderSide(color: Color(0xFF614f96), width: 2),
                   ),
                   counterText: "",
                 ),
@@ -228,7 +228,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : verifyCode,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFC87AAA),
+                    backgroundColor: Color(0xFF614f96),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -262,7 +262,7 @@ class _VerificationPageState extends State<VerificationPage> {
                           ? "Resend code"
                           : "Resend in ${resendTimer}s",
                       style: TextStyle(
-                        color: canResendCode ? Color(0xFFAA6B94) : Colors.grey,
+                        color: canResendCode ? Color(0xFF614f96) : Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -281,7 +281,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: Text(
                   "← Back to Sign Up",
                   style: TextStyle(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     decoration: TextDecoration.underline,
                   ),
                 ),

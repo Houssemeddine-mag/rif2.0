@@ -40,6 +40,7 @@ flutter:
     - lib/resource/LOGO_Univ2-removebg-preview.png
     - lib/resource/IEEE.png
     - lib/resource/IEEE dz.png
+    - lib/resource/constantine.jpg
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -49,8 +50,8 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "lib/resource/rifnonbgcopy.png"
-    background_color: "#AA6B94"
-    theme_color: "#AA6B94"
+    background_color: "#614f96"
+    theme_color: "#614f96"
   windows:
     generate: true
     image_path: "lib/resource/rifnonbgcopy.png"

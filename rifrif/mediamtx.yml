@@ -18,3 +18,31 @@ paths:
   all:
     # Allow publishing from any source
     source: publisher
+
+# # Updated mediamtx.yml for better long-stream stability
+# protocols: [tcp, udp]
+# rtmp: true
+
+# # HLS optimization for long streams
+# hls: true
+# hlsAddress: ":80"
+# hlsSegmentDuration: "2s"
+# hlsSegmentCount: 10           # Increased from default 3
+# hlsSegmentMaxSize: "1MB"
+# hlsAllowOrigin: "*"
+
+# # WebRTC for low-latency fallback
+# webrtc: true
+# webrtcAddress: ":8889"
+
+# # API for monitoring
+# api: true
+# apiAddress: ":9997"
+
+# paths:
+#   RIFLIVE:
+#     source: publisher
+#     sourceOnDemand: yes
+#     sourceOnDemandStartTimeout: "30s"
+#     readBufferCount: 1024      # Increased buffer
+#     readTimeout: 30s           # Longer timeout 

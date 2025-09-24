@@ -284,7 +284,7 @@ class _SignupPageState extends State<SignupPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 40),
@@ -294,7 +294,7 @@ class _SignupPageState extends State<SignupPage> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Nom complet",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -307,7 +307,7 @@ class _SignupPageState extends State<SignupPage> {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -321,7 +321,7 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Mot de passe",
-                  labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                  labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -336,7 +336,7 @@ class _SignupPageState extends State<SignupPage> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : signupWithEmail,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFC87AAA),
+                    backgroundColor: Color(0xFF614f96),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -360,7 +360,7 @@ class _SignupPageState extends State<SignupPage> {
                   child: Text(
                     "Already have an account? Sign In",
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       decoration: TextDecoration.underline,
                     ),
                   ),
@@ -371,7 +371,7 @@ class _SignupPageState extends State<SignupPage> {
 
               Text(
                 "Ou inscrivez-vous avec",
-                style: TextStyle(color: Color(0xFFAA6B94)),
+                style: TextStyle(color: Color(0xFF614f96)),
               ),
               SizedBox(height: 15),
 
@@ -404,7 +404,7 @@ class _SignupPageState extends State<SignupPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                     ),
                   ),
                   SizedBox(height: 20),

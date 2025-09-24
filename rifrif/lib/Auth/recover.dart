@@ -142,7 +142,7 @@ class _RecoverPageState extends State<RecoverPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 40),
@@ -157,7 +157,7 @@ class _RecoverPageState extends State<RecoverPage> {
                   child: Text(
                     "← Back to Sign In",
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       decoration: TextDecoration.underline,
                     ),
                   ),
@@ -171,7 +171,7 @@ class _RecoverPageState extends State<RecoverPage> {
                     controller: emailController,
                     decoration: InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(color: Color(0xFFAA6B94)),
+                      labelStyle: TextStyle(color: Color(0xFF614f96)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -184,7 +184,7 @@ class _RecoverPageState extends State<RecoverPage> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : sendPasswordResetEmail,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFC87AAA),
+                        backgroundColor: Color(0xFF614f96),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

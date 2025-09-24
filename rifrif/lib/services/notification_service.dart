@@ -257,7 +257,7 @@ class NotificationService {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFAA6B94),
+              backgroundColor: Color(0xFF614f96),
               foregroundColor: Colors.white,
             ),
             child: Text('Send Notification'),

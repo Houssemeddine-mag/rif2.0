@@ -159,7 +159,7 @@ class _NotificationBellState extends State<NotificationBell>
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                     ),
                   ),
                   Row(
@@ -460,7 +460,7 @@ class _NotificationBellState extends State<NotificationBell>
         switch (type) {
           case 'session':
             iconData = Icons.event;
-            iconColor = Color(0xFFAA6B94);
+            iconColor = Color(0xFF614f96);
             break;
           case 'conference':
             iconData = Icons.mic;
@@ -473,7 +473,7 @@ class _NotificationBellState extends State<NotificationBell>
 
         return Card(
           margin: EdgeInsets.symmetric(vertical: 4),
-          color: isRead ? Colors.white : Color(0xFFAA6B94).withOpacity(0.1),
+          color: isRead ? Colors.white : Color(0xFF614f96).withOpacity(0.1),
           child: ListTile(
             leading: Container(
               padding: EdgeInsets.all(8),
@@ -645,7 +645,7 @@ class _NotificationBellState extends State<NotificationBell>
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         shape: BoxShape.circle,
                       ),
                     )
@@ -714,7 +714,7 @@ class _NotificationBellState extends State<NotificationBell>
               IconButton(
                 icon: Icon(
                   Icons.notifications,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   size: 28,
                 ),
                 onPressed: _showNotificationsPanel,

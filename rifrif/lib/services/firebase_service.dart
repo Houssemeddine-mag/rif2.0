@@ -893,21 +893,33 @@ Cet email a été envoyé automatiquement à : $email
 
   Future<void> completeUserProfile({
     required String uid,
-    required String school,
+    String? school, // Deprecated but kept for backward compatibility
+    String? university,
     required String schoolLevel,
     required String gender,
     required DateTime birthday,
-    required String location,
+    String? location, // Deprecated but kept for backward compatibility
+    String? country,
+    String? province,
   }) async {
     try {
-      await updateUserProfile(uid, {
-        'school': school,
+      final Map<String, dynamic> updateData = {
         'schoolLevel': schoolLevel,
         'gender': gender,
         'birthday': Timestamp.fromDate(birthday),
-        'location': location,
         'isProfileComplete': true,
-      });
+      };
+
+      // Add new fields if provided
+      if (university != null) updateData['university'] = university;
+      if (country != null) updateData['country'] = country;
+      if (province != null) updateData['province'] = province;
+
+      // Keep old fields for backward compatibility
+      if (school != null) updateData['school'] = school;
+      if (location != null) updateData['location'] = location;
+
+      await updateUserProfile(uid, updateData);
       debugPrintAuth('User profile completed successfully');
     } catch (e) {
       debugPrintAuth('Error completing user profile: $e');
@@ -1081,10 +1093,24 @@ Cet email a été envoyé automatiquement à : $email
       final query = await FirebaseFirestore.instance
           .collection('ratings')
           .where('presentationId', isEqualTo: presentationId)
-          .orderBy('ratedAt', descending: true)
           .get();
 
-      return query.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList();
+      final results = query.docs.map((doc) {
+        final data = {...doc.data(), 'id': doc.id};
+        return data;
+      }).toList();
+
+      // Sort by timestamp in Dart instead of Firestore to avoid index requirement
+      results.sort((a, b) {
+        final aTime = a['ratedAt'] as Timestamp?;
+        final bTime = b['ratedAt'] as Timestamp?;
+        if (aTime == null && bTime == null) return 0;
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+        return bTime.compareTo(aTime); // Descending order (newest first)
+      });
+
+      return results;
     } catch (e) {
       debugPrintAuth('Error getting all ratings: $e');
       return [];

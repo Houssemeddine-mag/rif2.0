@@ -507,7 +507,7 @@ const Program = () => {
             className="form-section"
             style={{ marginTop: 24, background: "#f7f7fa" }}
           >
-            <h3>Keynote Speaker</h3>
+            <h3>Keynote Speaker (Optional)</h3>
             <div className="form-row">
               <div className="form-group">
                 <label>Name</label>
@@ -516,7 +516,7 @@ const Program = () => {
                   name="keynote.name"
                   value={formData.keynote.name}
                   onChange={handleInputChange}
-                  required
+                  placeholder="Optional - Enter keynote speaker name"
                 />
               </div>
               <div className="form-group">
@@ -526,7 +526,7 @@ const Program = () => {
                   name="keynote.affiliation"
                   value={formData.keynote.affiliation}
                   onChange={handleInputChange}
-                  required
+                  placeholder="Optional - Enter speaker affiliation"
                 />
               </div>
             </div>
@@ -549,7 +549,7 @@ const Program = () => {
                   name="keynote.bio"
                   value={formData.keynote.bio}
                   onChange={handleInputChange}
-                  required
+                  placeholder="Optional - Enter speaker bio"
                 />
               </div>
               <div className="form-group presenter-image-upload">
@@ -585,7 +585,9 @@ const Program = () => {
               </div>
             </div>
             <div className="form-group" style={{ marginTop: 12 }}>
-              <label>
+              <label
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
                 <input
                   type="checkbox"
                   checked={formData.keynoteHasConference}
@@ -595,7 +597,7 @@ const Program = () => {
                       keynoteHasConference: e.target.checked,
                     }))
                   }
-                  style={{ marginRight: 8 }}
+                  style={{ width: "16px", height: "16px", flexShrink: 0 }}
                 />
                 Keynote speaker gives a conference
               </label>
@@ -1044,61 +1046,72 @@ const Program = () => {
                     </button>
                   </div>
                 </div>
-                {/* Keynote Speaker */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    background: "#f7f7fa",
-                    borderRadius: 12,
-                    padding: 16,
-                    marginBottom: 16,
-                  }}
-                >
-                  {session.keynote && session.keynote.image && (
-                    <img
-                      src={session.keynote.image}
-                      alt="Keynote"
-                      style={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginRight: 18,
-                        border: "2px solid #a259ff",
-                        background: "#fff",
-                      }}
-                    />
-                  )}
-                  <div>
+                {/* Keynote Speaker - Only show if keynote exists */}
+                {session.keynote &&
+                  (session.keynote.name ||
+                    session.keynote.affiliation ||
+                    session.keynote.bio) && (
                     <div
                       style={{
-                        fontWeight: 600,
-                        fontSize: 17,
-                        color: "#232946",
+                        display: "flex",
+                        alignItems: "center",
+                        background: "#f7f7fa",
+                        borderRadius: 12,
+                        padding: 16,
+                        marginBottom: 16,
                       }}
                     >
-                      {session.keynote?.name}
-                    </div>
-                    <div style={{ color: "#4f8cff", fontSize: 15 }}>
-                      {session.keynote?.affiliation}
-                    </div>
-                    <div style={{ color: "#7f8c8d", fontSize: 14 }}>
-                      {session.keynote?.bio}
-                    </div>
-                    {session.keynoteDescription && (
-                      <div
-                        style={{
-                          color: "#232946",
-                          fontSize: 15,
-                          marginBottom: 10,
-                        }}
-                      >
-                        <b>Description:</b> {session.keynoteDescription}
+                      {session.keynote && session.keynote.image && (
+                        <img
+                          src={session.keynote.image}
+                          alt="Keynote"
+                          style={{
+                            width: 64,
+                            height: 64,
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            marginRight: 18,
+                            border: "2px solid #a259ff",
+                            background: "#fff",
+                          }}
+                        />
+                      )}
+                      <div>
+                        {session.keynote?.name && (
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: 17,
+                              color: "#232946",
+                            }}
+                          >
+                            {session.keynote.name}
+                          </div>
+                        )}
+                        {session.keynote?.affiliation && (
+                          <div style={{ color: "#4f8cff", fontSize: 15 }}>
+                            {session.keynote.affiliation}
+                          </div>
+                        )}
+                        {session.keynote?.bio && (
+                          <div style={{ color: "#7f8c8d", fontSize: 14 }}>
+                            {session.keynote.bio}
+                          </div>
+                        )}
+                        {session.keynoteDescription && (
+                          <div
+                            style={{
+                              color: "#232946",
+                              fontSize: 15,
+                              marginBottom: 10,
+                            }}
+                          >
+                            <b>Description:</b> {session.keynoteDescription}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </div>
+                  )}
                 {/* Conferences Table */}
                 <table className="sessions-table" style={{ marginTop: 10 }}>
                   <thead>

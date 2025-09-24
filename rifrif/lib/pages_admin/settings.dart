@@ -8,7 +8,7 @@ class SettingsPage extends StatelessWidget {
     return Center(
       child: Text(
         'Paramètres à venir',
-        style: TextStyle(fontSize: 24, color: Color(0xFFAA6B94)),
+        style: TextStyle(fontSize: 24, color: Color(0xFF614f96)),
       ),
     );
   }

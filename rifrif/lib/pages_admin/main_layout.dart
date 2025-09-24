@@ -49,14 +49,14 @@ class _MainLayoutState extends State<MainLayout> {
                 children: [
                   Icon(
                     Icons.exit_to_app,
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     size: 28,
                   ),
                   SizedBox(width: 12),
                   Text(
                     'Quitter l\'application',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -84,7 +84,7 @@ class _MainLayoutState extends State<MainLayout> {
                     Navigator.of(context).pop(true); // Exit the app
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
+                    backgroundColor: Color(0xFF614f96),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -115,14 +115,14 @@ class _MainLayoutState extends State<MainLayout> {
                 children: [
                   Icon(
                     Icons.logout,
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     size: 28,
                   ),
                   SizedBox(width: 12),
                   Text(
                     'Déconnexion',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -150,7 +150,7 @@ class _MainLayoutState extends State<MainLayout> {
                     Navigator.of(context).pop(true); // Confirm disconnect
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
+                    backgroundColor: Color(0xFF614f96),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -227,7 +227,7 @@ class _MainLayoutState extends State<MainLayout> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.menu, color: Color(0xFFAA6B94)),
+            icon: Icon(Icons.menu, color: Color(0xFF614f96)),
             onPressed: () {
               _scaffoldKey.currentState?.openDrawer();
             },
@@ -235,7 +235,7 @@ class _MainLayoutState extends State<MainLayout> {
           title: Text(
             _welcomeMessage,
             style: TextStyle(
-              color: Color(0xFFAA6B94),
+              color: Color(0xFF614f96),
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

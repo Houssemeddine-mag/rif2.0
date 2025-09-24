@@ -89,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFFAA6B94),
+              primary: Color(0xFF614f96),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -139,13 +139,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.1),
+                          color: Color(0xFF614f96).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.camera_alt,
                           size: 30,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -167,13 +167,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.1),
+                          color: Color(0xFF614f96).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.photo_library,
                           size: 30,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -352,7 +352,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? const Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color(0xFFAA6B94)),
+                                  Color(0xFF614f96)),
                               strokeWidth: 2,
                             ),
                           )
@@ -385,7 +385,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -515,10 +515,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       });
                     },
                     icon: const Icon(Icons.edit,
-                        size: 16, color: Color(0xFFAA6B94)),
+                        size: 16, color: Color(0xFF614f96)),
                     label: const Text(
                       'Update',
-                      style: TextStyle(color: Color(0xFFAA6B94)),
+                      style: TextStyle(color: Color(0xFF614f96)),
                     ),
                   ),
               ],
@@ -626,7 +626,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
+                  borderSide: const BorderSide(color: Color(0xFF614f96)),
                 ),
               ),
             ),
@@ -643,7 +643,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
+                  borderSide: const BorderSide(color: Color(0xFF614f96)),
                 ),
               ),
             ),
@@ -727,7 +727,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFAA6B94)),
+                  borderSide: const BorderSide(color: Color(0xFF614f96)),
                 ),
               ),
             ),
@@ -753,8 +753,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               });
                             },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFFAA6B94),
-                        side: const BorderSide(color: Color(0xFFAA6B94)),
+                        foregroundColor: Color(0xFF614f96),
+                        side: const BorderSide(color: Color(0xFF614f96)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -774,7 +774,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ElevatedButton(
                       onPressed: _isCompleting ? null : _completeProfile,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFAA6B94),
+                        backgroundColor: Color(0xFF614f96),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -809,7 +809,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ElevatedButton(
                   onPressed: _isCompleting ? null : _completeProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
+                    backgroundColor: Color(0xFF614f96),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -880,14 +880,14 @@ class _ProfilePageState extends State<ProfilePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
               ),
             )
           : SingleChildScrollView(

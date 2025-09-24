@@ -47,6 +47,14 @@ const Sidebar = () => (
           Database
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/app/keynote-in-app"
+          className={({ isActive }) => (isActive ? "active" : undefined)}
+        >
+          Keynote in App
+        </NavLink>
+      </li>
     </ul>
     <div className="sidebar-logout-wrapper">
       <button

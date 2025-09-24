@@ -101,14 +101,14 @@ class _SettingsPageState extends State<SettingsPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
               ),
             )
           : SingleChildScrollView(
@@ -127,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
+                          colors: [Color(0xFF614f96), Color(0xFF7862ab)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -184,126 +184,143 @@ class _SettingsPageState extends State<SettingsPage> {
                           value: _notificationsEnabled,
                           onChanged: _toggleNotifications,
                           icon: Icons.notifications_active,
-                          iconColor: Color(0xFFAA6B94),
+                          iconColor: Color(0xFF614f96),
+                          enabled: true,
                         ),
 
-                        if (_notificationsEnabled) ...[
-                          Divider(height: 1),
+                        Divider(height: 1),
 
-                          // Session notifications
-                          _buildSwitchTile(
-                            title: 'Session Notifications',
-                            subtitle: 'Get notified about upcoming sessions',
-                            value: _sessionNotifications,
-                            onChanged: (value) async {
-                              setState(() {
-                                _sessionNotifications = value;
-                              });
-                              await _saveSettings();
+                        // Session notifications
+                        _buildSwitchTile(
+                          title: 'Session Notifications',
+                          subtitle: 'Get notified about upcoming sessions',
+                          value: _sessionNotifications,
+                          onChanged: _notificationsEnabled
+                              ? (value) async {
+                                  setState(() {
+                                    _sessionNotifications = value;
+                                  });
+                                  await _saveSettings();
 
-                              if (value) {
-                                await PushNotificationService.subscribeToTopic(
-                                    'sessions');
-                              } else {
-                                await PushNotificationService
-                                    .unsubscribeFromTopic('sessions');
-                              }
-                            },
-                            icon: Icons.event,
-                            iconColor: Colors.blue,
-                          ),
+                                  if (value) {
+                                    await PushNotificationService
+                                        .subscribeToTopic('sessions');
+                                  } else {
+                                    await PushNotificationService
+                                        .unsubscribeFromTopic('sessions');
+                                  }
+                                }
+                              : null,
+                          icon: Icons.event,
+                          iconColor: Colors.blue,
+                          enabled: _notificationsEnabled,
+                        ),
 
-                          Divider(height: 1),
+                        Divider(height: 1),
 
-                          // Conference notifications
-                          _buildSwitchTile(
-                            title: 'Conference Notifications',
-                            subtitle:
-                                'Get notified about specific presentations',
-                            value: _conferenceNotifications,
-                            onChanged: (value) async {
-                              setState(() {
-                                _conferenceNotifications = value;
-                              });
-                              await _saveSettings();
+                        // Conference notifications
+                        _buildSwitchTile(
+                          title: 'Conference Notifications',
+                          subtitle: 'Get notified about specific presentations',
+                          value: _conferenceNotifications,
+                          onChanged: _notificationsEnabled
+                              ? (value) async {
+                                  setState(() {
+                                    _conferenceNotifications = value;
+                                  });
+                                  await _saveSettings();
 
-                              if (value) {
-                                await PushNotificationService.subscribeToTopic(
-                                    'conferences');
-                              } else {
-                                await PushNotificationService
-                                    .unsubscribeFromTopic('conferences');
-                              }
-                            },
-                            icon: Icons.mic,
-                            iconColor: Colors.green,
-                          ),
+                                  if (value) {
+                                    await PushNotificationService
+                                        .subscribeToTopic('conferences');
+                                  } else {
+                                    await PushNotificationService
+                                        .unsubscribeFromTopic('conferences');
+                                  }
+                                }
+                              : null,
+                          icon: Icons.mic,
+                          iconColor: Colors.green,
+                          enabled: _notificationsEnabled,
+                        ),
 
-                          Divider(height: 1),
+                        Divider(height: 1),
 
-                          // General notifications
-                          _buildSwitchTile(
-                            title: 'General Notifications',
-                            subtitle: 'Receive general announcements',
-                            value: _generalNotifications,
-                            onChanged: (value) async {
-                              setState(() {
-                                _generalNotifications = value;
-                              });
-                              await _saveSettings();
-                            },
-                            icon: Icons.info,
-                            iconColor: Colors.orange,
-                          ),
-                        ],
+                        // General notifications
+                        _buildSwitchTile(
+                          title: 'General Notifications',
+                          subtitle: 'Receive general announcements',
+                          value: _generalNotifications,
+                          onChanged: _notificationsEnabled
+                              ? (value) async {
+                                  setState(() {
+                                    _generalNotifications = value;
+                                  });
+                                  await _saveSettings();
+                                }
+                              : null,
+                          icon: Icons.info,
+                          iconColor: Colors.orange,
+                          enabled: _notificationsEnabled,
+                        ),
                       ],
                     ),
                   ),
 
-                  if (_notificationsEnabled) ...[
-                    SizedBox(height: 24),
+                  SizedBox(height: 24),
 
-                    // Notification Behavior Section
-                    _buildSectionTitle('Notification Behavior', Icons.tune),
+                  // Notification Behavior Section
+                  _buildSectionTitle('Notification Behavior', Icons.tune,
+                      enabled: _notificationsEnabled),
 
-                    Card(
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          _buildSwitchTile(
-                            title: 'Sound',
-                            subtitle: 'Play sound for notifications',
-                            value: _soundEnabled,
-                            onChanged: (value) async {
-                              setState(() {
-                                _soundEnabled = value;
-                              });
-                              await _saveSettings();
-                            },
-                            icon: Icons.volume_up,
-                            iconColor: Colors.purple,
-                          ),
-                          Divider(height: 1),
-                          _buildSwitchTile(
-                            title: 'Vibration',
-                            subtitle: 'Vibrate for notifications',
-                            value: _vibrationEnabled,
-                            onChanged: (value) async {
-                              setState(() {
-                                _vibrationEnabled = value;
-                              });
-                              await _saveSettings();
-                            },
-                            icon: Icons.vibration,
-                            iconColor: Colors.red,
-                          ),
-                        ],
-                      ),
+                  Card(
+                    elevation: _notificationsEnabled ? 1 : 0.5,
+                    color:
+                        _notificationsEnabled ? Colors.white : Colors.grey[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: _notificationsEnabled
+                          ? BorderSide.none
+                          : BorderSide(color: Colors.grey[200]!, width: 1),
                     ),
-                  ],
+                    child: Column(
+                      children: [
+                        _buildSwitchTile(
+                          title: 'Sound',
+                          subtitle: 'Play sound for notifications',
+                          value: _soundEnabled,
+                          onChanged: _notificationsEnabled
+                              ? (value) async {
+                                  setState(() {
+                                    _soundEnabled = value;
+                                  });
+                                  await _saveSettings();
+                                }
+                              : null,
+                          icon: Icons.volume_up,
+                          iconColor: Colors.purple,
+                          enabled: _notificationsEnabled,
+                        ),
+                        Divider(height: 1),
+                        _buildSwitchTile(
+                          title: 'Vibration',
+                          subtitle: 'Vibrate for notifications',
+                          value: _vibrationEnabled,
+                          onChanged: _notificationsEnabled
+                              ? (value) async {
+                                  setState(() {
+                                    _vibrationEnabled = value;
+                                  });
+                                  await _saveSettings();
+                                }
+                              : null,
+                          icon: Icons.vibration,
+                          iconColor: Colors.red,
+                          enabled: _notificationsEnabled,
+                        ),
+                      ],
+                    ),
+                  ),
 
                   SizedBox(height: 24),
 
@@ -322,7 +339,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           subtitle:
                               'International Conference on Women in Computer Science Research',
                           icon: Icons.school,
-                          iconColor: Color(0xFFAA6B94),
+                          iconColor: Color(0xFF614f96),
                         ),
                         Divider(height: 1),
                         _buildInfoTile(
@@ -361,21 +378,34 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon) {
+  Widget _buildSectionTitle(String title, IconData icon,
+      {bool enabled = true}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12, left: 4),
       child: Row(
         children: [
-          Icon(icon, color: Color(0xFFAA6B94), size: 20),
+          Icon(icon,
+              color: enabled ? Color(0xFF614f96) : Colors.grey[400], size: 20),
           SizedBox(width: 8),
           Text(
             title,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFAA6B94),
+              color: enabled ? Color(0xFF614f96) : Colors.grey[400],
             ),
           ),
+          if (!enabled) ...[
+            SizedBox(width: 8),
+            Text(
+              '(Disabled)',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[400],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -385,39 +415,54 @@ class _SettingsPageState extends State<SettingsPage> {
     required String title,
     required String subtitle,
     required bool value,
-    required Function(bool) onChanged,
+    required Function(bool)? onChanged,
     required IconData icon,
     required Color iconColor,
+    bool enabled = true,
   }) {
-    return ListTile(
-      leading: Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.6,
+      child: ListTile(
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (enabled ? iconColor : Colors.grey).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+            border:
+                enabled ? null : Border.all(color: Colors.grey[300]!, width: 1),
+          ),
+          child: Icon(icon,
+              color: enabled ? iconColor : Colors.grey[400], size: 20),
         ),
-        child: Icon(icon, color: iconColor, size: 20),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: enabled ? Colors.black : Colors.grey[500],
+          ),
         ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          color: Colors.grey[600],
-          fontSize: 13,
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: enabled ? Colors.grey[600] : Colors.grey[400],
+            fontSize: 13,
+          ),
         ),
+        trailing: Switch(
+          value: value,
+          onChanged: enabled ? onChanged : null,
+          activeColor: Color(0xFF614f96),
+          inactiveThumbColor:
+              enabled ? (value ? null : Colors.grey[400]) : Colors.grey[300],
+          inactiveTrackColor:
+              enabled ? (value ? null : Colors.grey[200]) : Colors.grey[200],
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          splashRadius: enabled ? null : 0,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        enabled: enabled,
       ),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeColor: Color(0xFFAA6B94),
-      ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 

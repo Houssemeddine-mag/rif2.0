@@ -6,11 +6,14 @@ class UserProfile {
   final String email;
   final String? displayName;
   final String? photoURL;
-  final String? school;
+  final String? school; // Deprecated - use university instead
+  final String? university;
   final String? schoolLevel;
   final String? gender; // 'male', 'female', or null
   final DateTime? birthday;
-  final String? location;
+  final String? location; // Deprecated - use country/province instead
+  final String? country;
+  final String? province; // For Algeria: wilaya, for others: state/province
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool isProfileComplete;
@@ -21,10 +24,13 @@ class UserProfile {
     this.displayName,
     this.photoURL,
     this.school,
+    this.university,
     this.schoolLevel,
     this.gender,
     this.birthday,
     this.location,
+    this.country,
+    this.province,
     this.createdAt,
     this.updatedAt,
     this.isProfileComplete = false,
@@ -37,6 +43,7 @@ class UserProfile {
       displayName: map['displayName'],
       photoURL: map['photoURL'],
       school: map['school'],
+      university: map['university'],
       schoolLevel: map['schoolLevel'],
       gender: map['gender'],
       birthday: map['birthday'] != null
@@ -45,6 +52,8 @@ class UserProfile {
               : DateTime.parse(map['birthday']))
           : null,
       location: map['location'],
+      country: map['country'],
+      province: map['province'],
       createdAt: map['createdAt'] != null
           ? (map['createdAt'] is Timestamp
               ? (map['createdAt'] as Timestamp).toDate()
@@ -66,10 +75,13 @@ class UserProfile {
       'displayName': displayName,
       'photoURL': photoURL,
       'school': school,
+      'university': university,
       'schoolLevel': schoolLevel,
       'gender': gender,
       'birthday': birthday != null ? Timestamp.fromDate(birthday!) : null,
       'location': location,
+      'country': country,
+      'province': province,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
       'isProfileComplete': isProfileComplete,
@@ -82,10 +94,13 @@ class UserProfile {
     String? displayName,
     String? photoURL,
     String? school,
+    String? university,
     String? schoolLevel,
     String? gender,
     DateTime? birthday,
     String? location,
+    String? country,
+    String? province,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isProfileComplete,
@@ -96,10 +111,13 @@ class UserProfile {
       displayName: displayName ?? this.displayName,
       photoURL: photoURL ?? this.photoURL,
       school: school ?? this.school,
+      university: university ?? this.university,
       schoolLevel: schoolLevel ?? this.schoolLevel,
       gender: gender ?? this.gender,
       birthday: birthday ?? this.birthday,
       location: location ?? this.location,
+      country: country ?? this.country,
+      province: province ?? this.province,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isProfileComplete: isProfileComplete ?? this.isProfileComplete,
@@ -134,7 +152,7 @@ class UserProfile {
       case 'female':
         return Color(0xFFFF69B4); // Pink for female
       default:
-        return Color(0xFFAA6B94); // Default app theme color
+        return Color(0xFF614f96); // Default app theme color
     }
   }
 }

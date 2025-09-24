@@ -367,49 +367,95 @@ class _HomePageState extends State<HomePage> {
             Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                image: DecorationImage(
+                  image: AssetImage('lib/resource/constantine.jpg'),
+                  fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "RIF 2025 International Conference",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(
+                      0.5), // Semi-transparent overlay for text readability
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sponsor logos at top
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcATop,
+                          ),
+                          child: Image.asset(
+                            'lib/resource/IEEE dz.png',
+                            height: 50,
+                            width: 70,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcATop,
+                          ),
+                          child: Image.asset(
+                            'lib/resource/IEEE.png',
+                            height: 60,
+                            width: 80,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcATop,
+                          ),
+                          child: Image.asset(
+                            'lib/resource/LOGO_Univ2-removebg-preview.png',
+                            height: 50,
+                            width: 70,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Women in Computer Science Research - Constantine, Algeria",
-                    style: TextStyle(fontSize: 16, color: Colors.white70),
-                  ),
-                  SizedBox(height: 16),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 8,
-                    children: [
-                      _iconText(Icons.calendar_today, conferenceStartDate),
-                      _iconText(Icons.location_on, "Constantine University 2"),
-                      _iconText(Icons.people, _getParticipantText()),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    _getCountdownText(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                    SizedBox(height: 20),
+                    Text(
+                      "The 14th International Conference on Research In ComputIng At Feminine",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 16),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      children: [
+                        _iconText(Icons.calendar_today, conferenceStartDate),
+                        _iconText(
+                            Icons.location_on, "Constantine University 2"),
+                        _iconText(Icons.people, _getParticipantText()),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      _getCountdownText(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -441,7 +487,7 @@ class _HomePageState extends State<HomePage> {
                     height: 200,
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                       ),
                     ),
                   )
@@ -450,7 +496,7 @@ class _HomePageState extends State<HomePage> {
                         height: 150,
                         child: Card(
                           margin: EdgeInsets.symmetric(vertical: 8),
-                          color: Color(0xFFEACBE5),
+                          color: Color(0xFFE6DFF2),
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -458,14 +504,14 @@ class _HomePageState extends State<HomePage> {
                                 Icon(
                                   Icons.event_busy,
                                   size: 48,
-                                  color: Color(0xFFAA6B94),
+                                  color: Color(0xFF614f96),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
                                   "No upcoming sessions",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Color(0xFFAA6B94),
+                                    color: Color(0xFF614f96),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -502,7 +548,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: Text("View full program"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFAA6B94),
+                  backgroundColor: Color(0xFF614f96),
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -514,7 +560,7 @@ class _HomePageState extends State<HomePage> {
             Text(
               "About RIF 2025",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -540,7 +586,7 @@ class _HomePageState extends State<HomePage> {
                             icon: Icon(Icons.web, size: 18),
                             label: Text("Visit website"),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFAA6B94),
+                              backgroundColor: Color(0xFF614f96),
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),
@@ -555,8 +601,8 @@ class _HomePageState extends State<HomePage> {
                             icon: Icon(Icons.history, size: 18),
                             label: Text("Past editions"),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFEACBE5),
-                              foregroundColor: Color(0xFFAA6B94),
+                              backgroundColor: Color(0xFFE6DFF2),
+                              foregroundColor: Color(0xFF614f96),
                               padding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),
                             ),
@@ -586,7 +632,7 @@ class _HomePageState extends State<HomePage> {
                         "Organizer Mode",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       ),
                       SizedBox(height: 8),
@@ -634,7 +680,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 4),
@@ -663,7 +709,7 @@ class _HomePageState extends State<HomePage> {
 
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
-      color: Color(0xFFEACBE5),
+      color: Color(0xFFE6DFF2),
       child: ListTile(
         leading: speakerImage != null
             ? Container(
@@ -672,7 +718,7 @@ class _HomePageState extends State<HomePage> {
                 child: ClipOval(child: speakerImage),
               )
             : CircleAvatar(
-                backgroundColor: Color(0xFFAA6B94),
+                backgroundColor: Color(0xFF614f96),
                 child: Icon(Icons.person, color: Colors.white),
               ),
         title: Text(
@@ -688,7 +734,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 _formatDate(event.date),
                 style: TextStyle(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -772,10 +818,10 @@ class _HomePageState extends State<HomePage> {
   Widget _organizerButton(String label) {
     return ElevatedButton(
       onPressed: () {},
-      child: Text(label, style: TextStyle(color: Color(0xFFAA6B94))),
+      child: Text(label, style: TextStyle(color: Color(0xFF614f96))),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFEACBE5),
-        foregroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFFE6DFF2),
+        foregroundColor: Color(0xFF614f96),
       ),
     );
   }

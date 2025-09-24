@@ -75,7 +75,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 Navigator.of(context).pushReplacementNamed('/login');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFAA6B94),
+                backgroundColor: Color(0xFF614f96),
                 foregroundColor: Colors.white,
               ),
               child: Text('Exit'),
@@ -330,7 +330,7 @@ class _PresentationPageState extends State<PresentationPage> {
         title: Text(
           'Presenter Dashboard',
           style: TextStyle(
-            color: Color(0xFFAA6B94),
+            color: Color(0xFF614f96),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -338,7 +338,7 @@ class _PresentationPageState extends State<PresentationPage> {
         elevation: 1,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: Color(0xFFAA6B94)),
+            icon: Icon(Icons.refresh, color: Color(0xFF614f96)),
             onPressed: () {
               if (_selectedPresentationTitle != null) {
                 _loadQuestionsForPresentation(_selectedPresentationTitle!);
@@ -346,7 +346,7 @@ class _PresentationPageState extends State<PresentationPage> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.logout, color: Color(0xFFAA6B94)),
+            icon: Icon(Icons.logout, color: Color(0xFF614f96)),
             onPressed: () async {
               final shouldExit = await _showExitConfirmation();
               if (shouldExit == true) {
@@ -400,16 +400,16 @@ class _PresentationPageState extends State<PresentationPage> {
       padding: EdgeInsets.all(24),
       margin: EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
-        color: Color(0xFFAA6B94).withValues(alpha: 0.05),
+        color: Color(0xFF614f96).withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Color(0xFFAA6B94).withValues(alpha: 0.2)),
+        border: Border.all(color: Color(0xFF614f96).withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
           Icon(
             Icons.slideshow_outlined,
             size: 48,
-            color: Color(0xFFAA6B94),
+            color: Color(0xFF614f96),
           ),
           SizedBox(height: 16),
           Text(
@@ -417,7 +417,7 @@ class _PresentationPageState extends State<PresentationPage> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFAA6B94),
+              color: Color(0xFF614f96),
             ),
           ),
           SizedBox(height: 8),
@@ -513,7 +513,7 @@ class _PresentationPageState extends State<PresentationPage> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFAA6B94),
+                            backgroundColor: Color(0xFF614f96),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 8),
@@ -556,7 +556,7 @@ class _PresentationPageState extends State<PresentationPage> {
             // Section header
             Row(
               children: [
-                Icon(Icons.slideshow, color: Color(0xFFAA6B94)),
+                Icon(Icons.slideshow, color: Color(0xFF614f96)),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -564,7 +564,7 @@ class _PresentationPageState extends State<PresentationPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -603,18 +603,18 @@ class _PresentationPageState extends State<PresentationPage> {
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Color(0xFFAA6B94).withValues(alpha: 0.1)
+                          ? Color(0xFF614f96).withValues(alpha: 0.1)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color:
-                            isSelected ? Color(0xFFAA6B94) : Colors.grey[300]!,
+                            isSelected ? Color(0xFF614f96) : Colors.grey[300]!,
                         width: isSelected ? 2 : 1,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: Color(0xFFAA6B94).withValues(alpha: 0.1),
+                                color: Color(0xFF614f96).withValues(alpha: 0.1),
                                 blurRadius: 8,
                                 offset: Offset(0, 2),
                               ),
@@ -631,7 +631,7 @@ class _PresentationPageState extends State<PresentationPage> {
                                   ? Icons.radio_button_checked
                                   : Icons.radio_button_unchecked,
                               color: isSelected
-                                  ? Color(0xFFAA6B94)
+                                  ? Color(0xFF614f96)
                                   : Colors.grey[600],
                               size: 20,
                             ),
@@ -645,7 +645,7 @@ class _PresentationPageState extends State<PresentationPage> {
                                       ? FontWeight.bold
                                       : FontWeight.w500,
                                   color: isSelected
-                                      ? Color(0xFFAA6B94)
+                                      ? Color(0xFF614f96)
                                       : Colors.black87,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -667,7 +667,7 @@ class _PresentationPageState extends State<PresentationPage> {
                                   '${conference.start} - ${conference.end}',
                                   style: TextStyle(
                                     color: isSelected
-                                        ? Color(0xFFAA6B94)
+                                        ? Color(0xFF614f96)
                                             .withValues(alpha: 0.8)
                                         : Colors.grey[600],
                                     fontSize: 14,
@@ -681,7 +681,7 @@ class _PresentationPageState extends State<PresentationPage> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFAA6B94),
+                                    color: Color(0xFF614f96),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
@@ -1265,7 +1265,7 @@ class _PresentationPageState extends State<PresentationPage> {
         // Questions header
         Row(
           children: [
-            Icon(Icons.help_outline, color: Color(0xFFAA6B94)),
+            Icon(Icons.help_outline, color: Color(0xFF614f96)),
             SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -1273,7 +1273,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -1285,19 +1285,19 @@ class _PresentationPageState extends State<PresentationPage> {
         Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Color(0xFFAA6B94).withValues(alpha: 0.05),
+            color: Color(0xFF614f96).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Color(0xFFAA6B94).withValues(alpha: 0.2)),
+            border: Border.all(color: Color(0xFF614f96).withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
-              Icon(Icons.access_time, color: Color(0xFFAA6B94), size: 16),
+              Icon(Icons.access_time, color: Color(0xFF614f96), size: 16),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Showing all questions submitted during this presentation\'s scheduled time.',
                   style: TextStyle(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     fontSize: 12,
                   ),
                 ),
@@ -1501,7 +1501,7 @@ class _PresentationPageState extends State<PresentationPage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Color(0xFFAA6B94)),
+                      borderSide: BorderSide(color: Color(0xFF614f96)),
                     ),
                     contentPadding: EdgeInsets.all(12),
                   ),
@@ -1518,7 +1518,7 @@ class _PresentationPageState extends State<PresentationPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
+                    backgroundColor: Color(0xFF614f96),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

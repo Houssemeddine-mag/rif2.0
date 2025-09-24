@@ -22,7 +22,7 @@ class Sidebar extends StatelessWidget {
           DrawerHeader(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
+                colors: [Color(0xFF614f96), Color(0xFF7862ab)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -111,11 +111,11 @@ class Sidebar extends StatelessWidget {
   }) {
     final isSelected = selectedIndex == index;
     return ListTile(
-      leading: Icon(icon, color: isSelected ? Color(0xFFAA6B94) : Colors.grey),
+      leading: Icon(icon, color: isSelected ? Color(0xFF614f96) : Colors.grey),
       title: Text(
         title,
         style: TextStyle(
-          color: isSelected ? Color(0xFFAA6B94) : Colors.grey,
+          color: isSelected ? Color(0xFF614f96) : Colors.grey,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -125,7 +125,7 @@ class Sidebar extends StatelessWidget {
             Navigator.pop(context); // Close drawer
           },
       selected: isSelected,
-      selectedTileColor: Color(0xFFEACBE5).withOpacity(0.2),
+      selectedTileColor: Color(0xFFE6DFF2).withOpacity(0.2),
     );
   }
 

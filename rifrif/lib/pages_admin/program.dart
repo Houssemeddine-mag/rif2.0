@@ -233,13 +233,13 @@ class _ProgramPageState extends State<ProgramPage>
             ),
           ],
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showNotificationManagement,
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         foregroundColor: Colors.white,
         icon: Icon(Icons.manage_history),
         label: Text('Manage Notifications'),
@@ -255,13 +255,13 @@ class _ProgramPageState extends State<ProgramPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
             ),
             SizedBox(height: 16),
             Text(
               'Loading program...',
               style: TextStyle(
-                color: Color(0xFFAA6B94),
+                color: Color(0xFF614f96),
                 fontSize: 16,
               ),
             ),
@@ -317,7 +317,7 @@ class _ProgramPageState extends State<ProgramPage>
               Icon(
                 Icons.calendar_today_outlined,
                 size: 64,
-                color: Color(0xFFAA6B94).withOpacity(0.5),
+                color: Color(0xFF614f96).withOpacity(0.5),
               ),
               SizedBox(height: 16),
               Text(
@@ -325,7 +325,7 @@ class _ProgramPageState extends State<ProgramPage>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 8),
@@ -342,7 +342,7 @@ class _ProgramPageState extends State<ProgramPage>
                 'This page will update automatically.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -358,7 +358,7 @@ class _ProgramPageState extends State<ProgramPage>
       return Container(
         child: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
           ),
         ),
       );
@@ -378,7 +378,7 @@ class _ProgramPageState extends State<ProgramPage>
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
+                colors: [Color(0xFF614f96), Color(0xFF7862ab)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -418,11 +418,11 @@ class _ProgramPageState extends State<ProgramPage>
                 controller: _tabController!,
                 isScrollable: true,
                 indicator: BoxDecoration(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 labelColor: Colors.white,
-                unselectedLabelColor: Color(0xFFAA6B94),
+                unselectedLabelColor: Color(0xFF614f96),
                 labelStyle: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -588,13 +588,13 @@ class _ProgramPageState extends State<ProgramPage>
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Color(0xFFAA6B94).withOpacity(0.1),
+                      color: Color(0xFF614f96).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${program.start} - ${program.end}',
                       style: TextStyle(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -632,15 +632,15 @@ class _ProgramPageState extends State<ProgramPage>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Color(0xFFAA6B94).withOpacity(0.1),
+                    color: Color(0xFF614f96).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border:
-                        Border.all(color: Color(0xFFAA6B94).withOpacity(0.3)),
+                        Border.all(color: Color(0xFF614f96).withOpacity(0.3)),
                   ),
                   child: Text(
                     program.room!,
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -675,7 +675,7 @@ class _ProgramPageState extends State<ProgramPage>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Color(0xFFAA6B94),
+                            color: Color(0xFF614f96),
                             width: 1,
                           ),
                         ),
@@ -687,13 +687,13 @@ class _ProgramPageState extends State<ProgramPage>
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFAA6B94).withOpacity(0.2),
+                                  color: Color(0xFF614f96).withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Icon(
                                   Icons.person,
                                   size: 16,
-                                  color: Color(0xFFAA6B94),
+                                  color: Color(0xFF614f96),
                                 ),
                               );
                             },
@@ -702,14 +702,14 @@ class _ProgramPageState extends State<ProgramPage>
                       ),
                       SizedBox(width: 8),
                     ] else ...[
-                      Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
+                      Icon(Icons.person, size: 16, color: Color(0xFF614f96)),
                       SizedBox(width: 4),
                     ],
                     Expanded(
                       child: Text(
                         'Keynote Speaker: ${program.keynote!.name}',
                         style: TextStyle(
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -776,7 +776,7 @@ class _ProgramPageState extends State<ProgramPage>
                       icon: Icon(Icons.notifications, size: 16),
                       label: Text('Notify'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFAA6B94),
+                        backgroundColor: Color(0xFF614f96),
                         foregroundColor: Colors.white,
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -828,7 +828,7 @@ class _ProgramPageState extends State<ProgramPage>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 8),
@@ -846,15 +846,15 @@ class _ProgramPageState extends State<ProgramPage>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Color(0xFFAA6B94).withOpacity(0.1),
+                    color: Color(0xFF614f96).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border:
-                        Border.all(color: Color(0xFFAA6B94).withOpacity(0.3)),
+                        Border.all(color: Color(0xFF614f96).withOpacity(0.3)),
                   ),
                   child: Text(
                     'Room: ${program.room!}',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -897,7 +897,7 @@ class _ProgramPageState extends State<ProgramPage>
                               child: Row(
                                 children: [
                                   Icon(Icons.person,
-                                      size: 16, color: Color(0xFFAA6B94)),
+                                      size: 16, color: Color(0xFF614f96)),
                                   SizedBox(width: 8),
                                   Text(chair),
                                 ],
@@ -916,7 +916,7 @@ class _ProgramPageState extends State<ProgramPage>
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFFAA6B94),
+                                color: Color(0xFF614f96),
                               ),
                             ),
                             ElevatedButton.icon(
@@ -925,7 +925,7 @@ class _ProgramPageState extends State<ProgramPage>
                               icon: Icon(Icons.notifications_active, size: 16),
                               label: Text('Notify All'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFAA6B94),
+                                backgroundColor: Color(0xFF614f96),
                                 foregroundColor: Colors.white,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
@@ -957,7 +957,7 @@ class _ProgramPageState extends State<ProgramPage>
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Color(0xFFAA6B94),
+          color: Color(0xFF614f96),
         ),
       ),
     );
@@ -965,7 +965,7 @@ class _ProgramPageState extends State<ProgramPage>
 
   Widget _buildKeynoteCard(Keynote keynote) {
     return Card(
-      color: Color(0xFFAA6B94).withOpacity(0.1),
+      color: Color(0xFF614f96).withOpacity(0.1),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Row(
@@ -979,7 +979,7 @@ class _ProgramPageState extends State<ProgramPage>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
                   border: Border.all(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     width: 2,
                   ),
                 ),
@@ -991,13 +991,13 @@ class _ProgramPageState extends State<ProgramPage>
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.2),
+                          color: Color(0xFF614f96).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(38),
                         ),
                         child: Icon(
                           Icons.person,
                           size: 40,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       );
                     },
@@ -1104,7 +1104,7 @@ class _ProgramPageState extends State<ProgramPage>
                         icon: Icon(Icons.notification_add, size: 14),
                         label: Text('Notify'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFAA6B94).withOpacity(0.8),
+                          backgroundColor: Color(0xFF614f96).withOpacity(0.8),
                           foregroundColor: Colors.white,
                           padding:
                               EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1119,13 +1119,13 @@ class _ProgramPageState extends State<ProgramPage>
             SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
+                Icon(Icons.person, size: 16, color: Color(0xFF614f96)),
                 SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     conference.presenter,
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -1281,7 +1281,7 @@ class _ProgramPageState extends State<ProgramPage>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                     ),
                   ),
                   Row(
@@ -1312,7 +1312,7 @@ class _ProgramPageState extends State<ProgramPage>
                       return Center(
                         child: CircularProgressIndicator(
                           valueColor:
-                              AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+                              AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
                         ),
                       );
                     }
@@ -1410,7 +1410,7 @@ class _ProgramPageState extends State<ProgramPage>
     switch (type) {
       case 'session':
         iconData = Icons.event;
-        iconColor = Color(0xFFAA6B94);
+        iconColor = Color(0xFF614f96);
         break;
       case 'conference':
         iconData = Icons.mic;

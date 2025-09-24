@@ -11,3 +11,16 @@ services:
     volumes:
       - ./mediamtx.yml:/mediamtx.yml
     restart: unless-stopped
+
+# version: '3.8'
+# services:
+#   mediamtx:
+#     image: bluenviron/mediamtx:latest
+#     container_name: mediamtx
+#     ports:
+#       - "1935:1935"    # RTMP for OBS input
+#       - "8888:8888"    # HLS for viewers
+#       - "9997:9997"    # Web interface for monitoring
+#     volumes:
+#       - ./mediamtx.yml:/mediamtx.yml  # Mount our config file
+#     restart: unless-stopped  # Auto-restart if crashes

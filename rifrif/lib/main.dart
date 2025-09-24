@@ -98,13 +98,13 @@ class AuthWrapper extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                   ),
                   SizedBox(height: 20),
                   Text(
                     'Vérification de l\'authentification...',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 16,
                     ),
                   ),
@@ -148,13 +148,13 @@ class UserRouteDecider extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                   ),
                   SizedBox(height: 20),
                   Text(
                     'Chargement de votre profil...',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 16,
                     ),
                   ),
@@ -200,7 +200,7 @@ class ProfileSetupWrapper extends StatelessWidget {
         title: Text(
           'Complétez votre profil',
           style: TextStyle(
-            color: Color(0xFFAA6B94),
+            color: Color(0xFF614f96),
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -220,7 +220,7 @@ class ProfileSetupWrapper extends StatelessWidget {
             child: Text(
               'Passer',
               style: TextStyle(
-                color: Color(0xFFAA6B94),
+                color: Color(0xFF614f96),
                 fontSize: 16,
               ),
             ),
@@ -258,7 +258,7 @@ class ProtectedPresenterRoute extends StatelessWidget {
             backgroundColor: Color(0xFFFDFDFD),
             body: Center(
               child: CircularProgressIndicator(
-                color: Color(0xFFAA6B94),
+                color: Color(0xFF614f96),
               ),
             ),
           );
@@ -279,7 +279,7 @@ class ProtectedPresenterRoute extends StatelessWidget {
                 'Access Denied\nRedirecting to login...',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   fontSize: 16,
                 ),
               ),

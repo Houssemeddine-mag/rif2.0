@@ -4,6 +4,7 @@ import '../models/program_model.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'presentation_feedback.dart';
 
 class ProgramPage extends StatefulWidget {
   const ProgramPage({Key? key}) : super(key: key);
@@ -232,7 +233,7 @@ class _ProgramPageState extends State<ProgramPage>
             ),
           ],
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
       ),
       body: _buildBody(),
@@ -247,13 +248,13 @@ class _ProgramPageState extends State<ProgramPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
             ),
             SizedBox(height: 16),
             Text(
               'Loading program...',
               style: TextStyle(
-                color: Color(0xFFAA6B94),
+                color: Color(0xFF614f96),
                 fontSize: 16,
               ),
             ),
@@ -309,7 +310,7 @@ class _ProgramPageState extends State<ProgramPage>
               Icon(
                 Icons.calendar_today_outlined,
                 size: 64,
-                color: Color(0xFFAA6B94).withOpacity(0.5),
+                color: Color(0xFF614f96).withOpacity(0.5),
               ),
               SizedBox(height: 16),
               Text(
@@ -317,7 +318,7 @@ class _ProgramPageState extends State<ProgramPage>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 8),
@@ -334,7 +335,7 @@ class _ProgramPageState extends State<ProgramPage>
                 'This page will update automatically.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -350,7 +351,7 @@ class _ProgramPageState extends State<ProgramPage>
       return Container(
         child: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFAA6B94)),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
           ),
         ),
       );
@@ -370,7 +371,7 @@ class _ProgramPageState extends State<ProgramPage>
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
+                colors: [Color(0xFF614f96), Color(0xFF7862ab)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -410,11 +411,11 @@ class _ProgramPageState extends State<ProgramPage>
                 controller: _tabController!,
                 isScrollable: true,
                 indicator: BoxDecoration(
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 labelColor: Colors.white,
-                unselectedLabelColor: Color(0xFFAA6B94),
+                unselectedLabelColor: Color(0xFF614f96),
                 labelStyle: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -580,13 +581,13 @@ class _ProgramPageState extends State<ProgramPage>
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Color(0xFFAA6B94).withOpacity(0.1),
+                      color: Color(0xFF614f96).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${program.start} - ${program.end}',
                       style: TextStyle(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -624,15 +625,15 @@ class _ProgramPageState extends State<ProgramPage>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Color(0xFFAA6B94).withOpacity(0.1),
+                    color: Color(0xFF614f96).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                     border:
-                        Border.all(color: Color(0xFFAA6B94).withOpacity(0.3)),
+                        Border.all(color: Color(0xFF614f96).withOpacity(0.3)),
                   ),
                   child: Text(
                     program.room!,
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -667,7 +668,7 @@ class _ProgramPageState extends State<ProgramPage>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Color(0xFFAA6B94),
+                            color: Color(0xFF614f96),
                             width: 1,
                           ),
                         ),
@@ -679,13 +680,13 @@ class _ProgramPageState extends State<ProgramPage>
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFAA6B94).withOpacity(0.2),
+                                  color: Color(0xFF614f96).withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Icon(
                                   Icons.person,
                                   size: 16,
-                                  color: Color(0xFFAA6B94),
+                                  color: Color(0xFF614f96),
                                 ),
                               );
                             },
@@ -694,14 +695,14 @@ class _ProgramPageState extends State<ProgramPage>
                       ),
                       SizedBox(width: 8),
                     ] else ...[
-                      Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
+                      Icon(Icons.person, size: 16, color: Color(0xFF614f96)),
                       SizedBox(width: 4),
                     ],
                     Expanded(
                       child: Text(
                         'Keynote Speaker: ${program.keynote!.name}',
                         style: TextStyle(
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -802,7 +803,7 @@ class _ProgramPageState extends State<ProgramPage>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 8),
@@ -820,15 +821,15 @@ class _ProgramPageState extends State<ProgramPage>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Color(0xFFAA6B94).withOpacity(0.1),
+                    color: Color(0xFF614f96).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border:
-                        Border.all(color: Color(0xFFAA6B94).withOpacity(0.3)),
+                        Border.all(color: Color(0xFF614f96).withOpacity(0.3)),
                   ),
                   child: Text(
                     'Room: ${program.room!}',
                     style: TextStyle(
-                      color: Color(0xFFAA6B94),
+                      color: Color(0xFF614f96),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -871,7 +872,7 @@ class _ProgramPageState extends State<ProgramPage>
                               child: Row(
                                 children: [
                                   Icon(Icons.person,
-                                      size: 16, color: Color(0xFFAA6B94)),
+                                      size: 16, color: Color(0xFF614f96)),
                                   SizedBox(width: 8),
                                   Text(chair),
                                 ],
@@ -906,7 +907,7 @@ class _ProgramPageState extends State<ProgramPage>
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Color(0xFFAA6B94),
+          color: Color(0xFF614f96),
         ),
       ),
     );
@@ -914,7 +915,7 @@ class _ProgramPageState extends State<ProgramPage>
 
   Widget _buildKeynoteCard(Keynote keynote) {
     return Card(
-      color: Color(0xFFAA6B94).withOpacity(0.1),
+      color: Color(0xFF614f96).withOpacity(0.1),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Row(
@@ -928,7 +929,7 @@ class _ProgramPageState extends State<ProgramPage>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
                   border: Border.all(
-                    color: Color(0xFFAA6B94),
+                    color: Color(0xFF614f96),
                     width: 2,
                   ),
                 ),
@@ -940,13 +941,13 @@ class _ProgramPageState extends State<ProgramPage>
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFFAA6B94).withOpacity(0.2),
+                          color: Color(0xFF614f96).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(38),
                         ),
                         child: Icon(
                           Icons.person,
                           size: 40,
-                          color: Color(0xFFAA6B94),
+                          color: Color(0xFF614f96),
                         ),
                       );
                     },
@@ -1008,7 +1009,14 @@ class _ProgramPageState extends State<ProgramPage>
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _showRatingDialog(conference, program),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PresentationFeedbackPage(
+              conference: conference,
+              sessionDate: program.date,
+            ),
+          ),
+        ),
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -1050,7 +1058,7 @@ class _ProgramPageState extends State<ProgramPage>
                       Icon(
                         Icons.star_rate,
                         size: 16,
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                       ),
                     ],
                   ),
@@ -1059,13 +1067,13 @@ class _ProgramPageState extends State<ProgramPage>
               SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.person, size: 16, color: Color(0xFFAA6B94)),
+                  Icon(Icons.person, size: 16, color: Color(0xFF614f96)),
                   SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       conference.presenter,
                       style: TextStyle(
-                        color: Color(0xFFAA6B94),
+                        color: Color(0xFF614f96),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1128,10 +1136,10 @@ class _ProgramPageState extends State<ProgramPage>
                         Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Color(0xFFAA6B94).withOpacity(0.1),
+                            color: Color(0xFF614f96).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                                color: Color(0xFFAA6B94).withOpacity(0.3)),
+                                color: Color(0xFF614f96).withOpacity(0.3)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1139,14 +1147,14 @@ class _ProgramPageState extends State<ProgramPage>
                               Row(
                                 children: [
                                   Icon(Icons.person_outline,
-                                      size: 12, color: Color(0xFFAA6B94)),
+                                      size: 12, color: Color(0xFF614f96)),
                                   SizedBox(width: 4),
                                   Text(
                                     'Your Rating',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xFFAA6B94),
+                                      color: Color(0xFF614f96),
                                     ),
                                   ),
                                 ],
@@ -1156,13 +1164,13 @@ class _ProgramPageState extends State<ProgramPage>
                                 children: [
                                   if (presenterRating > 0) ...[
                                     Icon(Icons.person,
-                                        size: 14, color: Color(0xFFAA6B94)),
+                                        size: 14, color: Color(0xFF614f96)),
                                     SizedBox(width: 4),
                                     Text(
                                       '${presenterRating.toStringAsFixed(1)}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFFAA6B94),
+                                        color: Color(0xFF614f96),
                                       ),
                                     ),
                                     _buildStarRating(presenterRating),
@@ -1170,13 +1178,13 @@ class _ProgramPageState extends State<ProgramPage>
                                   ],
                                   if (presentationRating > 0) ...[
                                     Icon(Icons.slideshow,
-                                        size: 14, color: Color(0xFFAA6B94)),
+                                        size: 14, color: Color(0xFF614f96)),
                                     SizedBox(width: 4),
                                     Text(
                                       '${presentationRating.toStringAsFixed(1)}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFFAA6B94),
+                                        color: Color(0xFF614f96),
                                       ),
                                     ),
                                     _buildStarRating(presentationRating),
@@ -1195,7 +1203,7 @@ class _ProgramPageState extends State<ProgramPage>
               // Tap to rate hint
               SizedBox(height: 8),
               Text(
-                'Tap to rate this presentation',
+                'Tap to view reviews and rate this presentation',
                 style: TextStyle(
                   color: Colors.grey[500],
                   fontSize: 12,
@@ -1224,290 +1232,5 @@ class _ProgramPageState extends State<ProgramPage>
         );
       }),
     );
-  }
-
-  void _showRatingDialog(Conference conference, ProgramSession program) {
-    double presenterRating = 0.0;
-    double presentationRating = 0.0;
-    String comment = '';
-    final commentController = TextEditingController(text: comment);
-    bool isLoadingUserRating = true;
-    bool hasExistingRating = false;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            // Load user's existing rating on first build
-            if (isLoadingUserRating) {
-              isLoadingUserRating = false;
-              FirebaseService.getUserRating(conference,
-                      sessionDate: program.date)
-                  .then((userRating) {
-                if (userRating != null) {
-                  setState(() {
-                    presenterRating =
-                        userRating['presenterRating']?.toDouble() ?? 0.0;
-                    presentationRating =
-                        userRating['presentationRating']?.toDouble() ?? 0.0;
-                    comment = userRating['comment'] ?? '';
-                    commentController.text = comment;
-                    hasExistingRating = true;
-                  });
-                }
-              });
-            }
-
-            return AlertDialog(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        hasExistingRating
-                            ? 'Update Rating'
-                            : 'Rate Presentation',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFAA6B94),
-                        ),
-                      ),
-                      if (hasExistingRating) ...[
-                        SizedBox(width: 8),
-                        Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Color(0xFFAA6B94),
-                        ),
-                      ],
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    conference.title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Text(
-                    'by ${conference.presenter}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Presenter Rating
-                    Text(
-                      'Rate the Presenter',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: List.generate(5, (index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              presenterRating = index + 1.0;
-                            });
-                          },
-                          child: Icon(
-                            index < presenterRating.floor()
-                                ? Icons.star
-                                : Icons.star_border,
-                            size: 32,
-                            color: index < presenterRating.floor()
-                                ? Colors.amber
-                                : Colors.grey[400],
-                          ),
-                        );
-                      }),
-                    ),
-                    SizedBox(height: 20),
-
-                    // Presentation Rating
-                    Text(
-                      'Rate the Presentation',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: List.generate(5, (index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              presentationRating = index + 1.0;
-                            });
-                          },
-                          child: Icon(
-                            index < presentationRating.floor()
-                                ? Icons.star
-                                : Icons.star_border,
-                            size: 32,
-                            color: index < presentationRating.floor()
-                                ? Colors.amber
-                                : Colors.grey[400],
-                          ),
-                        );
-                      }),
-                    ),
-                    SizedBox(height: 20),
-
-                    // Comment
-                    Text(
-                      'Add a Comment (Optional)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: commentController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        hintText:
-                            'Share your thoughts about the presentation...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Color(0xFFAA6B94)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _submitRating(
-                      conference,
-                      program,
-                      presenterRating,
-                      presentationRating,
-                      commentController.text.trim(),
-                    );
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFAA6B94),
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(
-                      hasExistingRating ? 'Update Rating' : 'Submit Rating'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _submitRating(
-    Conference conference,
-    ProgramSession program,
-    double presenterRating,
-    double presentationRating,
-    String comment,
-  ) async {
-    try {
-      // Show loading
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-                SizedBox(width: 16),
-                Text('Submitting your rating...'),
-              ],
-            ),
-            backgroundColor: Color(0xFFAA6B94),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-
-      // Update the conference with the new ratings using individual user rating
-      await FirebaseService.submitUserRating(
-        conference,
-        presenterRating,
-        presentationRating,
-        comment,
-        sessionDate: program.date,
-      );
-
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Rating submitted successfully!'),
-              ],
-            ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (e) {
-      // Show error message
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Failed to submit rating: ${e.toString()}'),
-              ],
-            ),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
-    }
   }
 }

@@ -227,7 +227,7 @@ class _DirectPageState extends State<DirectPage> {
               _sendNotification();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFAA6B94),
+              backgroundColor: Color(0xFF614f96),
               foregroundColor: Colors.white,
             ),
             child: Text('Send Now'),
@@ -249,7 +249,7 @@ class _DirectPageState extends State<DirectPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFAA6B94),
+        backgroundColor: Color(0xFF614f96),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
@@ -280,7 +280,7 @@ class _DirectPageState extends State<DirectPage> {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFFAA6B94), Color(0xFFC87BAA)],
+                      colors: [Color(0xFF614f96), Color(0xFF7862ab)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -325,7 +325,7 @@ class _DirectPageState extends State<DirectPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 12),
@@ -382,7 +382,7 @@ class _DirectPageState extends State<DirectPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 12),
@@ -418,7 +418,7 @@ class _DirectPageState extends State<DirectPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 12),
@@ -439,14 +439,14 @@ class _DirectPageState extends State<DirectPage> {
                           labelText: 'Notification Title',
                           hintText: 'Enter a clear, concise title',
                           prefixIcon:
-                              Icon(Icons.title, color: Color(0xFFAA6B94)),
+                              Icon(Icons.title, color: Color(0xFF614f96)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide:
-                                BorderSide(color: Color(0xFFAA6B94), width: 2),
+                                BorderSide(color: Color(0xFF614f96), width: 2),
                           ),
                         ),
                         validator: (value) {
@@ -467,14 +467,14 @@ class _DirectPageState extends State<DirectPage> {
                           labelText: 'Notification Message',
                           hintText: 'Enter your detailed message here...',
                           prefixIcon:
-                              Icon(Icons.message, color: Color(0xFFAA6B94)),
+                              Icon(Icons.message, color: Color(0xFF614f96)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide:
-                                BorderSide(color: Color(0xFFAA6B94), width: 2),
+                                BorderSide(color: Color(0xFF614f96), width: 2),
                           ),
                         ),
                         maxLines: 4,
@@ -549,8 +549,8 @@ class _DirectPageState extends State<DirectPage> {
                           label: Text('Preview'),
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 16),
-                            side: BorderSide(color: Color(0xFFAA6B94)),
-                            foregroundColor: Color(0xFFAA6B94),
+                            side: BorderSide(color: Color(0xFF614f96)),
+                            foregroundColor: Color(0xFF614f96),
                           ),
                         ),
                       ),
@@ -573,7 +573,7 @@ class _DirectPageState extends State<DirectPage> {
                           label: Text(
                               _isSending ? 'Sending...' : 'Send Notification'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFAA6B94),
+                            backgroundColor: Color(0xFF614f96),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             elevation: 2,
@@ -593,7 +593,7 @@ class _DirectPageState extends State<DirectPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFAA6B94),
+                  color: Color(0xFF614f96),
                 ),
               ),
               SizedBox(height: 12),
