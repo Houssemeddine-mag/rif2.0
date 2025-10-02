@@ -21,8 +21,10 @@ dependencies:
   image_picker: ^1.0.4 # For profile picture selection
   shared_preferences: ^2.2.2 # For storing user preferences
   flutter_local_notifications: ^17.2.2 # For system notifications with sound and vibration
-  video_player: ^2.8.2 # For video streaming
-  chewie: ^1.7.5 # For video player controls
+  webview_flutter: ^4.4.2 # For displaying WebRTC stream in web view
+  socket_io_client: ^2.0.3+1 # For real-time communication with Node.js server
+  video_player: ^2.8.1 # For video playback
+  chewie: ^1.7.4 # Video player UI controls
 
 dev_dependencies:
   flutter_test:

@@ -37,10 +37,54 @@ class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker _imagePicker = ImagePicker();
   bool _isUpdatingProfilePicture = false;
 
+  // University search functionality
+  final TextEditingController _universitySearchController =
+      TextEditingController();
+  List<String> _filteredUniversities = [];
+  bool _showUniversitySuggestions = false;
+  final FocusNode _universityFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _initializeUniversitySearch();
+  }
+
+  void _initializeUniversitySearch() {
+    _filteredUniversities = ProfileData.allUniversities;
+
+    _universitySearchController.addListener(() {
+      _filterUniversities(_universitySearchController.text);
+    });
+
+    _universityFocusNode.addListener(() {
+      setState(() {
+        _showUniversitySuggestions = _universityFocusNode.hasFocus;
+      });
+    });
+  }
+
+  void _filterUniversities(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredUniversities = ProfileData.allUniversities;
+      } else {
+        _filteredUniversities = ProfileData.allUniversities
+            .where((university) =>
+                university.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  void _selectUniversity(String university) {
+    setState(() {
+      _selectedUniversity = university;
+      _universitySearchController.text = university;
+      _showUniversitySuggestions = false;
+    });
+    _universityFocusNode.unfocus();
   }
 
   @override
@@ -253,6 +297,31 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _completeProfile() async {
+    // Check if university was typed but not selected from suggestions
+    if (_universitySearchController.text.isNotEmpty &&
+        _selectedUniversity == null) {
+      // Auto-select if there's an exact match
+      final exactMatch = ProfileData.allUniversities.firstWhere(
+        (university) =>
+            university.toLowerCase() ==
+            _universitySearchController.text.toLowerCase(),
+        orElse: () => '',
+      );
+
+      if (exactMatch.isNotEmpty) {
+        _selectedUniversity = exactMatch;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Please select a university from the suggestions or clear the field'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
+
     if ((_selectedUniversity == null || _selectedUniversity!.isEmpty) ||
         (_selectedEducationLevel == null || _selectedEducationLevel!.isEmpty) ||
         (_selectedCountry == null || _selectedCountry!.isEmpty) ||
@@ -336,6 +405,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _selectedProvince = null;
         _selectedUniversity = null;
         _selectedEducationLevel = null;
+        _universitySearchController.clear();
 
         await _loadUserProfile();
       }
@@ -547,6 +617,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       _selectedProvince = _userProfile!.province;
                       _selectedUniversity =
                           _userProfile!.university ?? _userProfile!.school;
+                      _universitySearchController.text =
+                          _userProfile!.university ??
+                              _userProfile!.school ??
+                              '';
 
                       setState(() {
                         _isEditing = true;
@@ -665,39 +739,86 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 20),
 
-            // University Dropdown Field
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[400]!),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedUniversity,
-                  hint: Text(
-                    'Select University',
-                    style: TextStyle(color: Colors.grey[600]),
+            // University Search Field
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: _universitySearchController,
+                  focusNode: _universityFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'University',
+                    hintText: 'Start typing university name...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF614f96)),
+                    ),
+                    suffixIcon: _universitySearchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear),
+                            onPressed: () {
+                              _universitySearchController.clear();
+                              setState(() {
+                                _selectedUniversity = null;
+                              });
+                            },
+                          )
+                        : Icon(Icons.search),
                   ),
-                  isExpanded: true,
-                  items: ProfileData.allUniversities.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedUniversity = newValue;
-                    });
+                  onChanged: (value) {
+                    if (value != _selectedUniversity) {
+                      setState(() {
+                        _selectedUniversity =
+                            null; // Clear selection when typing
+                      });
+                    }
                   },
                 ),
-              ),
+                // Suggestions List
+                if (_showUniversitySuggestions &&
+                    _filteredUniversities.isNotEmpty)
+                  Container(
+                    margin: EdgeInsets.only(top: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    constraints: BoxConstraints(
+                      maxHeight: 200,
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filteredUniversities.length > 10
+                          ? 10
+                          : _filteredUniversities.length,
+                      itemBuilder: (context, index) {
+                        final university = _filteredUniversities[index];
+                        return ListTile(
+                          dense: true,
+                          title: Text(
+                            university,
+                            style: TextStyle(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          onTap: () => _selectUniversity(university),
+                          hoverColor: Color(0xFF614f96).withOpacity(0.1),
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
 
@@ -1037,19 +1158,30 @@ class _ProfilePageState extends State<ProfilePage> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF614f96)),
               ),
             )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildProfileInfo(),
-                  const SizedBox(height: 16),
-                  _buildAdditionalInfo(),
-                  if (_userProfile != null &&
-                      (!_userProfile!.isProfileComplete || _isEditing)) ...[
-                    const SizedBox(height: 24),
-                    _buildCompleteProfileForm(),
+          : GestureDetector(
+              onTap: () {
+                // Dismiss university suggestions when tapping outside
+                if (_showUniversitySuggestions) {
+                  setState(() {
+                    _showUniversitySuggestions = false;
+                  });
+                  _universityFocusNode.unfocus();
+                }
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildProfileInfo(),
+                    const SizedBox(height: 16),
+                    _buildAdditionalInfo(),
+                    if (_userProfile != null &&
+                        (!_userProfile!.isProfileComplete || _isEditing)) ...[
+                      const SizedBox(height: 24),
+                      _buildCompleteProfileForm(),
+                    ],
+                    const SizedBox(height: 32),
                   ],
-                  const SizedBox(height: 32),
-                ],
+                ),
               ),
             ),
     );
