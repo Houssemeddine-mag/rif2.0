@@ -21,19 +21,19 @@
 //   int _viewerCount = 0;
 //   List<Map<String, dynamic>> _viewers = [];
 //   List<Map<String, dynamic>> _questions = [];
-  
+
 //   // UI state variables
 //   bool _isLoading = false;
 //   bool _isConnected = false;
 //   String _errorMessage = '';
 //   String _connectionStatus = 'Disconnected';
-  
+
 //   // Room code and controls
 //   final TextEditingController _roomCodeController = TextEditingController();
 //   final TextEditingController _questionController = TextEditingController();
 //   bool _isSubmittingQuestion = false;
 //   bool _isJoiningRoom = false;
-  
+
 //   // WebRTC server URLs - try domain first, then IP as fallback
 //   final List<String> _webrtcServerUrls = [
 //     'https://myappstore.live:3001',  // Primary: domain with HTTPS and correct port
@@ -113,7 +113,7 @@
 //     if (webViewController != null) {
 //       await webViewController!.runJavaScript('''
 //         console.log("Enhanced video handlers initialized - looking for video#remote-video");
-        
+
 //         // Immediate DOM diagnostic
 //         console.log('=== IMMEDIATE DOM DIAGNOSTIC ===');
 //         console.log('- document.readyState:', document.readyState);
@@ -123,7 +123,7 @@
 //         console.log('- document.innerHTML length:', document.documentElement.innerHTML.length);
 //         console.log('- document.title:', document.title);
 //         console.log('- window.location.href:', window.location.href);
-        
+
 //         // Check DOM tree structure
 //         if (document.body) {
 //           console.log('- document.body.children.length:', document.body.children.length);
@@ -136,14 +136,14 @@
 //           }
 //         }
 //         console.log('=== END IMMEDIATE DIAGNOSTIC ===');
-        
+
 //         // Check if we're in the right document
 //         function handleVideoElement(video) {
 //           if (!video) {
 //             console.log("No video element provided to handleVideoElement");
 //             return;
 //           }
-          
+
 //           console.log("Configuring video element:", {
 //             id: video.id,
 //             tagName: video.tagName,
@@ -156,7 +156,7 @@
 //             offsetWidth: video.offsetWidth,
 //             offsetHeight: video.offsetHeight
 //           });
-          
+
 //           // Force mobile-optimized settings
 //           video.muted = true;
 //           video.autoplay = true;
@@ -170,16 +170,16 @@
 //           video.style.visibility = 'visible';
 //           video.style.objectFit = 'contain';
 //           video.style.backgroundColor = '#000';
-          
+
 //           console.log("Video element configured with mobile settings");
-          
+
 //           // Remove any existing event listeners to avoid duplicates
 //           if (video._handlersAttached) {
 //             console.log("Handlers already attached, skipping");
 //             return;
 //           }
 //           video._handlersAttached = true;
-          
+
 //           // Add comprehensive event handlers
 //           video.addEventListener('loadedmetadata', function() {
 //             console.log("Video metadata loaded:", {
@@ -188,7 +188,7 @@
 //               videoHeight: this.videoHeight
 //             });
 //           });
-          
+
 //           video.addEventListener('loadeddata', function() {
 //             console.log("Video data loaded, attempting to play...");
 //             this.play().then(() => {
@@ -213,19 +213,19 @@
 //               });
 //             });
 //           });
-          
+
 //           video.addEventListener('canplay', function() {
 //             console.log("Video can play - attempting play");
 //             this.play().catch(e => console.log("Play attempt failed:", e));
 //           });
-          
+
 //           video.addEventListener('error', function(e) {
 //             console.error("Video error:", e.type, this.error ? this.error.message : 'Unknown error');
 //             if (window.StreamStatus) {
 //               window.StreamStatus.postMessage('stream-error');
 //             }
 //           });
-          
+
 //           // Additional events for debugging
 //           ['loadstart', 'progress', 'suspend', 'abort', 'emptied', 'stalled', 'play', 'pause', 'playing', 'waiting', 'seeking', 'seeked', 'ended'].forEach(eventType => {
 //             video.addEventListener(eventType, function() {
@@ -238,14 +238,14 @@
 //               });
 //             });
 //           });
-          
+
 //           // If video already has data, try to play immediately
 //           if (video.readyState >= 3) { // HAVE_FUTURE_DATA
 //             console.log("Video has data, attempting immediate play");
 //             video.play().catch(e => console.log("Immediate play failed:", e));
 //           }
 //         }
-        
+
 //         // Function to specifically find the remote-video element
 //         function findRemoteVideo() {
 //           const video = document.getElementById('remote-video');
@@ -259,17 +259,17 @@
 //             });
 //             return video;
 //           }
-          
+
 //           // Fallback: look for any video element
 //           const videos = document.querySelectorAll('video');
 //           console.log('Fallback: found', videos.length, 'video elements');
 //           return videos.length > 0 ? videos[0] : null;
 //         }
-        
+
 //         // Function to find and handle all video elements
 //         function processAllVideos() {
 //           console.log('=== Processing all videos ===');
-          
+
 //           // First try to find the specific remote-video element
 //           const remoteVideo = findRemoteVideo();
 //           if (remoteVideo) {
@@ -277,34 +277,34 @@
 //             handleVideoElement(remoteVideo);
 //             return 1; // Found and processed
 //           }
-          
+
 //           // Fallback: process all video elements
 //           const videos = document.querySelectorAll('video');
 //           console.log('Processing', videos.length, 'video elements');
-          
+
 //           videos.forEach((video, index) => {
 //             console.log('Processing video', index + ':', video.id || 'no-id');
 //             handleVideoElement(video);
 //           });
-          
+
 //           return videos.length;
 //         }
-        
+
 //         // Enhanced monitoring for video elements
 //         function startVideoMonitoring() {
 //           console.log('Starting video monitoring...');
-          
+
 //           // Initial processing with detailed logging
 //           const videoCount = processAllVideos();
 //           console.log('Initial scan found', videoCount, 'video elements');
-          
+
 //           // Set up mutation observer for dynamically added videos
 //           if (typeof MutationObserver !== 'undefined') {
 //             console.log('Setting up MutationObserver');
 //             const observer = new MutationObserver(function(mutations) {
 //               console.log('DOM mutations detected:', mutations.length);
 //               let foundVideos = false;
-              
+
 //               mutations.forEach(function(mutation) {
 //                 if (mutation.type === 'childList') {
 //                   mutation.addedNodes.forEach(function(node) {
@@ -322,14 +322,14 @@
 //                     }
 //                   });
 //                 }
-                
+
 //                 if (mutation.type === 'attributes' && mutation.target.tagName === 'VIDEO') {
 //                   console.log('Video element attributes changed');
 //                   handleVideoElement(mutation.target);
 //                   foundVideos = true;
 //                 }
 //               });
-              
+
 //               if (!foundVideos) {
 //                 // Still check if video is now present after DOM changes
 //                 setTimeout(() => {
@@ -340,7 +340,7 @@
 //                 }, 100);
 //               }
 //             });
-            
+
 //             observer.observe(document.body, {
 //               childList: true,
 //               subtree: true,
@@ -350,14 +350,14 @@
 //           } else {
 //             console.log('MutationObserver not available');
 //           }
-          
+
 //           // More frequent periodic checks with detailed logging
 //           let checkCount = 0;
 //           const intervalId = setInterval(() => {
 //             checkCount++;
 //             console.log('Periodic check #' + checkCount);
 //             const count = processAllVideos();
-            
+
 //             // Log DOM structure occasionally for debugging
 //             if (checkCount % 10 === 1) {
 //               const videoContainer = document.querySelector('.video-container');
@@ -370,7 +370,7 @@
 //             }
 //           }, 2000); // Check every 2 seconds
 //         }
-        
+
 //         // Start monitoring immediately if DOM is ready, otherwise wait
 //         if (document.readyState === 'loading') {
 //           console.log('DOM still loading, waiting for DOMContentLoaded');
@@ -382,7 +382,7 @@
 //           console.log('DOM already ready, starting monitoring immediately');
 //           setTimeout(startVideoMonitoring, 100); // Small delay to ensure injection is complete
 //         }
-        
+
 //         // Override console.log to send messages to Flutter
 //         const originalConsoleLog = console.log;
 //         console.log = function(...args) {
@@ -391,7 +391,7 @@
 //             window.VideoDebug.postMessage(args.join(' '));
 //           }
 //         };
-        
+
 //         // Override console.error too
 //         const originalConsoleError = console.error;
 //         console.error = function(...args) {
@@ -400,14 +400,14 @@
 //             window.VideoDebug.postMessage('ERROR: ' + args.join(' '));
 //           }
 //         };
-        
+
 //         // Override RTCPeerConnection to monitor stream assignment
 //         if (window.RTCPeerConnection) {
 //           const originalRTCPeerConnection = window.RTCPeerConnection;
 //           window.RTCPeerConnection = function(...args) {
 //             const pc = new originalRTCPeerConnection(...args);
 //             console.log('RTCPeerConnection created');
-            
+
 //             pc.addEventListener('track', function(event) {
 //               console.log('Track received:', {
 //                 kind: event.track.kind,
@@ -415,11 +415,11 @@
 //                 enabled: event.track.enabled,
 //                 readyState: event.track.readyState
 //               });
-              
+
 //               if (event.streams && event.streams.length > 0) {
 //                 const stream = event.streams[0];
 //                 console.log('Stream received with tracks:', stream.getTracks().length);
-                
+
 //                 // Find video element and assign stream
 //                 setTimeout(() => {
 //                   const videos = document.querySelectorAll('video');
@@ -433,7 +433,7 @@
 //                 }, 100);
 //               }
 //             });
-            
+
 //             return pc;
 //           };
 //         }
@@ -465,7 +465,7 @@
 //     for (int i = 0; i < _webrtcServerUrls.length; i++) {
 //       _serverUrlIndex = i;
 //       _currentServerUrl = _webrtcServerUrls[i];
-      
+
 //       print('Trying to connect to: $_currentServerUrl');
 //       setState(() {
 //         _connectionStatus = 'Trying $_currentServerUrl...';
@@ -488,7 +488,7 @@
 //         print('Failed to connect to $_currentServerUrl: $e');
 //         socket?.disconnect();
 //         socket = null;
-        
+
 //         if (i == _webrtcServerUrls.length - 1) {
 //           // Last attempt failed
 //           throw Exception('All server URLs failed. Last error: $e');
@@ -500,7 +500,7 @@
 //   Future<bool> _attemptConnection() async {
 //     final completer = Completer<bool>();
 //     Timer? timeoutTimer;
-    
+
 //     socket!.on('connect', (_) {
 //       timeoutTimer?.cancel();
 //       if (!completer.isCompleted) {
@@ -523,7 +523,7 @@
 //     });
 
 //     socket!.connect();
-    
+
 //     return completer.future;
 //   }
 
@@ -793,7 +793,7 @@
 //           children: [
 //             // Room Connection Section
 //             _buildRoomConnectionSection(),
-            
+
 //             // Live Stream Section
 //             _buildStreamSection(),
 
@@ -837,7 +837,7 @@
 //             ],
 //           ),
 //           SizedBox(height: 16),
-          
+
 //           if (!_isConnected) ...[
 //             TextField(
 //               controller: _roomCodeController,
@@ -1102,11 +1102,11 @@
 //               children: [
 //                 CircularProgressIndicator(color: Colors.white),
 //                 SizedBox(height: 16),
-//                 Text('Loading video stream...', 
+//                 Text('Loading video stream...',
 //                   style: TextStyle(color: Colors.white),
 //                 ),
 //                 SizedBox(height: 8),
-//                 Text('Room: $_currentRoomId', 
+//                 Text('Room: $_currentRoomId',
 //                   style: TextStyle(color: Colors.white70, fontSize: 12),
 //                 ),
 //                 SizedBox(height: 16),
@@ -1343,20 +1343,20 @@
 //   }
 // }
 
- //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
 //***************************************************************************************************************************  //************************************************************************************************************************* */
-  //********************************************NEW WITH VM AZURE mediamtx*************************************************** */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
-  //************************************************************************************************************************* */
+//********************************************NEW WITH VM AZURE mediamtx*************************************************** */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
+//************************************************************************************************************************* */
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -1396,12 +1396,15 @@ class _DirectPageState extends State<DirectPage> with WidgetsBindingObserver {
   String _serverConnectionStatus = 'Checking server...';
   String _streamConnectionStatus = 'Not connected';
 
+  // Viewer count
+  int _viewerCount = 0;
+
   // Question submission
   final TextEditingController _questionController = TextEditingController();
   bool _isSubmittingQuestion = false;
 
   // Stream URLs - MediaMTX HLS endpoint
-final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
+  final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
 
   @override
   void initState() {
@@ -1443,7 +1446,7 @@ final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
   //     _startStreamMonitoring();
   //   }
   // }
-  
+
   Future<void> _checkStreamAvailability() async {
     if (!mounted) return;
 
@@ -1453,15 +1456,14 @@ final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
     });
 
     try {
-      final response = await http
-          .get(Uri.parse(_streamUrl))
-          .timeout(Duration(seconds: 10));
+      final response =
+          await http.get(Uri.parse(_streamUrl)).timeout(Duration(seconds: 10));
 
       if (!mounted) return;
 
       print('📡 Server response: ${response.statusCode}');
       print('📡 Response headers: ${response.headers}');
-      
+
       if (response.statusCode == 200) {
         print('✅ Server is accessible, stream available');
         setState(() {
@@ -1901,13 +1903,17 @@ final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                color: _isServerConnected ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                color: _isServerConnected
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.red.withOpacity(0.1),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Icon(
-                          _isServerConnected ? Icons.cloud_done : Icons.cloud_off,
+                          _isServerConnected
+                              ? Icons.cloud_done
+                              : Icons.cloud_off,
                           color: _isServerConnected ? Colors.green : Colors.red,
                           size: 16,
                         ),
@@ -1916,7 +1922,9 @@ final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
                           child: Text(
                             _serverConnectionStatus,
                             style: TextStyle(
-                              color: _isServerConnected ? Colors.green : Colors.red,
+                              color: _isServerConnected
+                                  ? Colors.green
+                                  : Colors.red,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -2421,7 +2429,7 @@ final String _streamUrl = 'http://4.178.186.35:8888/live/index.m3u8';
               'Conference', 'RIF 2025 - Women in Computer Science Research'),
           _buildInfoRow('Status', _isLive ? 'Live' : 'Offline'),
           _buildInfoRow('Quality', '720p HD'),
-          _buildInfoRow('Viewers', '125+ participants'),
+          _buildInfoRow('Viewers', _viewerCount.toString()),
           if (_retryCount > 0)
             _buildInfoRow('Connection', 'Auto-recovery active'),
         ],
