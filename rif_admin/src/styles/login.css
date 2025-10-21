@@ -63,6 +63,43 @@
   font-family: "Poppins", sans-serif;
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7f8c8d;
+  transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+  color: #b71b97;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+}
+
+.password-toggle-btn svg {
+  display: block;
+}
+
 .login-btn {
   width: 100%;
   padding: 12px 0;

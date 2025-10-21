@@ -12,6 +12,7 @@ const Program = () => {
     date: "",
     start: "",
     end: "",
+    endDate: "", // Added end date field for sessions
     room: "", // Added room field
     chairs: [],
     chairInput: "",
@@ -248,6 +249,7 @@ const Program = () => {
         date: "",
         start: "",
         end: "",
+        endDate: "", // Reset end date field
         room: "", // Reset room field
         chairs: [],
         chairInput: "",
@@ -281,6 +283,7 @@ const Program = () => {
       date: session.date || "",
       start: session.start || "",
       end: session.end || "",
+      endDate: session.endDate || "", // Include end date in edit
       room: session.room || "", // Include room in edit
       chairs: session.chairs || [],
       chairInput: "",
@@ -409,6 +412,29 @@ const Program = () => {
               />
             </div>
             <div className="form-group">
+              <label>End Date (Optional)</label>
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleInputChange}
+                placeholder="Leave empty if same as start date"
+              />
+              <small
+                style={{
+                  color: "#888",
+                  fontSize: "12px",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
+                Set an end date if the session spans multiple days
+              </small>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label>Session Title</label>
               <input
                 type="text"
@@ -427,6 +453,16 @@ const Program = () => {
                 type="time"
                 name="start"
                 value={formData.start}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Session End Time</label>
+              <input
+                type="time"
+                name="end"
+                value={formData.end}
                 onChange={handleInputChange}
                 required
               />
@@ -950,6 +986,7 @@ const Program = () => {
                   date: "",
                   start: "",
                   end: "",
+                  endDate: "", // Reset end date field
                   room: "", // Reset room field
                   chairs: [],
                   chairInput: "",
@@ -1016,7 +1053,14 @@ const Program = () => {
                       {session.title}
                     </div>
                     <div style={{ color: "#7f8c8d", fontSize: 15 }}>
-                      {formatDate(session.date)} • Room:{" "}
+                      {formatDate(session.date)}
+                      {session.endDate && session.endDate !== session.date && (
+                        <span> - {formatDate(session.endDate)}</span>
+                      )}
+                      {" • "}
+                      {session.start}
+                      {session.end && ` - ${session.end}`}
+                      {" • Room: "}
                       {session.room || "Not specified"}
                     </div>
                     <div

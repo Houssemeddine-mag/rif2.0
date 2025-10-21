@@ -37,6 +37,7 @@ flutter:
 
   assets:
     - lib/resource/rifnonbgcopy.png
+    - lib/resource/INovation.png
     - lib/resource/Logo NTIC.png
     - lib/resource/labolire_T.png
     - lib/resource/LOGO_Univ2-removebg-preview.png

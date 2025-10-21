@@ -58,13 +58,13 @@ class Sidebar extends StatelessWidget {
           _buildNavItem(
             context,
             icon: Icons.calendar_month_outlined,
-            title: 'Programme',
+            title: 'Schedule',
             index: 1,
           ),
           _buildNavItem(
             context,
             icon: Icons.chat_outlined,
-            title: 'Direct',
+            title: 'RIF Live',
             index: 2,
           ),
           _buildNavItem(

@@ -26,16 +26,23 @@ class _ProgramPageState extends State<ProgramPage>
   // Real-time stream subscription
   StreamSubscription<List<ProgramSession>>? _programsSubscription;
 
+  // Timer for updating session status
+  Timer? _statusUpdateTimer;
+
   @override
   void initState() {
     super.initState();
     _setupRealtimeListener();
+    _startStatusUpdateTimer();
   }
 
   @override
   void dispose() {
     // Cancel real-time subscription
     _programsSubscription?.cancel();
+
+    // Cancel status update timer
+    _statusUpdateTimer?.cancel();
 
     // Safely dispose TabController with null check
     try {
@@ -68,6 +75,17 @@ class _ProgramPageState extends State<ProgramPage>
         }
       },
     );
+  }
+
+  void _startStatusUpdateTimer() {
+    // Update session status every minute to keep timers accurate
+    _statusUpdateTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          // This will trigger a rebuild to update all session status displays
+        });
+      }
+    });
   }
 
   void _processPrograms(List<ProgramSession> programs) {
@@ -211,24 +229,13 @@ class _ProgramPageState extends State<ProgramPage>
                 color: Colors.green,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: Colors.white,
-                    size: 6,
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    'LIVE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'LIVE',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -381,19 +388,14 @@ class _ProgramPageState extends State<ProgramPage>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildStatItem(
-                  '${allPrograms.length}',
-                  'Sessions',
-                  Icons.event,
-                ),
-                _buildStatItem(
                   '${allPrograms.fold<int>(0, (sum, program) => sum + program.conferences.length)}',
-                  'Conferences',
+                  'Presentations',
                   Icons.mic,
                 ),
                 _buildStatItem(
-                  '${_getUniqueSpeakers().length}',
-                  'Speakers',
-                  Icons.people,
+                  '${allPrograms.where((program) => program.keynote != null && program.keynote!.name.isNotEmpty).length}',
+                  'Keynotes',
+                  Icons.school_rounded,
                 ),
               ],
             ),
@@ -541,14 +543,6 @@ class _ProgramPageState extends State<ProgramPage>
     );
   }
 
-  Set<String> _getUniqueSpeakers() {
-    Set<String> speakers = {};
-    for (var program in allPrograms) {
-      speakers.addAll(program.allSpeakers);
-    }
-    return speakers;
-  }
-
   // Helper method to convert base64 string to Uint8List for Image.memory
   Uint8List _getImageFromBase64(String base64String) {
     // Remove data URL prefix if present (e.g., "data:image/jpeg;base64,")
@@ -585,37 +579,89 @@ class _ProgramPageState extends State<ProgramPage>
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '${program.start} - ${program.end}',
+                      '${program.start}${program.end != null ? ' - ${program.end}' : ''}',
                       style: TextStyle(
                         color: Color(0xFF614f96),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  if (program.keynote != null &&
-                      program.keynote!.name.isNotEmpty)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.amber[100],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star, size: 14, color: Colors.amber[700]),
-                          SizedBox(width: 4),
-                          Text(
-                            'Keynote',
-                            style: TextStyle(
-                              color: Colors.amber[700],
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                  Row(
+                    children: [
+                      // Session Status Badge
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: program.hasFinished
+                              ? Colors.grey[300]
+                              : (program.timeUntilEnd != null
+                                  ? Colors.green[100]
+                                  : Colors.blue[100]),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              program.hasFinished
+                                  ? Icons.check_circle
+                                  : (program.timeUntilEnd != null
+                                      ? Icons.access_time
+                                      : Icons.event),
+                              size: 14,
+                              color: program.hasFinished
+                                  ? Colors.grey[700]
+                                  : (program.timeUntilEnd != null
+                                      ? Colors.green[700]
+                                      : Colors.blue[700]),
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 4),
+                            Text(
+                              program.sessionStatus,
+                              style: TextStyle(
+                                color: program.hasFinished
+                                    ? Colors.grey[700]
+                                    : (program.timeUntilEnd != null
+                                        ? Colors.green[700]
+                                        : Colors.blue[700]),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      if (program.keynote != null &&
+                          program.keynote!.name.isNotEmpty) ...[
+                        SizedBox(width: 8),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.amber[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star,
+                                  size: 14, color: Colors.amber[700]),
+                              SizedBox(width: 4),
+                              Text(
+                                'Keynote',
+                                style: TextStyle(
+                                  color: Colors.amber[700],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
               ),
 

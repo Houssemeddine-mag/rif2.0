@@ -78,116 +78,287 @@ class _KeynoteSpeakersPageState extends State<KeynoteSpeakersPage> {
       context: context,
       builder: (context) {
         return Dialog(
-          insetPadding: const EdgeInsets.all(16),
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.8,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header with close button
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF614f96),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          speaker['name'] ?? 'Unknown Speaker',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(20),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              // Main Card Content (positioned below the image)
+              Container(
+                margin: const EdgeInsets.only(top: 80), // Lowered the card more
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.72,
                 ),
-
-                // Content
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Speaker image
-                        if (speaker['imageData'] != null &&
-                            speaker['imageData'].isNotEmpty)
-                          Center(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 30,
+                      offset: const Offset(0, 15),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Close button in top right corner
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(),
+                            borderRadius: BorderRadius.circular(20),
                             child: Container(
-                              width: 120,
-                              height: 120,
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFF614f96),
-                                  width: 3,
-                                ),
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              child: ClipOval(
-                                child: _buildSpeakerImage(speaker['imageData']),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.grey[600],
+                                size: 20,
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                    ),
 
-                        const SizedBox(height: 16),
+                    // Space for the overlapping image
+                    const SizedBox(height: 35),
 
-                        // Speaker details
-                        Text(
-                          'Title: ${speaker['title'] ?? 'Not specified'}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                    // Speaker Name
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Text(
+                        speaker['name'] ?? 'Unknown Speaker',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF2d2d2d),
+                          letterSpacing: 0.5,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    // Title
+                    if (speaker['title'] != null && speaker['title'].isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 28),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF614f96).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.school_rounded,
+                                size: 16,
+                                color: const Color(0xFF614f96),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                speaker['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                  letterSpacing: 0.3,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const SizedBox(height: 12),
+
+                    // Institution
+                    if (speaker['institution'] != null &&
+                        speaker['institution'].isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 28),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF614f96).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.apartment_rounded,
+                                size: 16,
+                                color: const Color(0xFF614f96),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                speaker['institution'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                  letterSpacing: 0.3,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const SizedBox(height: 24),
+
+                    // Elegant Divider
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Container(
+                        height: 0.5,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.grey.withOpacity(0.3),
+                              Colors.transparent,
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
+                      ),
+                    ),
 
-                        Text(
-                          'Institution: ${speaker['institution'] ?? 'Not specified'}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-                        // Biography
-                        const Text(
-                          'Biography:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF614f96),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
+                    // Biography section
+                    Flexible(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 28),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF614f96)
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.person_outline_rounded,
+                                    size: 16,
+                                    color: const Color(0xFF614f96),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'About',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF614f96),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 14),
 
-                        Text(
-                          speaker['biography'] ?? 'No biography available.',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
+                            // Biography text
+                            Text(
+                              speaker['biography'] ?? 'No biography available.',
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                height: 1.8,
+                                color: Colors.grey[800],
+                                letterSpacing: 0.2,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Profile Picture - Positioned half outside, half inside
+              Positioned(
+                top: 10, // Lowered from 0 to 10
+                child: Container(
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF614f96).withOpacity(0.25),
+                        blurRadius: 25,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 5,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF614f96).withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: ClipOval(
+                        child: speaker['imageData'] != null &&
+                                speaker['imageData'].isNotEmpty
+                            ? _buildSpeakerImage(speaker['imageData'])
+                            : Container(
+                                color:
+                                    const Color(0xFF614f96).withOpacity(0.08),
+                                child: const Icon(
+                                  Icons.person_rounded,
+                                  size: 70,
+                                  color: Color(0xFF614f96),
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

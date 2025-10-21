@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> loginWithEmail() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -401,12 +402,25 @@ class _LoginPageState extends State<LoginPage> {
               // Password field
               TextField(
                 controller: passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: "Mot de passe",
                   labelStyle: TextStyle(color: Color(0xFF614f96)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Color(0xFF614f96),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
                   ),
                 ),
               ),
@@ -539,6 +553,14 @@ class _LoginPageState extends State<LoginPage> {
                         'lib/resource/IEEE dz.png',
                         height: 80,
                         width: 180,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: 15),
+                      // INovation Logo
+                      Image.asset(
+                        'lib/resource/INovation.png',
+                        height: 120,
+                        width: 240,
                         fit: BoxFit.contain,
                       ),
                     ],

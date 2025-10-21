@@ -84,6 +84,7 @@ class ProgramSession {
   final String date;
   final String start;
   final String? end; // Made optional since not all sessions have end times
+  final String? endDate; // End date for multi-day sessions
   final String? room; // Room where the session takes place
   final List<String> chairs;
   final Keynote? keynote;
@@ -100,6 +101,7 @@ class ProgramSession {
     required this.date,
     required this.start,
     this.end, // Made optional
+    this.endDate, // Optional end date field
     this.room, // Optional room field
     required this.chairs,
     this.keynote,
@@ -118,6 +120,7 @@ class ProgramSession {
       date: map['date'] ?? '',
       start: map['start'] ?? '',
       end: map['end'], // Optional, can be null
+      endDate: map['endDate'], // Optional end date field
       room: map['room'], // Optional room field
       chairs: List<String>.from(map['chairs'] ?? []),
       keynote: map['keynote'] != null ? Keynote.fromMap(map['keynote']) : null,
@@ -165,6 +168,7 @@ class ProgramSession {
       'date': date,
       'start': start,
       'end': end,
+      'endDate': endDate,
       'room': room,
       'chairs': chairs,
       'keynote': keynote?.toMap(),
@@ -217,6 +221,96 @@ class ProgramSession {
     } catch (e) {
       return false;
     }
+  }
+
+  // Helper method to check if session has finished
+  bool get hasFinished {
+    try {
+      final now = DateTime.now();
+
+      // Determine the actual end date (use endDate if provided, otherwise use date)
+      final actualEndDate = endDate != null && endDate!.isNotEmpty
+          ? DateTime.parse(endDate!)
+          : DateTime.parse(date);
+
+      // If we have an end time, check against it
+      if (end != null && end!.isNotEmpty) {
+        final endTimeParts = end!.split(':');
+        final endDateTime = DateTime(
+          actualEndDate.year,
+          actualEndDate.month,
+          actualEndDate.day,
+          int.parse(endTimeParts[0]),
+          int.parse(endTimeParts[1]),
+        );
+        return now.isAfter(endDateTime);
+      }
+
+      // If no end time, just check if the end date has passed
+      return now.isAfter(actualEndDate.add(Duration(days: 1)));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Helper method to get remaining time until session ends
+  Duration? get timeUntilEnd {
+    try {
+      final now = DateTime.now();
+
+      // Determine the actual end date
+      final actualEndDate = endDate != null && endDate!.isNotEmpty
+          ? DateTime.parse(endDate!)
+          : DateTime.parse(date);
+
+      // If we have an end time, calculate exact duration
+      if (end != null && end!.isNotEmpty) {
+        final endTimeParts = end!.split(':');
+        final endDateTime = DateTime(
+          actualEndDate.year,
+          actualEndDate.month,
+          actualEndDate.day,
+          int.parse(endTimeParts[0]),
+          int.parse(endTimeParts[1]),
+        );
+
+        if (now.isBefore(endDateTime)) {
+          return endDateTime.difference(now);
+        }
+        return null; // Already finished
+      }
+
+      // If no end time, return null
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Helper method to get status string
+  String get sessionStatus {
+    if (hasFinished) {
+      return 'Finished';
+    }
+
+    final timeLeft = timeUntilEnd;
+    if (timeLeft != null) {
+      final hours = timeLeft.inHours;
+      final minutes = timeLeft.inMinutes.remainder(60);
+
+      if (hours > 24) {
+        final days = hours ~/ 24;
+        return 'Ends in $days day${days > 1 ? 's' : ''}';
+      } else if (hours > 0) {
+        return 'Ends in ${hours}h ${minutes}m';
+      } else if (minutes > 0) {
+        return 'Ends in ${minutes}m';
+      } else {
+        return 'Ending soon';
+      }
+    }
+
+    return 'In progress';
   }
 
   // Helper method to format date for display

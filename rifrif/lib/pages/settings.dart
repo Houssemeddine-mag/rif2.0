@@ -348,6 +348,13 @@ class _SettingsPageState extends State<SettingsPage> {
                           icon: Icons.info,
                           iconColor: Colors.grey,
                         ),
+                        Divider(height: 1),
+                        _buildInfoTile(
+                          title: 'Developed by',
+                          subtitle: 'M Innovation Group © 2025',
+                          icon: Icons.code,
+                          iconColor: Color(0xFF614f96),
+                        ),
                       ],
                     ),
                   ),
